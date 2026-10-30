@@ -3,7 +3,7 @@
 A personal, mobile-first web app that lists the films coming to Italian cinemas, week by week, with the Italian release date. One page replaces checking several Italian sites by hand.
 
 - **Italian dates only.** Every date comes from TMDB's Italian release entries, never from the worldwide one. Limited and festival runs are shown with a visible label.
-- **Week by week.** The current week and the next one by default; pick any range from 1 January 2026 onward, or load two more weeks at a time.
+- **Week by week.** The current week and the next one by default; pick any range from 1 January 2026 onward, or page back and forward two weeks at a time.
 - **Film pages.** Plot, director, cast, country, production company, running time and the trailer when TMDB has one.
 - **Italian and English UI**, switchable, with the same Italian release data.
 - **Cross-check.** Each week links to the same week on ComingSoon for a manual comparison.

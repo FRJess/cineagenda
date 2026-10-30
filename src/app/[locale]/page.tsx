@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
 import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
@@ -31,6 +32,9 @@ const rangeHref = (range: ReleaseWindow) => ({
 // Request-time: reads searchParams and the clock, so it streams inside <Suspense>.
 async function Weeks({ locale, searchParams }: { locale: UiLocale; searchParams: SearchParams }) {
   const params = await searchParams;
+
+  // The clock is request data: without this Next flags `new Date()` as unstable at prerender.
+  await connection();
   const today = todayInRome(new Date());
   const todayMonday = mondayOf(today);
   const range = parseRange(first(params.from), first(params.to), today);

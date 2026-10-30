@@ -41,8 +41,8 @@ export function FilmDetail({ film }: { readonly film: MovieDetails }) {
   const format = useFormatter();
 
   return (
-    <main data-part="film">
-      <header data-part="film-hero" data-backdrop={film.backdropPath ? "true" : undefined}>
+    <main data-part="film" data-backdrop={film.backdropPath ? "" : undefined}>
+      <header data-part="film-hero">
         {film.backdropPath && (
           <Image
             src={`${IMAGE_BASE}/w1280${film.backdropPath}`}
@@ -57,12 +57,8 @@ export function FilmDetail({ film }: { readonly film: MovieDetails }) {
         </nav>
       </header>
       <section data-part="film-summary" aria-labelledby="film-title">
-        {film.posterPath ? (
+        {film.posterPath && (
           <Image src={`${IMAGE_BASE}/w500${film.posterPath}`} alt="" width={500} height={750} />
-        ) : (
-          <figure data-part="poster-placeholder">
-            <figcaption>{tReleases("noPoster")}</figcaption>
-          </figure>
         )}
         <div data-part="film-summary-text">
           <h1 id="film-title">{film.title}</h1>
@@ -90,12 +86,12 @@ export function FilmDetail({ film }: { readonly film: MovieDetails }) {
                 <dd>{film.genres.join(", ")}</dd>
               </div>
             )}
-            {film.runtime && (
+            {film.runtime ? (
               <div>
                 <dt>{t("runtimeLabel")}</dt>
                 <dd>{t("runtime", { minutes: film.runtime })}</dd>
               </div>
-            )}
+            ) : null}
             {film.countries.length > 0 && (
               <div>
                 <dt>{t("country")}</dt>

@@ -63,11 +63,33 @@ describe("MovieCard", () => {
     expect(screen.queryByText("Uscita limitata")).not.toBeInTheDocument();
   });
 
-  it("shows the limited badge with the TMDB note", () => {
-    renderWithIntl(<MovieCard movie={movie({ releaseType: "limited", releaseNote: "IMAX" })} />);
+  it("shows the limited tag on the poster and keeps the TMDB note for the film page", () => {
+    const { container } = renderWithIntl(
+      <MovieCard movie={movie({ releaseType: "limited", releaseNote: "Re-release" })} />,
+    );
 
-    expect(screen.getByText("Uscita limitata")).toBeInTheDocument();
-    expect(screen.getByText("IMAX")).toBeInTheDocument();
+    expect(
+      container.querySelector("[data-part='poster'] [data-release='limited']"),
+    ).toHaveTextContent("Uscita limitata");
+    expect(screen.queryByText("Re-release")).not.toBeInTheDocument();
+  });
+
+  it("keeps only the date and the title under the poster", () => {
+    const { container } = renderWithIntl(
+      <MovieCard movie={movie({ releaseType: "limited", releaseNote: "Re-release" })} />,
+    );
+    const below = [...(container.querySelector("a")?.children ?? [])].filter(
+      (el) => el.getAttribute("data-part") !== "poster",
+    );
+
+    expect(below.map((el) => el.tagName)).toEqual(["P", "H3"]);
+    expect(below[0]).toHaveTextContent(/^5 novembre$/);
+  });
+
+  it("keeps the limited tag in the link's accessible name", () => {
+    renderWithIntl(<MovieCard movie={movie({ releaseType: "limited" })} />);
+
+    expect(screen.getByRole("link")).toHaveAccessibleName(/Uscita limitata/);
   });
 
   it("shows the limited badge alone when the note is empty", () => {
@@ -77,6 +99,14 @@ describe("MovieCard", () => {
 
     expect(screen.getByText("Uscita limitata")).toBeInTheDocument();
     expect(container.querySelectorAll("[data-release] *")).toHaveLength(0);
+  });
+
+  it("puts the date line above the title so dates align across a row", () => {
+    const { container } = renderWithIntl(<MovieCard movie={movie()} />);
+    const time = container.querySelector("time");
+    const heading = container.querySelector("h3");
+
+    expect(time?.compareDocumentPosition(heading as Node)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
   });
 
   it("shows a text placeholder instead of a missing poster", () => {

@@ -118,17 +118,21 @@ export function weeksBetween(range: ReleaseWindow): readonly string[] {
 }
 
 /**
- * Range extended by two weeks at one end.
+ * Next or previous page of two weeks, adjacent to the current range.
  * @param range Normalized range.
- * @param direction `earlier` moves the start back, `later` moves the end forward.
- * @returns New range, or null when the start is already at the lower bound.
+ * @param direction `earlier` shows the two weeks before the start, `later` the two after the end.
+ * @returns New two-week range, or null when the start is already at the lower bound.
  */
 export function shiftRange(
   range: ReleaseWindow,
   direction: "earlier" | "later",
 ): ReleaseWindow | null {
+  const pageDays = DEFAULT_WEEKS * 7;
+
   if (direction === "later") {
-    return { from: range.from, to: addDays(range.to, 14) };
+    const from = addDays(range.to, 1);
+
+    return { from, to: addDays(from, pageDays - 1) };
   }
 
   const minFrom = mondayOf(MIN_DATE);
@@ -137,7 +141,8 @@ export function shiftRange(
     return null;
   }
 
-  const from = addDays(range.from, -14);
+  const wanted = addDays(range.from, -pageDays);
+  const from = wanted < minFrom ? minFrom : wanted;
 
-  return { from: from < minFrom ? minFrom : from, to: range.to };
+  return { from, to: addDays(from, pageDays - 1) };
 }

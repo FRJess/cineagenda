@@ -9,6 +9,7 @@ Updated 2026-10-30. V1.1 (week navigation, film page, poster grid, README) is on
 - [ ] Vercel: import `FRJess/cineagenda` on Vercel Hobby and set `TMDB_ACCESS_TOKEN` (Production and Preview).
 - [ ] Vercel: open `/it`, a film page and `?from=2026-01-05&to=2026-01-18` on a phone.
 - [ ] Spot-check a few weeks against ComingSoon with the per-week link; note films that differ in the spec.
+- [ ] Watch the festival/event heuristic for a few weeks: a wrongly dropped or kept limited release means adding or removing a word in `FESTIVAL_OR_EVENT` (src/lib/tmdb/release-date.ts).
 
 Suggested commit message:
 
@@ -17,6 +18,8 @@ feat(releases): week navigation, film pages, poster grid and README
 ```
 
 ## Later (deferred from reviews)
+
+- [ ] Optional IMDb link on the film page (TMDB gives `imdb_id`; IMDb has no usable free API for dates).
 
 - [ ] Add a `server-only` guard to `src/lib/tmdb/client.ts` (needs the `server-only` package).
 - [ ] Move `src/lib/tmdb/fixtures.ts` to `src/test/`.

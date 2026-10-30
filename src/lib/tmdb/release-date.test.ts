@@ -47,24 +47,44 @@ describe("pickItalianRelease", () => {
     expect(pickItalianRelease(details({}, [rd(type, "2026-11-05")]), window)).toBeNull();
   });
 
-  it("labels a festival-only limited entry as limited with its empty note", () => {
-    // TMDB id 1462778: premiere at a Rome festival plus a bare limited entry.
+  it("drops a limited entry released the same week as a festival premiere", () => {
+    // TMDB id 1462778: premiere at a Rome festival plus a bare limited entry five days earlier.
     const film = details({}, [
       rd(1, "2026-10-31", "EU Balkan Film Festival, Rome"),
       rd(2, "2026-10-26"),
     ]);
 
-    expect(pickItalianRelease(film, window)).toEqual({
-      date: "2026-10-26",
-      type: "limited",
-      note: "",
-    });
+    expect(pickItalianRelease(film, window)).toBeNull();
   });
 
-  it("carries the IMAX note", () => {
-    expect(pickItalianRelease(details({}, [rd(2, "2026-11-26", "IMAX")]), window)?.note).toBe(
-      "IMAX",
-    );
+  it("keeps a bare limited entry when the premiere is far away", () => {
+    const film = details({}, [rd(1, "2026-08-30", "Venice"), rd(2, "2026-11-05")]);
+
+    expect(pickItalianRelease(film, window)?.date).toBe("2026-11-05");
+  });
+
+  it.each(["CineUnderground Film Festival", "Anteprima", "Premiere", "IMAX", "Evento speciale"])(
+    "drops a limited entry noted %j (festival or event)",
+    (note) => {
+      expect(pickItalianRelease(details({}, [rd(2, "2026-11-26", note)]), window)).toBeNull();
+    },
+  );
+
+  it.each(["Re-release", "40th Anniversary", "4K Restoration", ""])(
+    "keeps a limited entry noted %j (re-release or plain limited run)",
+    (note) => {
+      expect(pickItalianRelease(details({}, [rd(2, "2026-11-26", note)]), window)).toEqual({
+        date: "2026-11-26",
+        type: "limited",
+        note,
+      });
+    },
+  );
+
+  it("still prefers a theatrical entry even when a limited one is a festival screening", () => {
+    const film = details({}, [rd(2, "2026-11-05", "Festival"), rd(3, "2026-11-12")]);
+
+    expect(pickItalianRelease(film, window)?.date).toBe("2026-11-12");
   });
 
   it("includes the first day of the window", () => {
