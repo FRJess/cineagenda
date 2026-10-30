@@ -36,6 +36,66 @@ test("footer shows TMDB attribution and logo", async ({ page }) => {
   await expect(footer.getByRole("img", { name: "TMDB" })).toBeVisible();
 });
 
+test("default view shows the current week and the next one", async ({ page }) => {
+  await page.goto("/it");
+
+  await expect(page.getByRole("region")).toHaveCount(2);
+  await expect(page.getByRole("region").first().getByRole("heading", { level: 2 })).toHaveText(
+    /^Settimana /,
+  );
+});
+
+test("go forward shows the next two weeks", async ({ page }) => {
+  await page.goto("/it?from=2026-11-02&to=2026-11-15");
+  await page.getByRole("link", { name: "Vai avanti" }).click();
+
+  await expect(page).toHaveURL(/from=2026-11-16&to=2026-11-29/);
+  await expect(page.getByRole("region")).toHaveCount(2);
+});
+
+test("go back shows the previous two weeks", async ({ page }) => {
+  await page.goto("/it?from=2026-11-02&to=2026-11-15");
+  await page.getByRole("link", { name: "Vai indietro" }).click();
+
+  await expect(page).toHaveURL(/from=2026-10-19&to=2026-11-01/);
+  await expect(page.getByRole("region")).toHaveCount(2);
+});
+
+test("the URL range selects the weeks shown", async ({ page }) => {
+  await page.goto("/it?from=2026-01-05&to=2026-01-18");
+
+  const headings = page.getByRole("region").getByRole("heading", { level: 2 });
+  await expect(headings).toHaveCount(2);
+  await expect(headings.first()).toContainText("gennaio");
+  await expect(page.getByLabel("Dal", { exact: true })).toHaveValue("2026-01-05");
+  await expect(page.getByLabel("Al", { exact: true })).toHaveValue("2026-01-18");
+});
+
+test("the range cannot start before the week of 2026-01-01", async ({ page }) => {
+  await page.goto("/it?from=2025-01-01&to=2025-02-01");
+
+  await expect(page.getByLabel("Dal", { exact: true })).toHaveValue("2025-12-29");
+  await expect(page.getByRole("link", { name: "Vai indietro" })).toHaveCount(0);
+});
+
+test("the date form navigates to the chosen range", async ({ page }) => {
+  await page.goto("/it");
+  await page.getByLabel("Dal", { exact: true }).fill("2026-03-02");
+  await page.getByLabel("Al", { exact: true }).fill("2026-03-15");
+  await page.getByRole("button", { name: "Mostra" }).click();
+
+  await expect(page).toHaveURL(/from=2026-03-02&to=2026-03-15/);
+  await expect(page.getByRole("region")).toHaveCount(2);
+});
+
+test("each week links to the same week on ComingSoon", async ({ page }) => {
+  await page.goto("/it");
+  const link = page.getByRole("link", { name: "Verifica su ComingSoon" }).first();
+
+  await expect(link).toHaveAttribute("href", /comingsoon\.it\/cinema\/calendariouscite\/\?r=0$/);
+  await expect(link).toHaveAttribute("target", "_blank");
+});
+
 test("Italian page lists releases grouped by week", async ({ page }) => {
   await page.goto("/it");
   const firstWeek = page.getByRole("region").first();
@@ -72,12 +132,31 @@ test("headings use the serif display face", async ({ page }) => {
   expect(family).toMatch(/^Georgia\b/);
 });
 
-test("week headings are uppercase labels", async ({ page }) => {
+test("week headings stand out in the display face", async ({ page }) => {
   await page.goto("/it");
   const heading = page.getByRole("region").first().getByRole("heading", { level: 2 });
-  const transform = await heading.evaluate((el) => getComputedStyle(el).textTransform);
+  const style = await heading.evaluate((el) => {
+    const css = getComputedStyle(el);
 
-  expect(transform).toBe("uppercase");
+    return { size: parseFloat(css.fontSize), family: css.fontFamily };
+  });
+
+  expect(style.size).toBeGreaterThanOrEqual(22);
+  expect(style.family).toMatch(/^Georgia\b/);
+});
+
+test("release dates line up across a row of cards", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/it");
+  // Weeks stream in after load; read positions only once the cards exist.
+  await page.locator("article time").first().waitFor();
+  const tops = await page
+    .getByRole("region")
+    .first()
+    .locator("article time")
+    .evaluateAll((els) => els.slice(0, 4).map((el) => Math.round(el.getBoundingClientRect().top)));
+
+  expect(new Set(tops).size).toBe(1);
 });
 
 test.describe("dark mode", () => {

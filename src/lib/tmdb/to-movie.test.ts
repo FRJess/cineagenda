@@ -67,6 +67,48 @@ describe("toMovie", () => {
     );
   });
 
+  it("marks a theatrical release", () => {
+    const film = details({}, [rd(3, "2026-11-05")]);
+
+    expect(toMovie(film, window, "it", genreNames)).toMatchObject({
+      releaseType: "theatrical",
+      releaseNote: "",
+    });
+  });
+
+  it("marks a limited release and keeps its note", () => {
+    const film = details({}, [rd(2, "2026-11-26", "Re-release")]);
+
+    expect(toMovie(film, window, "it", genreNames)).toMatchObject({
+      releaseType: "limited",
+      releaseNote: "Re-release",
+    });
+  });
+
+  it("drops short films: known running time under 60 minutes", () => {
+    expect(
+      toMovie(details({ runtime: 59 }, [rd(3, "2026-11-05")]), window, "it", genreNames),
+    ).toBeNull();
+    expect(
+      toMovie(details({ runtime: 25 }, [rd(3, "2026-11-05")]), window, "it", genreNames),
+    ).toBeNull();
+  });
+
+  it("keeps films of 60 minutes or more", () => {
+    expect(
+      toMovie(details({ runtime: 60 }, [rd(3, "2026-11-05")]), window, "it", genreNames),
+    ).not.toBeNull();
+  });
+
+  it("keeps films whose running time TMDB does not know", () => {
+    expect(
+      toMovie(details({ runtime: 0 }, [rd(3, "2026-11-05")]), window, "it", genreNames),
+    ).not.toBeNull();
+    expect(
+      toMovie(details({ runtime: null }, [rd(3, "2026-11-05")]), window, "it", genreNames),
+    ).not.toBeNull();
+  });
+
   it("keeps a missing poster as null", () => {
     const film = details({ poster_path: null }, [rd(3, "2026-11-05")]);
 

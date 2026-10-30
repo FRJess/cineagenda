@@ -8,15 +8,39 @@
     "it": "Italiano",
     "en": "English"
   },
+  "Nav": {
+    "from": "Dal",
+    "to": "Al",
+    "show": "Mostra",
+    "today": "Oggi",
+    "weeks": "Altre settimane",
+    "more": "Vai avanti",
+    "earlier": "Vai indietro"
+  },
   "Releases": {
     "heading": "Film in uscita al cinema",
     "week": "Settimana {range}",
+    "noPoster": "Locandina non disponibile",
+    "limited": "Uscita limitata",
+    "verify": "Verifica su ComingSoon",
+    "emptyWeek": "Nessuna uscita questa settimana.",
+    "loading": "Caricamento delle uscite..."
+  },
+  "Film": {
+    "director": "Regia",
+    "cast": "Cast",
+    "country": "Paese",
+    "production": "Produzione",
+    "runtime": "{minutes} min",
+    "trailer": "Trailer",
+    "back": "Tutte le uscite",
+    "notFound": "Film non trovato.",
     "releaseDate": "Al cinema dal <time>{date}</time>",
+    "originalTitle": "Titolo originale",
     "genres": "Generi",
     "overview": "Trama",
     "noOverview": "Trama non disponibile.",
-    "noPoster": "Locandina non disponibile",
-    "empty": "Nessuna uscita trovata nei prossimi tre mesi."
+    "runtimeLabel": "Durata"
   },
   "Error": {
     "title": "Impossibile caricare le uscite.",

@@ -1,28 +1,27 @@
 # Cineagenda TODO
 
-Updated 2026-10-30. V1 is implemented on branch `feat/v1-release-list`, uncommitted.
+Updated 2026-10-30. V1.1 (week navigation, film page, poster grid, README) is committed on branch `feat/v1-release-list`.
 
 ## Now
 
-- [ ] Review the diff on `feat/v1-release-list` and commit it (suggested message below).
+- [x] Review the V1.1 diff and commit it.
 - [ ] Merge into `main` and push to GitHub.
-- [ ] Vercel: import `FRJess/cineagenda` on Vercel Hobby.
-- [ ] Vercel: set `TMDB_ACCESS_TOKEN` in the project environment (Production and Preview) before the first deploy, since the build calls TMDB.
-- [ ] Vercel: open `/it` and `/en` on a phone and check posters, dates and the locale switch.
+- [ ] Vercel: import `FRJess/cineagenda` on Vercel Hobby and set `TMDB_ACCESS_TOKEN` (Production and Preview).
+- [ ] Vercel: open `/it`, a film page and `?from=2026-01-05&to=2026-01-18` on a phone.
+- [ ] Spot-check a few weeks against ComingSoon with the per-week link; note films that differ in the spec.
+- [ ] Watch the festival/event heuristic for a few weeks: a wrongly dropped or kept limited release means adding or removing a word in `FESTIVAL_OR_EVENT` (src/lib/tmdb/release-date.ts).
 
-Suggested commit message:
+## Later (deferred from reviews)
 
-```
-feat(releases): list Italian cinema releases by week in it/en
-```
-
-## Later (deferred from the V1 review)
+- [ ] Optional IMDb link on the film page (TMDB gives `imdb_id`; IMDb has no usable free API for dates).
 
 - [ ] Add a `server-only` guard to `src/lib/tmdb/client.ts` (needs the `server-only` package).
 - [ ] Move `src/lib/tmdb/fixtures.ts` to `src/test/`.
-- [ ] Decide whether the Italian UI should label an English plot shown as fallback.
+- [ ] Film page returns HTTP 200 for unknown ids (the not-found UI is correct); a real 404 needs the id read outside Suspense.
+- [ ] The YouTube iframe is excluded from the axe check; consider a click-to-load poster instead of an eager iframe.
 - [ ] Make e2e independent of live TMDB data.
 - [ ] Upgrade Node to 22.19+ and bump jsdom to the latest major.
+- [ ] Hero backdrop fades with `mask-image`; check Safari rendering.
 
 ## V2 (from the spec, not started)
 

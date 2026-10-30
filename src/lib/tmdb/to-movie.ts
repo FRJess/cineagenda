@@ -1,11 +1,14 @@
 import type { Movie } from "@/lib/releases/movie";
 import type { ReleaseWindow } from "@/lib/releases/window";
-import { pickItalianReleaseDate } from "./release-date";
+import { pickItalianRelease } from "./release-date";
 import { buildDisplayTitle } from "./title";
 import type { GenreNames, TmdbMovieDetails } from "./types";
 
 /** UI locales; overviews come from the matching translation. */
 export type UiLocale = "it" | "en";
+
+/** Films shorter than this are shorts and are not listed; unknown running times pass. */
+const MIN_RUNTIME_MINUTES = 60;
 
 const overviewIn = (details: TmdbMovieDetails, lang: UiLocale): string =>
   details.translations.translations
@@ -18,7 +21,7 @@ const overviewIn = (details: TmdbMovieDetails, lang: UiLocale): string =>
  * @param window Release window.
  * @param locale UI locale for the overview.
  * @param genreNames Localized genre names.
- * @returns Movie, or null when it has no Italian release in the window.
+ * @returns Movie, or null when it has no Italian cinema release in the window or is a short.
  */
 export function toMovie(
   details: TmdbMovieDetails,
@@ -26,9 +29,10 @@ export function toMovie(
   locale: UiLocale,
   genreNames: GenreNames,
 ): Movie | null {
-  const releaseDateIt = pickItalianReleaseDate(details, window);
+  const release = pickItalianRelease(details, window);
+  const isShort = !!details.runtime && details.runtime < MIN_RUNTIME_MINUTES;
 
-  if (!releaseDateIt) {
+  if (!release || isShort) {
     return null;
   }
 
@@ -38,7 +42,9 @@ export function toMovie(
     originalTitle: details.original_title,
     posterPath: details.poster_path,
     genres: details.genres.flatMap((genre) => genreNames[genre.id] ?? []),
-    releaseDateIt,
+    releaseDateIt: release.date,
+    releaseType: release.type,
+    releaseNote: release.note,
     overview: overviewIn(details, locale) || overviewIn(details, locale === "it" ? "en" : "it"),
   };
 }

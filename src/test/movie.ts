@@ -13,6 +13,8 @@ export function movie(overrides: Partial<Movie> = {}): Movie {
     posterPath: "/poster.jpg",
     genres: ["Documentario"],
     releaseDateIt: "2026-11-05",
+    releaseType: "theatrical",
+    releaseNote: "",
     overview: "Un viaggio nella foresta.",
     ...overrides,
   };

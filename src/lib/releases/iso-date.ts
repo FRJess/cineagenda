@@ -9,3 +9,11 @@ export function isoDateToUtc(isoDate: string): Date {
 
 /** Day and month, read in UTC to match {@link isoDateToUtc}. */
 export const DAY_MONTH = { day: "numeric", month: "long", timeZone: "UTC" } as const;
+
+/** Day, month and year, read in UTC to match {@link isoDateToUtc}. */
+export const DAY_MONTH_YEAR = {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+  timeZone: "UTC",
+} as const;
