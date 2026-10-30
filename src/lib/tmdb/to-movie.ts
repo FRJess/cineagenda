@@ -1,6 +1,6 @@
 import type { Movie } from "@/lib/releases/movie";
 import type { ReleaseWindow } from "@/lib/releases/window";
-import { pickItalianReleaseDate } from "./release-date";
+import { pickItalianRelease } from "./release-date";
 import { buildDisplayTitle } from "./title";
 import type { GenreNames, TmdbMovieDetails } from "./types";
 
@@ -26,9 +26,9 @@ export function toMovie(
   locale: UiLocale,
   genreNames: GenreNames,
 ): Movie | null {
-  const releaseDateIt = pickItalianReleaseDate(details, window);
+  const release = pickItalianRelease(details, window);
 
-  if (!releaseDateIt) {
+  if (!release) {
     return null;
   }
 
@@ -38,7 +38,9 @@ export function toMovie(
     originalTitle: details.original_title,
     posterPath: details.poster_path,
     genres: details.genres.flatMap((genre) => genreNames[genre.id] ?? []),
-    releaseDateIt,
+    releaseDateIt: release.date,
+    releaseType: release.type,
+    releaseNote: release.note,
     overview: overviewIn(details, locale) || overviewIn(details, locale === "it" ? "en" : "it"),
   };
 }

@@ -10,6 +10,8 @@ const movie = (title: string, releaseDateIt: string): Movie => ({
   posterPath: null,
   genres: [],
   releaseDateIt,
+  releaseType: "theatrical",
+  releaseNote: "",
   overview: "",
 });
 

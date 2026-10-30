@@ -67,6 +67,24 @@ describe("toMovie", () => {
     );
   });
 
+  it("marks a theatrical release", () => {
+    const film = details({}, [rd(3, "2026-11-05")]);
+
+    expect(toMovie(film, window, "it", genreNames)).toMatchObject({
+      releaseType: "theatrical",
+      releaseNote: "",
+    });
+  });
+
+  it("marks a limited release and keeps its note", () => {
+    const film = details({}, [rd(2, "2026-11-26", "IMAX")]);
+
+    expect(toMovie(film, window, "it", genreNames)).toMatchObject({
+      releaseType: "limited",
+      releaseNote: "IMAX",
+    });
+  });
+
   it("keeps a missing poster as null", () => {
     const film = details({ poster_path: null }, [rd(3, "2026-11-05")]);
 

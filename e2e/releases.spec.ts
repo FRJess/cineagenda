@@ -36,6 +36,58 @@ test("footer shows TMDB attribution and logo", async ({ page }) => {
   await expect(footer.getByRole("img", { name: "TMDB" })).toBeVisible();
 });
 
+test("default view shows the current week and the next one", async ({ page }) => {
+  await page.goto("/it");
+
+  await expect(page.getByRole("region")).toHaveCount(2);
+  await expect(page.getByRole("region").first().getByRole("heading", { level: 2 })).toHaveText(
+    /^Settimana /,
+  );
+});
+
+test("two more weeks link extends the range to four weeks", async ({ page }) => {
+  await page.goto("/it");
+  await page.getByRole("link", { name: "Altre due settimane" }).click();
+
+  await expect(page).toHaveURL(/from=\d{4}-\d{2}-\d{2}&to=\d{4}-\d{2}-\d{2}/);
+  await expect(page.getByRole("region")).toHaveCount(4);
+});
+
+test("the URL range selects the weeks shown", async ({ page }) => {
+  await page.goto("/it?from=2026-01-05&to=2026-01-18");
+
+  const headings = page.getByRole("region").getByRole("heading", { level: 2 });
+  await expect(headings).toHaveCount(2);
+  await expect(headings.first()).toContainText("gennaio");
+  await expect(page.getByLabel("Dal", { exact: true })).toHaveValue("2026-01-05");
+  await expect(page.getByLabel("Al", { exact: true })).toHaveValue("2026-01-18");
+});
+
+test("the range cannot start before the week of 2026-01-01", async ({ page }) => {
+  await page.goto("/it?from=2025-01-01&to=2025-02-01");
+
+  await expect(page.getByLabel("Dal", { exact: true })).toHaveValue("2025-12-29");
+  await expect(page.getByRole("link", { name: "Due settimane prima" })).toHaveCount(0);
+});
+
+test("the date form navigates to the chosen range", async ({ page }) => {
+  await page.goto("/it");
+  await page.getByLabel("Dal", { exact: true }).fill("2026-03-02");
+  await page.getByLabel("Al", { exact: true }).fill("2026-03-15");
+  await page.getByRole("button", { name: "Mostra" }).click();
+
+  await expect(page).toHaveURL(/from=2026-03-02&to=2026-03-15/);
+  await expect(page.getByRole("region")).toHaveCount(2);
+});
+
+test("each week links to the same week on ComingSoon", async ({ page }) => {
+  await page.goto("/it");
+  const link = page.getByRole("link", { name: "Verifica su ComingSoon" }).first();
+
+  await expect(link).toHaveAttribute("href", /comingsoon\.it\/cinema\/calendariouscite\/\?r=0$/);
+  await expect(link).toHaveAttribute("target", "_blank");
+});
+
 test("Italian page lists releases grouped by week", async ({ page }) => {
   await page.goto("/it");
   const firstWeek = page.getByRole("region").first();

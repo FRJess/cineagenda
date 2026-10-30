@@ -1,8 +1,16 @@
 import { screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { renderWithIntl } from "@/test/intl";
 import { movie } from "@/test/movie";
 import { MovieCard } from "./_MovieCard";
+
+vi.mock("@/i18n/navigation", () => ({
+  Link: ({ children, href, ...rest }: React.ComponentProps<"a"> & { href: string }) => (
+    <a {...rest} href={href}>
+      {children}
+    </a>
+  ),
+}));
 
 const originalTz = process.env.TZ;
 
@@ -11,6 +19,12 @@ afterEach(() => {
 });
 
 describe("MovieCard", () => {
+  it("links the whole card to the film page", () => {
+    renderWithIntl(<MovieCard movie={movie({ id: 42 })} />);
+
+    expect(screen.getByRole("link")).toHaveAttribute("href", "/film/42");
+  });
+
   it("renders the title as a level-3 heading", () => {
     renderWithIntl(<MovieCard movie={movie()} />);
 
@@ -27,15 +41,13 @@ describe("MovieCard", () => {
 
     const time = container.querySelector("time");
     expect(time).toHaveAttribute("datetime", "2026-11-05");
-    expect(time?.parentElement).toHaveTextContent("Al cinema dal 5 novembre");
+    expect(time).toHaveTextContent("5 novembre");
   });
 
   it("renders the release date in English", () => {
     const { container } = renderWithIntl(<MovieCard movie={movie()} />, "en");
 
-    expect(container.querySelector("time")?.parentElement).toHaveTextContent(
-      "In cinemas from November 5",
-    );
+    expect(container.querySelector("time")).toHaveTextContent("November 5");
   });
 
   it("does not shift the date on a server west of UTC", () => {
@@ -45,31 +57,26 @@ describe("MovieCard", () => {
     expect(container.querySelector("time")).toHaveTextContent("5 novembre");
   });
 
-  it("lists genres", () => {
-    renderWithIntl(<MovieCard movie={movie({ genres: ["Dramma", "Storia"] })} />);
+  it("shows no limited badge for a theatrical release", () => {
+    renderWithIntl(<MovieCard movie={movie()} />);
 
-    const list = screen.getByRole("list", { name: "Generi" });
-    expect(list.querySelectorAll("li")).toHaveLength(2);
+    expect(screen.queryByText("Uscita limitata")).not.toBeInTheDocument();
   });
 
-  it("omits the genre list when there are no genres", () => {
-    renderWithIntl(<MovieCard movie={movie({ genres: [] })} />);
+  it("shows the limited badge with the TMDB note", () => {
+    renderWithIntl(<MovieCard movie={movie({ releaseType: "limited", releaseNote: "IMAX" })} />);
 
-    expect(screen.queryByRole("list", { name: "Generi" })).not.toBeInTheDocument();
+    expect(screen.getByText("Uscita limitata")).toBeInTheDocument();
+    expect(screen.getByText("IMAX")).toBeInTheDocument();
   });
 
-  it("puts the overview inside a disclosure", () => {
-    const { container } = renderWithIntl(<MovieCard movie={movie()} />);
+  it("shows the limited badge alone when the note is empty", () => {
+    const { container } = renderWithIntl(
+      <MovieCard movie={movie({ releaseType: "limited", releaseNote: "" })} />,
+    );
 
-    const details = container.querySelector("details");
-    expect(details?.querySelector("summary")).toHaveTextContent("Trama");
-    expect(details).toHaveTextContent("Un viaggio nella foresta.");
-  });
-
-  it("explains a missing overview", () => {
-    const { container } = renderWithIntl(<MovieCard movie={movie({ overview: "" })} />);
-
-    expect(container.querySelector("details")).toHaveTextContent("Trama non disponibile.");
+    expect(screen.getByText("Uscita limitata")).toBeInTheDocument();
+    expect(container.querySelectorAll("[data-release] *")).toHaveLength(0);
   });
 
   it("shows a text placeholder instead of a missing poster", () => {
@@ -85,5 +92,12 @@ describe("MovieCard", () => {
     expect(container.querySelector("img")?.getAttribute("src")).toContain(
       encodeURIComponent("https://image.tmdb.org/t/p/w342/poster.jpg"),
     );
+  });
+
+  it("does not render genres or plot in the grid", () => {
+    const { container } = renderWithIntl(<MovieCard movie={movie()} />);
+
+    expect(container.querySelector("details")).toBeNull();
+    expect(screen.queryByRole("list")).not.toBeInTheDocument();
   });
 });
