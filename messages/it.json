@@ -1,0 +1,28 @@
+{
+  "Metadata": {
+    "title": "Cineagenda",
+    "description": "Film in uscita nei cinema italiani, settimana per settimana."
+  },
+  "Header": {
+    "language": "Lingua",
+    "it": "Italiano",
+    "en": "English"
+  },
+  "Releases": {
+    "heading": "Film in uscita al cinema",
+    "week": "Settimana {range}",
+    "releaseDate": "Al cinema dal <time>{date}</time>",
+    "genres": "Generi",
+    "overview": "Trama",
+    "noOverview": "Trama non disponibile.",
+    "noPoster": "Locandina non disponibile",
+    "empty": "Nessuna uscita trovata nei prossimi tre mesi."
+  },
+  "Error": {
+    "title": "Impossibile caricare le uscite.",
+    "retry": "Riprova"
+  },
+  "Footer": {
+    "attribution": "This product uses the TMDB API but is not endorsed or certified by TMDB."
+  }
+}
