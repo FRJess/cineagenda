@@ -97,6 +97,27 @@ describe("FilmDetail", () => {
     expect(screen.queryByRole("heading", { name: "Trailer" })).not.toBeInTheDocument();
   });
 
+  it("never prints a stray 0 when TMDB has no running time", () => {
+    const { container } = renderWithIntl(<FilmDetail film={{ ...film, runtime: 0 }} />);
+
+    expect(container.querySelector("dl")).not.toHaveTextContent(/^0|Durata/);
+    expect(container.querySelector("dl")?.textContent).not.toMatch(/(^|\D)0(\D|$)/);
+  });
+
+  it("omits the poster block when there is no poster", () => {
+    const { container } = renderWithIntl(<FilmDetail film={{ ...film, posterPath: null }} />);
+
+    expect(container.querySelector("[data-part='film-summary'] > img")).toBeNull();
+    expect(screen.queryByText("Locandina non disponibile")).not.toBeInTheDocument();
+  });
+
+  it("marks the page when there is no backdrop so the summary does not overlap the header", () => {
+    const { container } = renderWithIntl(<FilmDetail film={{ ...film, backdropPath: null }} />);
+
+    expect(container.querySelector("[data-part='film']")).not.toHaveAttribute("data-backdrop");
+    expect(container.querySelector("[data-part='film-hero'] img")).toBeNull();
+  });
+
   it("links back to the release list", () => {
     renderWithIntl(<FilmDetail film={film} />);
 

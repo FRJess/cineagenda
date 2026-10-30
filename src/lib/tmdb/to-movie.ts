@@ -7,6 +7,9 @@ import type { GenreNames, TmdbMovieDetails } from "./types";
 /** UI locales; overviews come from the matching translation. */
 export type UiLocale = "it" | "en";
 
+/** Films shorter than this are shorts and are not listed; unknown running times pass. */
+const MIN_RUNTIME_MINUTES = 60;
+
 const overviewIn = (details: TmdbMovieDetails, lang: UiLocale): string =>
   details.translations.translations
     .find((t) => t.iso_639_1 === lang && t.data.overview?.trim())
@@ -18,7 +21,7 @@ const overviewIn = (details: TmdbMovieDetails, lang: UiLocale): string =>
  * @param window Release window.
  * @param locale UI locale for the overview.
  * @param genreNames Localized genre names.
- * @returns Movie, or null when it has no Italian release in the window.
+ * @returns Movie, or null when it has no Italian cinema release in the window or is a short.
  */
 export function toMovie(
   details: TmdbMovieDetails,
@@ -27,8 +30,9 @@ export function toMovie(
   genreNames: GenreNames,
 ): Movie | null {
   const release = pickItalianRelease(details, window);
+  const isShort = !!details.runtime && details.runtime < MIN_RUNTIME_MINUTES;
 
-  if (!release) {
+  if (!release || isShort) {
     return null;
   }
 

@@ -45,12 +45,20 @@ test("default view shows the current week and the next one", async ({ page }) =>
   );
 });
 
-test("two more weeks link extends the range to four weeks", async ({ page }) => {
-  await page.goto("/it");
-  await page.getByRole("link", { name: "Altre due settimane" }).click();
+test("go forward shows the next two weeks", async ({ page }) => {
+  await page.goto("/it?from=2026-11-02&to=2026-11-15");
+  await page.getByRole("link", { name: "Vai avanti" }).click();
 
-  await expect(page).toHaveURL(/from=\d{4}-\d{2}-\d{2}&to=\d{4}-\d{2}-\d{2}/);
-  await expect(page.getByRole("region")).toHaveCount(4);
+  await expect(page).toHaveURL(/from=2026-11-16&to=2026-11-29/);
+  await expect(page.getByRole("region")).toHaveCount(2);
+});
+
+test("go back shows the previous two weeks", async ({ page }) => {
+  await page.goto("/it?from=2026-11-02&to=2026-11-15");
+  await page.getByRole("link", { name: "Vai indietro" }).click();
+
+  await expect(page).toHaveURL(/from=2026-10-19&to=2026-11-01/);
+  await expect(page.getByRole("region")).toHaveCount(2);
 });
 
 test("the URL range selects the weeks shown", async ({ page }) => {
@@ -67,7 +75,7 @@ test("the range cannot start before the week of 2026-01-01", async ({ page }) =>
   await page.goto("/it?from=2025-01-01&to=2025-02-01");
 
   await expect(page.getByLabel("Dal", { exact: true })).toHaveValue("2025-12-29");
-  await expect(page.getByRole("link", { name: "Due settimane prima" })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Vai indietro" })).toHaveCount(0);
 });
 
 test("the date form navigates to the chosen range", async ({ page }) => {
@@ -124,12 +132,31 @@ test("headings use the serif display face", async ({ page }) => {
   expect(family).toMatch(/^Georgia\b/);
 });
 
-test("week headings are uppercase labels", async ({ page }) => {
+test("week headings stand out in the display face", async ({ page }) => {
   await page.goto("/it");
   const heading = page.getByRole("region").first().getByRole("heading", { level: 2 });
-  const transform = await heading.evaluate((el) => getComputedStyle(el).textTransform);
+  const style = await heading.evaluate((el) => {
+    const css = getComputedStyle(el);
 
-  expect(transform).toBe("uppercase");
+    return { size: parseFloat(css.fontSize), family: css.fontFamily };
+  });
+
+  expect(style.size).toBeGreaterThanOrEqual(22);
+  expect(style.family).toMatch(/^Georgia\b/);
+});
+
+test("release dates line up across a row of cards", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/it");
+  // Weeks stream in after load; read positions only once the cards exist.
+  await page.locator("article time").first().waitFor();
+  const tops = await page
+    .getByRole("region")
+    .first()
+    .locator("article time")
+    .evaluateAll((els) => els.slice(0, 4).map((el) => Math.round(el.getBoundingClientRect().top)));
+
+  expect(new Set(tops).size).toBe(1);
 });
 
 test.describe("dark mode", () => {
