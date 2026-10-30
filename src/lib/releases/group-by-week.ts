@@ -1,5 +1,5 @@
 import type { Movie } from "./movie";
-import { mondayOf } from "./window";
+import { mondayOf, sundayOf } from "./window";
 
 /** Releases of one Monday-to-Sunday week. */
 export type WeekGroup = {
@@ -10,12 +10,13 @@ export type WeekGroup = {
   readonly movies: readonly Movie[];
 };
 
-const SIX_DAYS_MS = 6 * 86_400_000;
-
-const sundayOf = (monday: string): string =>
-  new Date(new Date(`${monday}T00:00:00Z`).getTime() + SIX_DAYS_MS).toISOString().slice(0, 10);
-
-const byDateThenTitle = (a: Movie, b: Movie): number =>
+/**
+ * Sort order of a week: release date, then title in Italian collation.
+ * @param a First movie.
+ * @param b Second movie.
+ * @returns Negative, zero or positive.
+ */
+export const byDateThenTitle = (a: Movie, b: Movie): number =>
   a.releaseDateIt.localeCompare(b.releaseDateIt) || a.title.localeCompare(b.title, "it");
 
 /**

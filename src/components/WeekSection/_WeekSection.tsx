@@ -1,15 +1,23 @@
 import { useFormatter, useTranslations } from "next-intl";
 import { MovieCard } from "@/components/MovieCard";
+import { comingSoonUrl } from "@/lib/comingsoon";
 import type { WeekGroup } from "@/lib/releases/group-by-week";
 import { DAY_MONTH, isoDateToUtc } from "@/lib/releases/iso-date";
 import "./_WeekSection.css";
 
 /**
- * One release week: heading with the date range, then its films.
- * @param props Week group.
+ * One release week: heading with the date range, a ComingSoon cross-check link, then
+ * its films as a poster grid.
+ * @param props Week group and the Monday of the current week (for the ComingSoon offset).
  * @returns Section labeled by its heading.
  */
-export function WeekSection({ group }: { readonly group: WeekGroup }) {
+export function WeekSection({
+  group,
+  todayMonday,
+}: {
+  readonly group: WeekGroup;
+  readonly todayMonday: string;
+}) {
   const t = useTranslations("Releases");
   const format = useFormatter();
   const headingId = `week-${group.weekStart}`;
@@ -21,14 +29,27 @@ export function WeekSection({ group }: { readonly group: WeekGroup }) {
 
   return (
     <section aria-labelledby={headingId} data-part="week-section">
-      <h2 id={headingId}>{t("week", { range })}</h2>
-      <ol>
-        {group.movies.map((movie) => (
-          <li key={movie.id}>
-            <MovieCard movie={movie} />
-          </li>
-        ))}
-      </ol>
+      <header>
+        <h2 id={headingId}>{t("week", { range })}</h2>
+        <a
+          href={comingSoonUrl(group.weekStart, todayMonday)}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {t("verify")}
+        </a>
+      </header>
+      {group.movies.length === 0 ? (
+        <p>{t("emptyWeek")}</p>
+      ) : (
+        <ol>
+          {group.movies.map((movie) => (
+            <li key={movie.id}>
+              <MovieCard movie={movie} />
+            </li>
+          ))}
+        </ol>
+      )}
     </section>
   );
 }

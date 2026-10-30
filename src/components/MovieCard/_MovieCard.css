@@ -1,24 +1,40 @@
 /**
  * FILE: _MovieCard.css
- * USAGE: Styles for MovieCard
- * SCOPE: [data-part="movie-card"], [data-part="poster-placeholder"], [data-part="movie-body"]
+ * USAGE: Styles for MovieCard, a poster-first tile in the week grid: poster, date line, title
+ * SCOPE: [data-part="movie-card"], [data-part="poster-placeholder"]
  */
 
-/* ─── Layout: row on phone, column from 48rem ─── */
+/* ─── Layout ─── */
 
 [data-part="movie-card"] {
   display: flex;
-  gap: var(--space-4);
+  flex-direction: column;
   height: 100%;
 }
 
-[data-part="movie-card"] > img,
+[data-part="movie-card"] > a {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-2);
+  color: inherit;
+  text-decoration: none;
+  border-radius: var(--radius);
+}
+
+/* ─── Poster with an optional status tag over its bottom edge ─── */
+
+[data-part="poster"] {
+  position: relative;
+  display: flex;
+}
+
+[data-part="movie-card"] img,
 [data-part="poster-placeholder"] {
-  flex: 0 0 6.5rem;
-  align-self: flex-start;
-  width: 6.5rem;
+  width: 100%;
   height: auto;
   aspect-ratio: 2 / 3;
+  object-fit: cover;
   border-radius: var(--radius);
   box-shadow: var(--poster-shadow);
 }
@@ -36,78 +52,61 @@
   box-shadow: none;
 }
 
-[data-part="movie-body"] {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: var(--space-2);
-  min-width: 0;
-}
-
 /* ─── Text ─── */
 
-[data-part="movie-body"] h3 {
+[data-part="movie-card"] h3 {
   font-family: var(--font-display);
-  font-size: 1.1875rem;
+  font-size: 1rem;
   font-weight: 400;
   line-height: 1.25;
 }
 
-[data-part="movie-body"] > p {
-  font-size: 0.875rem;
-  color: var(--muted);
-}
+/* ─── Date line ─── */
 
-[data-part="movie-body"] ul {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1);
-  list-style: none;
+[data-part="card-meta"] {
+  margin-top: var(--space-1);
   font-size: 0.75rem;
-}
-
-[data-part="movie-body"] ul li {
-  padding: 0.125rem var(--space-2);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: var(--muted);
-  border: 1px solid var(--border);
+}
+
+/* ─── Limited tag: dark glass chip, legible on any poster, text plus dot ─── */
+
+[data-part="poster"] [data-release="limited"] {
+  position: absolute;
+  bottom: var(--space-2);
+  left: var(--space-2);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0.1875rem var(--space-2);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #fff;
+  background: rgb(0 0 0 / 0.72);
   border-radius: 999px;
+  backdrop-filter: blur(4px);
 }
 
-/* ─── Plot disclosure ─── */
-
-[data-part="movie-body"] summary {
-  cursor: pointer;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--accent);
+[data-part="poster"] [data-release="limited"]::before {
+  width: 0.375rem;
+  height: 0.375rem;
+  content: "";
+  background: #ff8a7a;
+  border-radius: 50%;
 }
-
-[data-part="movie-body"] details p {
-  padding-top: var(--space-1);
-  font-size: 0.9375rem;
-  line-height: 1.6;
-}
-
-/* ─── Wide screens: poster on top, lift on hover ─── */
-
-@media (min-width: 48rem) {
-  [data-part="movie-card"] {
-    flex-direction: column;
-  }
-
-  [data-part="movie-card"] > img,
-  [data-part="poster-placeholder"] {
-    flex-basis: auto;
-    width: 100%;
-  }
-}
+/* ─── Hover lift ─── */
 
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
-  [data-part="movie-card"] {
+  [data-part="movie-card"] > a {
     transition: transform 160ms ease;
   }
 
-  [data-part="movie-card"]:hover {
-    transform: translateY(-2px);
+  [data-part="movie-card"] > a:hover {
+    transform: translateY(-3px);
   }
 }
