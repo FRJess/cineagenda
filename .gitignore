@@ -1,0 +1,9 @@
+# local code index
+.tokensave/
+
+# secrets
+.env*
+!.env.example
+
+# throwaway spikes
+scratch/
