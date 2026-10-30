@@ -1,0 +1,54 @@
+/**
+ * FILE: globals.css
+ * USAGE: Global reset, color tokens and base layout, imported once in the root layout
+ * SCOPE: :root, html, body, main
+ */
+
+/* ─── Tokens ─── */
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+
+  html {
+    color-scheme: dark;
+  }
+}
+
+/* ─── Reset ─── */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  height: 100%;
+}
+
+/* ─── Layout ─── */
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  color: var(--foreground);
+  background: var(--background);
+  font-family: system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+}
