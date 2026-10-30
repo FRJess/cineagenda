@@ -174,6 +174,19 @@ V2 readiness, without building it: `Movie.id` is the TMDB id; grouping and windo
 - jsdom pinned to 29.1.1: jsdom 30 needs Node 22.19+ and this machine runs Node 22.14.0. Bump it after a Node upgrade.
 - `pnpm build` calls TMDB (about 90 requests) and needs `TMDB_ACCESS_TOKEN`; a TMDB outage fails the build.
 
+## V1.1 decisions (Jessica, 2026-10-30)
+
+Built from `docs/superpowers/plans/2026-10-30-cineagenda-v1.1.md`.
+
+- The list starts at 2026-01-01 (lower bound: the week of Monday 2025-12-29). Default view is the current week plus the next one; a date-range form (GET, `?from=&to=`) and "two more weeks" / "two weeks earlier" links extend it, at most 26 weeks at once, no upper bound in time.
+- Each week is fetched and cached on its own (`"use cache"`, daily; weekly for past weeks).
+- Release types: type 3 shows as theatrical, type 2 shows with a visible "Uscita limitata" label plus the TMDB note; types 1, 4, 5, 6 never show (tests pin it). Finding: TMDB 1462778 ("Belo se pere na devetdeset") has a Rome festival premiere and a bare limited entry, and ComingSoon does not list it; the label makes such cases visible.
+- Cross-check: each week links to ComingSoon's calendar for the same week (`?r=<days from this Monday>`), opened manually. No scraping.
+- Grid of posters: card = poster, title, date. Genres and plot moved to the film page.
+- Film page `/[locale]/film/[id]`: plot, directors, top 10 cast, countries, production companies, running time, genres, original title, backdrop hero, YouTube trailer (UI language first, then English; `youtube-nocookie.com`). No streaming providers. Rendered on demand with `instant = false` (blocking) because the title and the 404 need the film; data cached per id and locale.
+- jsdom pinned to 29.1.1 (jsdom 30 needs Node 22.19+).
+- README written in English following the webidoo internal-repository sections.
+
 ## Left to the builder
 
 - Component breakdown inside the page, CSS details, skeleton shape, empty state copy.

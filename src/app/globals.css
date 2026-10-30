@@ -1,7 +1,7 @@
 /**
  * FILE: globals.css
  * USAGE: Tokens, reset and page shell, imported once in the root layout
- * SCOPE: :root, body, main, a, button, [data-part="site-header"], [data-part="site-footer"]
+ * SCOPE: :root, body, main, a, button, [data-part="site-header"], [data-part="site-footer"], [data-part="week-nav"]
  */
 
 /* ─── Tokens ─── */
@@ -119,6 +119,27 @@ a {
 [data-part="site-footer"] > img {
   width: auto;
   height: 1rem;
+}
+
+/* ─── Week navigation ─── */
+
+[data-part="week-nav"] {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+[data-part="week-nav"] a {
+  padding: var(--space-2) var(--space-4);
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+
+[data-part="week-nav"] a:last-child {
+  margin-left: auto;
 }
 
 /* ─── Buttons ─── */

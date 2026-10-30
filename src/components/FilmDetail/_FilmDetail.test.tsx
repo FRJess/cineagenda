@@ -1,0 +1,105 @@
+import { screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+import type { MovieDetails } from "@/lib/tmdb/movie-details";
+import { renderWithIntl } from "@/test/intl";
+import { FilmDetail } from "./_FilmDetail";
+
+vi.mock("@/i18n/navigation", () => ({
+  Link: ({ children, href }: { children: React.ReactNode; href: string }) => (
+    <a href={href}>{children}</a>
+  ),
+}));
+
+const film: MovieDetails = {
+  id: 1309373,
+  title: "Il canto della foresta (Le Chant des forêts)",
+  originalTitle: "Le Chant des forêts",
+  posterPath: "/poster.jpg",
+  backdropPath: "/back.jpg",
+  genres: ["Documentario"],
+  releaseDateIt: "2026-11-12",
+  releaseType: "limited",
+  releaseNote: "IMAX",
+  overview: "Un viaggio nella foresta.",
+  runtime: 99,
+  directors: ["Vincent Munier"],
+  cast: [
+    { name: "Michel Munier", character: "Self", profilePath: "/m.jpg" },
+    { name: "Simon Munier", character: "", profilePath: null },
+  ],
+  countries: ["France"],
+  companies: ["Paprika Films", "Kobalann"],
+  trailerKey: "Hg84mjAvwyQ",
+};
+
+describe("FilmDetail", () => {
+  it("renders the title as the page heading with the release date", () => {
+    const { container } = renderWithIntl(<FilmDetail film={film} />);
+
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
+      "Il canto della foresta (Le Chant des forêts)",
+    );
+    expect(container.querySelector("time")).toHaveAttribute("datetime", "2026-11-12");
+    expect(container.querySelector("time")).toHaveTextContent("12 novembre");
+  });
+
+  it("shows the limited badge and note", () => {
+    renderWithIntl(<FilmDetail film={film} />);
+
+    expect(screen.getByText("Uscita limitata")).toBeInTheDocument();
+    expect(screen.getByText("IMAX")).toBeInTheDocument();
+  });
+
+  it("lists facts in a description list", () => {
+    const { container } = renderWithIntl(<FilmDetail film={film} />);
+    const dl = container.querySelector("dl");
+
+    expect(dl).toHaveTextContent("Regia");
+    expect(dl).toHaveTextContent("Vincent Munier");
+    expect(dl).toHaveTextContent("Paese");
+    expect(dl).toHaveTextContent("France");
+    expect(dl).toHaveTextContent("Produzione");
+    expect(dl).toHaveTextContent("Paprika Films, Kobalann");
+    expect(dl).toHaveTextContent("99 min");
+    expect(dl).toHaveTextContent("Documentario");
+    expect(dl).toHaveTextContent("Titolo originale");
+  });
+
+  it("renders the plot under a heading", () => {
+    renderWithIntl(<FilmDetail film={film} />);
+
+    expect(screen.getByRole("heading", { level: 2, name: "Trama" })).toBeInTheDocument();
+    expect(screen.getByText("Un viaggio nella foresta.")).toBeInTheDocument();
+  });
+
+  it("lists the cast with photo or initials", () => {
+    renderWithIntl(<FilmDetail film={film} />);
+    const cast = screen.getByRole("list", { name: "Cast" });
+
+    expect(cast.querySelectorAll("li")).toHaveLength(2);
+    expect(cast.querySelectorAll("img")).toHaveLength(1);
+    expect(cast).toHaveTextContent("SM");
+  });
+
+  it("embeds the trailer from youtube-nocookie", () => {
+    const { container } = renderWithIntl(<FilmDetail film={film} />);
+    const iframe = container.querySelector("iframe");
+
+    expect(iframe).toHaveAttribute("src", "https://www.youtube-nocookie.com/embed/Hg84mjAvwyQ");
+    expect(iframe).toHaveAttribute("title", "Trailer");
+    expect(iframe).toHaveAttribute("loading", "lazy");
+  });
+
+  it("omits the trailer section without a trailer", () => {
+    const { container } = renderWithIntl(<FilmDetail film={{ ...film, trailerKey: null }} />);
+
+    expect(container.querySelector("iframe")).toBeNull();
+    expect(screen.queryByRole("heading", { name: "Trailer" })).not.toBeInTheDocument();
+  });
+
+  it("links back to the release list", () => {
+    renderWithIntl(<FilmDetail film={film} />);
+
+    expect(screen.getByRole("link", { name: "Tutte le uscite" })).toHaveAttribute("href", "/");
+  });
+});

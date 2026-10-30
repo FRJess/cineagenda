@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { useFormatter, useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import type { Movie } from "@/lib/releases/movie";
 import { DAY_MONTH, isoDateToUtc } from "@/lib/releases/iso-date";
 import "./_MovieCard.css";
@@ -7,7 +8,8 @@ import "./_MovieCard.css";
 const POSTER_BASE = "https://image.tmdb.org/t/p/w342";
 
 /**
- * One release: poster, title, Italian date, genres, plot on demand.
+ * One release in the poster grid: poster, title and Italian date, linking to the film page.
+ * Limited releases carry a visible badge with the TMDB note.
  * @param props Movie to show.
  * @returns Article.
  */
@@ -17,33 +19,26 @@ export function MovieCard({ movie }: { readonly movie: Movie }) {
 
   return (
     <article data-part="movie-card">
-      {movie.posterPath ? (
-        <Image src={POSTER_BASE + movie.posterPath} alt="" width={342} height={513} />
-      ) : (
-        <figure data-part="poster-placeholder">
-          <figcaption>{t("noPoster")}</figcaption>
-        </figure>
-      )}
-      <div data-part="movie-body">
+      <Link href={`/film/${movie.id}`}>
+        {movie.posterPath ? (
+          <Image src={POSTER_BASE + movie.posterPath} alt="" width={342} height={513} />
+        ) : (
+          <figure data-part="poster-placeholder">
+            <figcaption>{t("noPoster")}</figcaption>
+          </figure>
+        )}
         <h3>{movie.title}</h3>
         <p>
-          {t.rich("releaseDate", {
-            date: format.dateTime(isoDateToUtc(movie.releaseDateIt), DAY_MONTH),
-            time: (chunks) => <time dateTime={movie.releaseDateIt}>{chunks}</time>,
-          })}
+          <time dateTime={movie.releaseDateIt}>
+            {format.dateTime(isoDateToUtc(movie.releaseDateIt), DAY_MONTH)}
+          </time>
         </p>
-        {movie.genres.length > 0 && (
-          <ul aria-label={t("genres")}>
-            {movie.genres.map((genre) => (
-              <li key={genre}>{genre}</li>
-            ))}
-          </ul>
-        )}
-        <details>
-          <summary>{t("overview")}</summary>
-          <p>{movie.overview || t("noOverview")}</p>
-        </details>
-      </div>
+      </Link>
+      {movie.releaseType === "limited" && (
+        <p data-release="limited">
+          {t("limited")} {movie.releaseNote && <span>{movie.releaseNote}</span>}
+        </p>
+      )}
     </article>
   );
 }

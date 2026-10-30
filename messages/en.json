@@ -8,15 +8,39 @@
     "it": "Italiano",
     "en": "English"
   },
+  "Nav": {
+    "from": "From",
+    "to": "To",
+    "show": "Show",
+    "today": "Today",
+    "weeks": "More weeks",
+    "more": "Two more weeks",
+    "earlier": "Two weeks earlier"
+  },
   "Releases": {
     "heading": "Coming to Italian cinemas",
     "week": "Week of {range}",
+    "noPoster": "No poster available",
+    "limited": "Limited release",
+    "verify": "Check on ComingSoon",
+    "emptyWeek": "No releases this week.",
+    "loading": "Loading releases..."
+  },
+  "Film": {
+    "director": "Director",
+    "cast": "Cast",
+    "country": "Country",
+    "production": "Production",
+    "runtime": "{minutes} min",
+    "trailer": "Trailer",
+    "back": "All releases",
+    "notFound": "Film not found.",
     "releaseDate": "In cinemas from <time>{date}</time>",
+    "originalTitle": "Original title",
     "genres": "Genres",
     "overview": "Plot",
     "noOverview": "Plot not available.",
-    "noPoster": "No poster available",
-    "empty": "No releases found in the next three months."
+    "runtimeLabel": "Running time"
   },
   "Error": {
     "title": "Could not load the releases.",

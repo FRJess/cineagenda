@@ -81,3 +81,16 @@ export async function fetchGenreNames(locale: UiLocale): Promise<GenreNames> {
 
   return Object.fromEntries(list.genres.map((genre) => [genre.id, genre.name]));
 }
+
+/**
+ * Full details of one film for the film page.
+ * @param id TMDB movie id.
+ * @returns Details with credits, Italian and English videos, release dates and translations.
+ * @throws {TmdbError} With status 404 when the id does not exist.
+ */
+export async function fetchMovieDetails(id: number): Promise<TmdbMovieDetails> {
+  return tmdbGet<TmdbMovieDetails>(`/movie/${id}`, {
+    append_to_response: "credits,videos,release_dates,translations",
+    include_video_language: "it,en",
+  });
+}
