@@ -1,0 +1,28 @@
+{
+  "Metadata": {
+    "title": "Cineagenda",
+    "description": "Films coming to Italian cinemas, week by week."
+  },
+  "Header": {
+    "language": "Language",
+    "it": "Italiano",
+    "en": "English"
+  },
+  "Releases": {
+    "heading": "Coming to Italian cinemas",
+    "week": "Week of {range}",
+    "releaseDate": "In cinemas from <time>{date}</time>",
+    "genres": "Genres",
+    "overview": "Plot",
+    "noOverview": "Plot not available.",
+    "noPoster": "No poster available",
+    "empty": "No releases found in the next three months."
+  },
+  "Error": {
+    "title": "Could not load the releases.",
+    "retry": "Try again"
+  },
+  "Footer": {
+    "attribution": "This product uses the TMDB API but is not endorsed or certified by TMDB."
+  }
+}

@@ -1,0 +1,44 @@
+/**
+ * FILE: _WeekSection.css
+ * USAGE: Styles for WeekSection
+ * SCOPE: [data-part="week-section"]
+ */
+
+/* ─── Layout: one column on phone, wrapping cards from 48rem ─── */
+
+[data-part="week-section"] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* ─── Week heading ─── */
+
+[data-part="week-section"] h2 {
+  padding-bottom: var(--space-2);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+}
+
+[data-part="week-section"] ol {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  list-style: none;
+}
+
+@media (min-width: 48rem) {
+  [data-part="week-section"] ol {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--space-8) var(--space-6);
+  }
+
+  [data-part="week-section"] ol > li {
+    flex: 0 1 12.5rem;
+  }
+}

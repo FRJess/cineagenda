@@ -49,7 +49,35 @@ Consequences:
 - One discover call per page of results plus one release_dates call per film. For a 3-month window this is on the order of 100-200 calls. Fine with server-side caching (see below); not fine from the browser.
 - Data quality for Italy on TMDB is good but not perfect. Films with no IT date in the window are dropped, not guessed.
 - TMDB terms require attribution: TMDB logo and the sentence "This product uses the TMDB API but is not endorsed or certified by TMDB." Goes in the footer.
-- Spike first (see Steps): confirm the discover/region behavior and date coverage on real data before building UI.
+- Spike done 2026-10-30, findings below.
+
+### Spike findings (2026-10-30, live TMDB data, window today to +90 days)
+
+| Measure | Value |
+|---|---|
+| Films returned by discover | 82 |
+| Films with no IT type 3/2 date in the window | 0 |
+| Films whose discover `release_date` differs from the in-window IT date | 8 |
+| Calls (5 discover pages + 1 `release_dates` per film) | 87 |
+| IT dates on a Thursday | 55 of 82 |
+
+- Discover with `region=IT` filters correctly: every returned film has an IT theatrical or limited date inside the window.
+- The discover `release_date` field is the film's earliest IT date, not the in-window one. Re-releases show 1968, 2001, 2013. Never display it.
+- A film can have several IT entries, unsorted. Rule: pick the entry with `type == 3` whose date falls in the window; fallback `type == 2` in the window. Picking the first type 3 regardless of window gives wrong dates (2001: A Space Odyssey shows 1974 instead of 2026-11-16).
+- The type 3 first rule is right for previews: Asterix has a type 2 "Anteprima" on 2027-01-06 and type 3 on 2027-01-13; 2027-01-13 is the release.
+- About 9 of 82 are re-releases, anniversaries, restorations or festival screenings. TMDB marks them only in the free-text `note` field ("Re-release", "40th Anniversary", "4K Restoration", "Reale Film Festival"), so they cannot be filtered reliably.
+- With `language=it-IT`, films without an Italian translation return the original title in the original script (Persian, Japanese). 2 of 82.
+- 87 calls per refresh is fine with server-side caching (24h).
+- `GET /movie/{id}?append_to_response=release_dates,translations` returns the IT release dates plus the title and overview in every language in one call. It replaces the per-film `release_dates` call at the same call count, and is the source for the title rule below. Checked on all 82 films.
+
+### Decisions from the spike (Jessica, 2026-10-30)
+
+- Re-releases, anniversaries, restorations and festival screenings are shown like any other release. No label, no filter.
+- Title rule, the same in both UI languages (my call: the Italian release is the film's identity here):
+  1. Original language Italian: original title.
+  2. Italian translation title present: Italian title, then original title in parentheses. Omit the parentheses when the two are equal, ignoring case and surrounding spaces.
+  3. No Italian translation: original title, then English title in parentheses, with the same omission rule.
+- On the 82 spike films the rule gives: 22 Italian originals, 39 "Italian (original)", 21 with no Italian translation. Of those 21, 19 are released in Italy under the original title (Shrek, Avengers: Doomsday) and show one title; 2 show "original (English)", e.g. "زمزمه‌ها (The Whispers)".
 
 ## Stack
 
@@ -78,13 +106,12 @@ src/
     [locale]/
       layout.tsx        html lang, header with locale switch, footer with TMDB attribution
       page.tsx          release list (Server Component)
-      loading.tsx       skeleton
       error.tsx         retry UI
     globals.css         imported once in the root layout
   lib/
     tmdb/
       client.ts         fetch wrapper: base URL, Bearer/api_key, language, revalidate
-      releases.ts       discover + release_dates -> Movie[] with Italian date
+      releases.ts       discover + release_dates -> Movie[] with Italian date (in-window pick rule, see spike findings)
       genres.ts         genre id -> name map per locale
       types.ts          TMDB response types (only fields used)
     releases/
@@ -103,7 +130,7 @@ Domain type (only what V1 shows):
 ```ts
 type Movie = {
   readonly id: number;            // TMDB id, stable key for V2 "interested" storage
-  readonly title: string;
+  readonly title: string;         // display title, built by the title rule
   readonly originalTitle: string;
   readonly posterPath: string | null;
   readonly genres: readonly string[];
@@ -126,8 +153,8 @@ V2 readiness, without building it: `Movie.id` is the TMDB id; grouping and windo
 1. Done 2026-10-30: local folder is a clone of `FRJess/cineagenda`, tracking `origin/main`.
 2. Done 2026-10-30: scaffolded with create-next-app (Next 16.4.3, React 19.3.0, TypeScript 5.9.3), exact pins, Prettier.
 3. Done 2026-10-30: Vitest 5 + Testing Library, Playwright 1.64 + axe-core, next-intl 4.14.9 installed. Scripts: `lint`, `format`, `typecheck` (`next typegen && tsc --noEmit`, typegen provides the global `LayoutProps`/`PageProps` types), `test`, `test:e2e`, `check` (webidoo repo guardrails via `webidoo-ai-mcp tools call`).
-4. Jessica creates `.env.local` with `TMDB_ACCESS_TOKEN`.
-5. Spike (throwaway, no tests): a script under `scratch/` that runs discover + release_dates for the next 30 days and prints title, Italian date, type. Confirms the region behavior, date coverage and call count. Findings go back into this document.
+4. Done 2026-10-30: `.env.local` with `TMDB_ACCESS_TOKEN`.
+5. Done 2026-10-30: spike under `scratch/` (gitignored), findings in "Spike findings" above.
 6. Link the repo to Vercel Hobby, set `TMDB_ACCESS_TOKEN`, confirm the scaffold deploys.
 7. Write the V1 implementation plan (superpowers:writing-plans) from this document.
 
@@ -138,6 +165,14 @@ V2 readiness, without building it: `Movie.id` is the TMDB id; grouping and windo
 - Geist fonts from the template were dropped: `next/font` applies a CSS class on `<html>`, which the webidoo zero-class rule forbids. `globals.css` uses `system-ui`. Builder may revisit with a CSS-only font.
 - webidoo guardrail exception: `webidoo-frontend-react` and `webidoo-meta-next` fail `file-naming` on `layout.tsx`/`page.tsx`. Next.js dictates those names; accepted as a known exception, every other rule passes.
 - `webidoo_tool_check scope=repo` scans 0 files in this repo even after `tokensave sync`; per-file snippet checks are used instead until that is understood.
+
+## Implementation notes (V1 built 2026-10-30)
+
+- `loading.tsx` dropped: with Cache Components the list is prerendered into the static shell and revalidated every 86400 s, so a loading state never shows; with next-intl it also broke the prerender.
+- `/` always redirects to `/it` (`localeDetection: false`); browser language is ignored.
+- Components follow the webidoo tree: `src/components/<Name>/{_Name.tsx,_Name.css,index.ts}`, CSS scoped with `[data-part]` selectors.
+- jsdom pinned to 29.1.1: jsdom 30 needs Node 22.19+ and this machine runs Node 22.14.0. Bump it after a Node upgrade.
+- `pnpm build` calls TMDB (about 90 requests) and needs `TMDB_ACCESS_TOKEN`; a TMDB outage fails the build.
 
 ## Left to the builder
 
