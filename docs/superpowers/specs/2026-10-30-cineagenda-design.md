@@ -62,7 +62,7 @@ Decided with Jessica unless marked "my call".
 | Package manager | pnpm (installed: 12.15.0), exact pins | webidoo rule: no `^`/`~`. |
 | Lint/format | ESLint (next/core-web-vitals) + Prettier | create-next-app default, zero friction. |
 | Styling | Plain CSS files imported from `app/layout.tsx`; semantic HTML; no CSS classes, no inline styles, flex first (`display: grid` only for named areas, subgrid, explicit placement, auto-fit tracks) | webidoo guardrails, checked with `webidoo_tool_check`. No Tailwind, no CSS-in-JS. |
-| Data fetching | `fetch` in Server Components with `next: { revalidate: 86400 }` (my call: 24h; releases change rarely) | Built-in Data Cache, no extra layer. |
+| Data fetching | `fetch` in Server Components inside `'use cache'` functions with `cacheLife('days')` (my call: 24h; releases change rarely) | Next 16.4.3 scaffold enables `cacheComponents`; in that model `next: { revalidate }` is replaced by the `use cache` directive plus `cacheLife`. See `node_modules/next/dist/docs/01-app/01-getting-started/08-caching.md`. |
 | i18n | `next-intl` (latest: 4.14.9 on 2026-10-30), route segment `app/[locale]/`, messages in `messages/{it,en}.json`, locale-aware routing via its middleware, date formatting via its `useFormatter`/`getFormatter` | Decided by Jessica: V2 adds more copy, and next-intl handles Server Components, typed messages and locale routing out of the box. |
 | Tests | Vitest + Testing Library for pure logic and components; Playwright + axe-core for one a11y smoke test per page | webidoo TDD and a11y process. Tests before implementation. |
 | Hosting | Vercel Hobby, linked to the GitHub repo, `TMDB_ACCESS_TOKEN` set in Vercel env | Free, auto-deploy on push, Data Cache works unchanged. |
@@ -95,7 +95,7 @@ src/
     request.ts          next-intl getRequestConfig: loads messages per locale
     navigation.ts       locale-aware Link, redirect, usePathname
 messages/{it,en}.json
-proxy.ts (or middleware.ts, whichever the installed Next version names)  next-intl createMiddleware(routing)
+proxy.ts              next-intl createMiddleware(routing); `middleware.ts` is deprecated in Next 16
 ```
 
 Domain type (only what V1 shows):
@@ -124,12 +124,20 @@ V2 readiness, without building it: `Movie.id` is the TMDB id; grouping and windo
 ## Steps before writing product code
 
 1. Done 2026-10-30: local folder is a clone of `FRJess/cineagenda`, tracking `origin/main`.
-2. Scaffold with `pnpm create next-app@latest` : TypeScript, ESLint, `src/`, App Router, import alias `@/*`, no Tailwind. Pin exact versions. Add Prettier.
-3. Add Vitest + Testing Library, Playwright + axe-core, scripts: `test`, `test:e2e`, `lint`, `typecheck`, `check` (webidoo).
+2. Done 2026-10-30: scaffolded with create-next-app (Next 16.4.3, React 19.3.0, TypeScript 5.9.3), exact pins, Prettier.
+3. Done 2026-10-30: Vitest 5 + Testing Library, Playwright 1.64 + axe-core, next-intl 4.14.9 installed. Scripts: `lint`, `format`, `typecheck` (`next typegen && tsc --noEmit`, typegen provides the global `LayoutProps`/`PageProps` types), `test`, `test:e2e`, `check` (webidoo repo guardrails via `webidoo-ai-mcp tools call`).
 4. Jessica creates `.env.local` with `TMDB_ACCESS_TOKEN`.
 5. Spike (throwaway, no tests): a script under `scratch/` that runs discover + release_dates for the next 30 days and prints title, Italian date, type. Confirms the region behavior, date coverage and call count. Findings go back into this document.
 6. Link the repo to Vercel Hobby, set `TMDB_ACCESS_TOKEN`, confirm the scaffold deploys.
 7. Write the V1 implementation plan (superpowers:writing-plans) from this document.
+
+## Scaffold findings (2026-10-30)
+
+- create-next-app defaults to `cacheComponents: true` and `partialPrefetching: true`. Data caching is `'use cache'` + `cacheLife`, not `fetch` revalidate options. Stack table updated.
+- Middleware file is `proxy.ts` (`middleware.ts` deprecated in Next 16).
+- Geist fonts from the template were dropped: `next/font` applies a CSS class on `<html>`, which the webidoo zero-class rule forbids. `globals.css` uses `system-ui`. Builder may revisit with a CSS-only font.
+- webidoo guardrail exception: `webidoo-frontend-react` and `webidoo-meta-next` fail `file-naming` on `layout.tsx`/`page.tsx`. Next.js dictates those names; accepted as a known exception, every other rule passes.
+- `webidoo_tool_check scope=repo` scans 0 files in this repo even after `tokensave sync`; per-file snippet checks are used instead until that is understood.
 
 ## Left to the builder
 
