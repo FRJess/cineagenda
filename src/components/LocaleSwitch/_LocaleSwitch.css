@@ -1,0 +1,29 @@
+/**
+ * FILE: _LocaleSwitch.css
+ * USAGE: Styles for LocaleSwitch, a segmented pill; the active locale is filled
+ * SCOPE: [data-part="locale-switch"]
+ */
+
+[data-part="locale-switch"] ul {
+  display: flex;
+  gap: var(--space-1);
+  padding: var(--space-1);
+  list-style: none;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+
+[data-part="locale-switch"] a {
+  display: inline-block;
+  padding: var(--space-1) var(--space-3);
+  font-size: 0.875rem;
+  color: var(--muted);
+  text-decoration: none;
+  border-radius: 999px;
+}
+
+[data-part="locale-switch"] a[aria-current="page"] {
+  font-weight: 600;
+  color: var(--on-accent);
+  background: var(--accent);
+}

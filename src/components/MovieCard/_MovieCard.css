@@ -1,0 +1,113 @@
+/**
+ * FILE: _MovieCard.css
+ * USAGE: Styles for MovieCard
+ * SCOPE: [data-part="movie-card"], [data-part="poster-placeholder"], [data-part="movie-body"]
+ */
+
+/* ─── Layout: row on phone, column from 48rem ─── */
+
+[data-part="movie-card"] {
+  display: flex;
+  gap: var(--space-4);
+  height: 100%;
+}
+
+[data-part="movie-card"] > img,
+[data-part="poster-placeholder"] {
+  flex: 0 0 6.5rem;
+  align-self: flex-start;
+  width: 6.5rem;
+  height: auto;
+  aspect-ratio: 2 / 3;
+  border-radius: var(--radius);
+  box-shadow: var(--poster-shadow);
+}
+
+[data-part="poster-placeholder"] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2);
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  box-shadow: none;
+}
+
+[data-part="movie-body"] {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+/* ─── Text ─── */
+
+[data-part="movie-body"] h3 {
+  font-family: var(--font-display);
+  font-size: 1.1875rem;
+  font-weight: 400;
+  line-height: 1.25;
+}
+
+[data-part="movie-body"] > p {
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+[data-part="movie-body"] ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  list-style: none;
+  font-size: 0.75rem;
+}
+
+[data-part="movie-body"] ul li {
+  padding: 0.125rem var(--space-2);
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+
+/* ─── Plot disclosure ─── */
+
+[data-part="movie-body"] summary {
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+[data-part="movie-body"] details p {
+  padding-top: var(--space-1);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+/* ─── Wide screens: poster on top, lift on hover ─── */
+
+@media (min-width: 48rem) {
+  [data-part="movie-card"] {
+    flex-direction: column;
+  }
+
+  [data-part="movie-card"] > img,
+  [data-part="poster-placeholder"] {
+    flex-basis: auto;
+    width: 100%;
+  }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  [data-part="movie-card"] {
+    transition: transform 160ms ease;
+  }
+
+  [data-part="movie-card"]:hover {
+    transform: translateY(-2px);
+  }
+}
