@@ -1,0 +1,143 @@
+/**
+ * FILE: globals.css
+ * USAGE: Tokens, reset and page shell, imported once in the root layout
+ * SCOPE: :root, body, main, a, button, [data-part="site-header"], [data-part="site-footer"]
+ */
+
+/* ─── Tokens ─── */
+
+:root {
+  --background: #f7f4ee;
+  --surface: #ffffff;
+  --foreground: #1b1a17;
+  --muted: #5c5750;
+  --border: #ddd6ca;
+  --accent: #a3241b;
+  --on-accent: #fffaf3;
+  --font-display: Georgia, "Times New Roman", serif;
+  --font-text: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --radius: 0.5rem;
+  --poster-shadow: 0 1px 2px rgb(0 0 0 / 0.12), 0 8px 20px rgb(0 0 0 / 0.12);
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #121110;
+    --surface: #1d1b19;
+    --foreground: #f1ede6;
+    --muted: #aca49a;
+    --border: #35312c;
+    --accent: #ff8a7a;
+    --on-accent: #121110;
+    --poster-shadow: 0 1px 2px rgb(0 0 0 / 0.5), 0 8px 20px rgb(0 0 0 / 0.4);
+  }
+}
+
+/* ─── Reset ─── */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ─── Page shell ─── */
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-8);
+  width: 100%;
+  max-width: 72rem;
+  margin-inline: auto;
+  padding: var(--space-6) var(--space-4) var(--space-8);
+}
+
+main > h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 1.2rem + 3vw, 3.25rem);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+a {
+  color: var(--accent);
+  text-underline-offset: 0.2em;
+}
+
+/* ─── Header and footer ─── */
+
+[data-part="site-header"],
+[data-part="site-footer"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-6);
+  padding-block: var(--space-4);
+  padding-inline: max(var(--space-4), calc((100% - 72rem) / 2 + var(--space-4)));
+}
+
+[data-part="site-header"] {
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+
+[data-part="site-header"] > a {
+  color: var(--foreground);
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  text-decoration: none;
+}
+
+[data-part="site-footer"] {
+  margin-top: auto;
+  border-top: 1px solid var(--border);
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+[data-part="site-footer"] > img {
+  width: auto;
+  height: 1rem;
+}
+
+/* ─── Buttons ─── */
+
+button {
+  align-self: flex-start;
+  padding: var(--space-2) var(--space-4);
+  font: inherit;
+  font-weight: 600;
+  color: var(--on-accent);
+  background: var(--accent);
+  border: 0;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+/* ─── Focus ─── */
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
