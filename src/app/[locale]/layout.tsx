@@ -48,10 +48,28 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 
   return (
     <html lang={locale}>
+      <head>
+        <link
+          rel="preload"
+          href="/fonts/syne-latin.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="/fonts/instrument-sans-latin.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+      </head>
       <body>
         <NextIntlClientProvider>
           <header data-part="site-header">
-            <Link href="/">Cineagenda</Link>
+            <Link href="/" data-part="brand">
+              cine<span>agenda</span>
+            </Link>
             <LocaleSwitch />
           </header>
           {children}

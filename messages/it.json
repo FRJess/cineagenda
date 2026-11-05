@@ -6,7 +6,9 @@
   "Header": {
     "language": "Lingua",
     "it": "Italiano",
-    "en": "English"
+    "en": "English",
+    "itCode": "IT",
+    "enCode": "EN"
   },
   "Nav": {
     "from": "Dal",
@@ -15,14 +17,20 @@
     "today": "Oggi",
     "weeks": "Altre settimane",
     "more": "Vai avanti",
-    "earlier": "Vai indietro"
+    "earlier": "Vai indietro",
+    "thisWeekShort": "questa",
+    "pickDates": "Date",
+    "weekTabs": "Settimane"
   },
   "Releases": {
     "heading": "Film in uscita al cinema",
-    "week": "Settimana {range}",
+    "week": "Settimana",
+    "thisWeek": "Questa settimana",
+    "nextWeek": "Prossima settimana",
+    "filmCount": "{count, plural, one {# film} other {# film}}",
+    "featured": "In evidenza",
     "noPoster": "Locandina non disponibile",
     "limited": "Uscita limitata",
-    "verify": "Verifica su ComingSoon",
     "emptyWeek": "Nessuna uscita questa settimana.",
     "loading": "Caricamento delle uscite..."
   },

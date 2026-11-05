@@ -1,42 +1,76 @@
 /**
  * FILE: globals.css
- * USAGE: Tokens, reset and page shell, imported once in the root layout
- * SCOPE: :root, body, main, a, button, [data-part="site-header"], [data-part="site-footer"], [data-part="week-nav"]
+ * USAGE: Fonts, tokens, reset and page shell, imported once in the root layout
+ * SCOPE: :root, body, main, a, button, [data-part="site-header"], [data-part="brand"], [data-part="site-footer"], [data-part="week-nav"], [data-part="week-skeleton"]
  */
+
+/* ─── Fonts: self-hosted latin subsets, SIL OFL 1.1 (public/fonts/README.md) ─── */
+
+@font-face {
+  font-family: "Syne";
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url("/fonts/syne-latin.woff2") format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Instrument Sans";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("/fonts/instrument-sans-latin.woff2") format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
 
 /* ─── Tokens ─── */
 
 :root {
-  --background: #f7f4ee;
+  --background: #ececf1;
   --surface: #ffffff;
-  --foreground: #1b1a17;
-  --muted: #5c5750;
-  --border: #ddd6ca;
-  --accent: #a3241b;
-  --on-accent: #fffaf3;
-  --font-display: Georgia, "Times New Roman", serif;
-  --font-text: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --foreground: #101018;
+  --muted: #5d5e70;
+  --border: #d3d3dd;
+  /* Darker than the spec's #e8321a: 4.7:1 on the page and 5.5:1 under white text (WCAG AA). */
+  --accent: #c82a12;
+  --accent-soft: #ffb3a6;
+  --on-accent: #ffffff;
+  --tab-bg: #101018;
+  --tab-fg: #ffffff;
+  --tab-muted: #ff8a73;
+  --font-display: "Syne", system-ui, sans-serif;
+  --font-text: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
   --space-4: 1rem;
   --space-6: 1.5rem;
   --space-8: 2rem;
-  --radius: 0.5rem;
-  --poster-shadow: 0 1px 2px rgb(0 0 0 / 0.12), 0 8px 20px rgb(0 0 0 / 0.12);
+  --radius: 0.625rem;
+  --poster-shadow: 0 1px 2px rgb(16 16 24 / 0.12), 0 8px 20px rgb(16 16 24 / 0.14);
+  --logo-mark: url("/logo-mark.svg");
   color-scheme: light dark;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #121110;
-    --surface: #1d1b19;
-    --foreground: #f1ede6;
-    --muted: #aca49a;
-    --border: #35312c;
-    --accent: #ff8a7a;
-    --on-accent: #121110;
-    --poster-shadow: 0 1px 2px rgb(0 0 0 / 0.5), 0 8px 20px rgb(0 0 0 / 0.4);
+    --background: #121218;
+    --surface: #1b1b24;
+    --foreground: #f1f0f5;
+    --muted: #9b9bb0;
+    --border: #2b2b38;
+    --accent: #ff6a4d;
+    --on-accent: #121218;
+    --tab-bg: #f1f0f5;
+    --tab-fg: #121218;
+    --tab-muted: #c82a12;
+    --poster-shadow: 0 1px 2px rgb(0 0 0 / 0.5), 0 10px 28px rgb(0 0 0 / 0.55);
+    --logo-mark: url("/logo-mark-dark.svg");
   }
 }
 
@@ -69,15 +103,17 @@ main {
   width: 100%;
   max-width: 72rem;
   margin-inline: auto;
-  padding: var(--space-6) var(--space-4) var(--space-8);
+  padding: var(--space-4) var(--space-4) var(--space-8);
 }
 
+/* The brand in the header is the visible title; the h1 stays for assistive tech. */
 main > h1 {
-  font-family: var(--font-display);
-  font-size: clamp(2rem, 1.2rem + 3vw, 3.25rem);
-  font-weight: 400;
-  line-height: 1.1;
-  letter-spacing: -0.01em;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  white-space: nowrap;
+  clip-path: inset(50%);
 }
 
 a {
@@ -93,32 +129,58 @@ a {
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-3) var(--space-6);
-  padding-block: var(--space-4);
   padding-inline: max(var(--space-4), calc((100% - 72rem) / 2 + var(--space-4)));
 }
 
 [data-part="site-header"] {
   justify-content: space-between;
-  border-bottom: 1px solid var(--border);
+  padding-block: var(--space-4) var(--space-2);
 }
 
-[data-part="site-header"] > a {
-  color: var(--foreground);
+[data-part="brand"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
   font-family: var(--font-display);
-  font-size: 1.5rem;
+  font-size: clamp(1.5rem, 1.25rem + 1.2vw, 2.25rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--foreground);
   text-decoration: none;
+}
+
+[data-part="brand"] span {
+  color: var(--accent);
+}
+
+/* Film-reel mark from public/logo-mark*.svg; the dark variant swaps in with the theme token. */
+[data-part="brand"]::before {
+  width: 1.1em;
+  height: 1.1em;
+  content: "";
+  background: var(--logo-mark) center / contain no-repeat;
+}
+
+[data-part="sr-only"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  white-space: nowrap;
+  clip-path: inset(50%);
 }
 
 [data-part="site-footer"] {
   margin-top: auto;
-  border-top: 1px solid var(--border);
-  font-size: 0.8125rem;
+  padding-block: var(--space-4);
+  font-size: 0.75rem;
   color: var(--muted);
+  border-top: 1px solid var(--border);
 }
 
 [data-part="site-footer"] > img {
   width: auto;
-  height: 1rem;
+  height: 0.875rem;
 }
 
 /* ─── Week navigation ─── */
@@ -131,15 +193,31 @@ a {
 }
 
 [data-part="week-nav"] a {
-  padding: var(--space-2) var(--space-4);
-  font-weight: 600;
+  padding-block: var(--space-2);
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--foreground);
   text-decoration: none;
-  border: 1px solid var(--border);
-  border-radius: 999px;
 }
 
 [data-part="week-nav"] a:last-child {
   margin-left: auto;
+}
+
+/* ─── Loading skeleton: six empty poster slots while the weeks stream in ─── */
+
+/* grid: auto-fill tracks, same wrap as the poster grid of a week */
+[data-part="week-skeleton"] ol {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr));
+  gap: var(--space-3);
+  list-style: none;
+}
+
+[data-part="week-skeleton"] li {
+  aspect-ratio: 2 / 3;
+  background: var(--surface);
+  border-radius: var(--radius);
 }
 
 /* ─── Buttons ─── */

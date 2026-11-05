@@ -41,7 +41,7 @@ test("default view shows the current week and the next one", async ({ page }) =>
 
   await expect(page.getByRole("region")).toHaveCount(2);
   await expect(page.getByRole("region").first().getByRole("heading", { level: 2 })).toHaveText(
-    /^Settimana /,
+    /^Questa settimana /,
   );
 });
 
@@ -80,6 +80,7 @@ test("the range cannot start before the week of 2026-01-01", async ({ page }) =>
 
 test("the date form navigates to the chosen range", async ({ page }) => {
   await page.goto("/it");
+  await page.getByText("Date", { exact: true }).click();
   await page.getByLabel("Dal", { exact: true }).fill("2026-03-02");
   await page.getByLabel("Al", { exact: true }).fill("2026-03-15");
   await page.getByRole("button", { name: "Mostra" }).click();
@@ -88,19 +89,22 @@ test("the date form navigates to the chosen range", async ({ page }) => {
   await expect(page.getByRole("region")).toHaveCount(2);
 });
 
-test("each week links to the same week on ComingSoon", async ({ page }) => {
-  await page.goto("/it");
-  const link = page.getByRole("link", { name: "Verifica su ComingSoon" }).first();
+test("the week tabs mark the week the range starts on", async ({ page }) => {
+  await page.goto("/it?from=2026-11-02&to=2026-11-15");
+  const tabs = page.getByRole("navigation", { name: "Settimane", exact: true });
 
-  await expect(link).toHaveAttribute("href", /comingsoon\.it\/cinema\/calendariouscite\/\?r=0$/);
-  await expect(link).toHaveAttribute("target", "_blank");
+  await expect(tabs.getByRole("link")).toHaveCount(5);
+  await expect(tabs.locator("a[aria-current='page']")).toHaveAttribute(
+    "href",
+    /from=2026-11-02&to=2026-11-15/,
+  );
 });
 
 test("Italian page lists releases grouped by week", async ({ page }) => {
   await page.goto("/it");
   const firstWeek = page.getByRole("region").first();
 
-  await expect(firstWeek.getByRole("heading", { level: 2 })).toHaveText(/^Settimana /);
+  await expect(firstWeek.getByRole("heading", { level: 2 })).toHaveText(/settimana /);
   await expect(firstWeek.locator("article time[datetime]").first()).toHaveAttribute(
     "datetime",
     /^\d{4}-\d{2}-\d{2}$/,
@@ -125,11 +129,13 @@ for (const locale of ["it", "en"]) {
   }
 }
 
-test("headings use the serif display face", async ({ page }) => {
+test("the brand uses the display face", async ({ page }) => {
   await page.goto("/it");
-  const family = await page.locator("h1").evaluate((el) => getComputedStyle(el).fontFamily);
+  const family = await page
+    .locator("[data-part='brand']")
+    .evaluate((el) => getComputedStyle(el).fontFamily);
 
-  expect(family).toMatch(/^Georgia\b/);
+  expect(family).toMatch(/^Syne\b/);
 });
 
 test("week headings stand out in the display face", async ({ page }) => {
@@ -142,21 +148,27 @@ test("week headings stand out in the display face", async ({ page }) => {
   });
 
   expect(style.size).toBeGreaterThanOrEqual(22);
-  expect(style.family).toMatch(/^Georgia\b/);
+  expect(style.family).toMatch(/^Syne\b/);
 });
 
-test("release dates line up across a row of cards", async ({ page }) => {
+test("posters line up across a row of cards", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/it");
   // Weeks stream in after load; read positions only once the cards exist.
-  await page.locator("article time").first().waitFor();
-  const tops = await page
+  await page.locator("ol article").first().waitFor();
+  const edges = await page
     .getByRole("region")
     .first()
-    .locator("article time")
-    .evaluateAll((els) => els.slice(0, 4).map((el) => Math.round(el.getBoundingClientRect().top)));
+    .locator("ol article")
+    .evaluateAll((els) =>
+      els.slice(0, 4).map((el) => {
+        const box = el.getBoundingClientRect();
 
-  expect(new Set(tops).size).toBe(1);
+        return `${Math.round(box.top)}-${Math.round(box.bottom)}`;
+      }),
+    );
+
+  expect(new Set(edges).size).toBe(1);
 });
 
 test.describe("dark mode", () => {

@@ -15,6 +15,7 @@ export function details(
     original_title: "Original",
     original_language: "en",
     poster_path: "/poster.jpg",
+    popularity: 0,
     genres: [],
     release_dates: { results: [{ iso_3166_1: "IT", release_dates: itDates }] },
     translations: { translations: [] },

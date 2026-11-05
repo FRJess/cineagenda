@@ -14,8 +14,6 @@ const romeDate = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Rome" });
 
 const toUtc = (isoDate: string): Date => new Date(`${isoDate}T00:00:00Z`);
 const toIso = (date: Date): string => date.toISOString().slice(0, 10);
-const addDays = (isoDate: string, days: number): string =>
-  toIso(new Date(toUtc(isoDate).getTime() + days * DAY_MS));
 const isValidIsoDate = (value: string | undefined): value is string => {
   if (!value || !ISO_DATE.test(value)) {
     return false;
@@ -26,6 +24,16 @@ const isValidIsoDate = (value: string | undefined): value is string => {
   // "2026-13-45" matches the pattern but is not a real date.
   return !Number.isNaN(date.getTime()) && toIso(date) === value;
 };
+
+/**
+ * Shifts an ISO date by whole days.
+ * @param isoDate ISO date.
+ * @param days Days to add, negative to go back.
+ * @returns ISO date.
+ */
+export function addDays(isoDate: string, days: number): string {
+  return toIso(new Date(toUtc(isoDate).getTime() + days * DAY_MS));
+}
 
 /**
  * Calendar day in Italy for an instant; servers run on UTC.
@@ -105,6 +113,29 @@ export function parseRange(
 }
 
 /**
+ * The two-week page that starts on a Monday; tabs and paging share it.
+ * @param monday ISO date of a Monday.
+ * @returns Monday to the Sunday of the following week.
+ */
+export function pageRange(monday: string): ReleaseWindow {
+  return { from: monday, to: addDays(monday, DEFAULT_WEEKS * 7 - 1) };
+}
+
+/**
+ * Mondays of the week tabs: two before the range start, the start, two after; weeks before
+ * the week of {@link MIN_DATE} are dropped.
+ * @param range Normalized range.
+ * @returns ISO dates, ascending.
+ */
+export function tabWeeks(range: ReleaseWindow): readonly string[] {
+  const minFrom = mondayOf(MIN_DATE);
+
+  return [-2, -1, 0, 1, 2]
+    .map((offset) => addDays(range.from, offset * 7))
+    .filter((monday) => monday >= minFrom);
+}
+
+/**
  * Mondays of every week in a normalized range.
  * @param range Monday-to-Sunday range.
  * @returns ISO dates, ascending.
@@ -130,9 +161,7 @@ export function shiftRange(
   const pageDays = DEFAULT_WEEKS * 7;
 
   if (direction === "later") {
-    const from = addDays(range.to, 1);
-
-    return { from, to: addDays(from, pageDays - 1) };
+    return pageRange(addDays(range.to, 1));
   }
 
   const minFrom = mondayOf(MIN_DATE);
@@ -142,7 +171,6 @@ export function shiftRange(
   }
 
   const wanted = addDays(range.from, -pageDays);
-  const from = wanted < minFrom ? minFrom : wanted;
 
-  return { from, to: addDays(from, pageDays - 1) };
+  return pageRange(wanted < minFrom ? minFrom : wanted);
 }
