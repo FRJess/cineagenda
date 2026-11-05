@@ -6,6 +6,7 @@ import {
   parseRange,
   shiftRange,
   sundayOf,
+  tabWeeks,
   todayInRome,
   weeksBetween,
 } from "./window";
@@ -134,5 +135,26 @@ describe("shiftRange", () => {
 
   it("returns null when the start is already at the minimum", () => {
     expect(shiftRange({ from: "2025-12-29", to: "2026-01-11" }, "earlier")).toBeNull();
+  });
+});
+
+describe("tabWeeks", () => {
+  it("returns two Mondays before, the start and two after", () => {
+    expect(tabWeeks({ from: "2026-11-02", to: "2026-11-15" })).toEqual([
+      "2026-10-19",
+      "2026-10-26",
+      "2026-11-02",
+      "2026-11-09",
+      "2026-11-16",
+    ]);
+  });
+
+  it("drops weeks before the week of 2026-01-01", () => {
+    expect(tabWeeks({ from: "2026-01-05", to: "2026-01-18" })).toEqual([
+      "2025-12-29",
+      "2026-01-05",
+      "2026-01-12",
+      "2026-01-19",
+    ]);
   });
 });

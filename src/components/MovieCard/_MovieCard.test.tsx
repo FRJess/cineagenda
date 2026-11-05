@@ -31,7 +31,7 @@ describe("MovieCard", () => {
     expect(
       screen.getByRole("heading", {
         level: 3,
-        name: "Il canto della foresta (Le Chant des forêts)",
+        name: "Il canto della foresta",
       }),
     ).toBeInTheDocument();
   });
@@ -41,20 +41,20 @@ describe("MovieCard", () => {
 
     const time = container.querySelector("time");
     expect(time).toHaveAttribute("datetime", "2026-11-05");
-    expect(time).toHaveTextContent("5 novembre");
+    expect(time).toHaveTextContent("gio 5 nov");
   });
 
   it("renders the release date in English", () => {
     const { container } = renderWithIntl(<MovieCard movie={movie()} />, "en");
 
-    expect(container.querySelector("time")).toHaveTextContent("November 5");
+    expect(container.querySelector("time")).toHaveTextContent("Thu, Nov 5");
   });
 
   it("does not shift the date on a server west of UTC", () => {
     process.env.TZ = "America/Los_Angeles";
     const { container } = renderWithIntl(<MovieCard movie={movie()} />);
 
-    expect(container.querySelector("time")).toHaveTextContent("5 novembre");
+    expect(container.querySelector("time")).toHaveTextContent("gio 5 nov");
   });
 
   it("shows no limited badge for a theatrical release", () => {
@@ -74,16 +74,15 @@ describe("MovieCard", () => {
     expect(screen.queryByText("Re-release")).not.toBeInTheDocument();
   });
 
-  it("keeps only the date and the title under the poster", () => {
+  it("prints only the date and the title on the poster", () => {
     const { container } = renderWithIntl(
       <MovieCard movie={movie({ releaseType: "limited", releaseNote: "Re-release" })} />,
     );
-    const below = [...(container.querySelector("a")?.children ?? [])].filter(
-      (el) => el.getAttribute("data-part") !== "poster",
-    );
+    const text = [...(container.querySelector("[data-part='card-text']")?.children ?? [])];
 
-    expect(below.map((el) => el.tagName)).toEqual(["P", "H3"]);
-    expect(below[0]).toHaveTextContent(/^5 novembre$/);
+    expect(container.querySelector("[data-part='poster'] [data-part='card-text']")).not.toBeNull();
+    expect(text.map((el) => el.tagName)).toEqual(["P", "H3"]);
+    expect(text[0]).toHaveTextContent(/^gio 5 nov$/);
   });
 
   it("keeps the limited tag in the link's accessible name", () => {

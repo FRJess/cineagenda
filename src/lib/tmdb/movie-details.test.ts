@@ -58,7 +58,8 @@ describe("toMovieDetails", () => {
 
     expect(result).toMatchObject({
       id: 1309373,
-      title: "Il canto della foresta (Le Chant des forêts)",
+      title: "Il canto della foresta",
+      subtitle: "Le Chant des forêts",
       originalTitle: "Le Chant des forêts",
       releaseDateIt: "2026-11-12",
       releaseType: "theatrical",

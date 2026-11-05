@@ -3,8 +3,8 @@ import { connection } from "next/server";
 import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
-import { WeekRangeForm } from "@/components/WeekRangeForm";
 import { WeekSection } from "@/components/WeekSection";
+import { WeekTabs } from "@/components/WeekTabs";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import {
@@ -20,6 +20,21 @@ import { getWeekReleases } from "@/lib/tmdb/cached";
 import type { UiLocale } from "@/lib/tmdb/to-movie";
 
 type SearchParams = PageProps<"/[locale]">["searchParams"];
+
+const SKELETON_SLOTS = [1, 2, 3, 4, 5, 6] as const;
+
+// Six empty poster slots while the weeks stream in.
+function WeekSkeleton({ label }: { readonly label: string }) {
+  return (
+    <section aria-busy="true" aria-label={label} data-part="week-skeleton">
+      <ol>
+        {SKELETON_SLOTS.map((slot) => (
+          <li key={slot} />
+        ))}
+      </ol>
+    </section>
+  );
+}
 
 const first = (value: string | string[] | undefined): string | undefined =>
   Array.isArray(value) ? value[0] : value;
@@ -48,7 +63,7 @@ async function Weeks({ locale, searchParams }: { locale: UiLocale; searchParams:
 
   return (
     <>
-      <WeekRangeForm range={range} />
+      <WeekTabs range={range} todayMonday={todayMonday} />
       {weeks.map((weekStart, index) => (
         <WeekSection
           key={weekStart}
@@ -82,7 +97,7 @@ export default async function ReleasesPage({ params, searchParams }: PageProps<"
   return (
     <main>
       <h1>{t("heading")}</h1>
-      <Suspense fallback={<p aria-busy="true">{t("loading")}</p>}>
+      <Suspense fallback={<WeekSkeleton label={t("loading")} />}>
         <Weeks locale={locale} searchParams={searchParams} />
       </Suspense>
     </main>

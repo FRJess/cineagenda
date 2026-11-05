@@ -1,18 +1,17 @@
 import Image from "next/image";
 import { useFormatter, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { isoDateToUtc, WEEKDAY_DAY_MONTH } from "@/lib/releases/iso-date";
 import type { Movie } from "@/lib/releases/movie";
-import { DAY_MONTH, isoDateToUtc } from "@/lib/releases/iso-date";
 import "./_MovieCard.css";
 
 const POSTER_BASE = "https://image.tmdb.org/t/p/w342";
 
 /**
- * One release in the poster grid: poster, date line, title, linking to the film page.
- * The date comes first so dates align across a row; limited releases get a tag on the poster.
- * The TMDB release note stays on the film page.
+ * One release in the poster grid: the poster with date and title printed over its bottom
+ * edge, linking to the film page.
  * @param props Movie to show.
- * @returns Article.
+ * @returns Article with one link.
  */
 export function MovieCard({ movie }: { readonly movie: Movie }) {
   const t = useTranslations("Releases");
@@ -30,13 +29,15 @@ export function MovieCard({ movie }: { readonly movie: Movie }) {
             </figure>
           )}
           {movie.releaseType === "limited" && <span data-release="limited">{t("limited")}</span>}
+          <div data-part="card-text">
+            <p data-part="card-meta">
+              <time dateTime={movie.releaseDateIt}>
+                {format.dateTime(isoDateToUtc(movie.releaseDateIt), WEEKDAY_DAY_MONTH)}
+              </time>
+            </p>
+            <h3>{movie.title}</h3>
+          </div>
         </div>
-        <p data-part="card-meta">
-          <time dateTime={movie.releaseDateIt}>
-            {format.dateTime(isoDateToUtc(movie.releaseDateIt), DAY_MONTH)}
-          </time>
-        </p>
-        <h3>{movie.title}</h3>
       </Link>
     </article>
   );

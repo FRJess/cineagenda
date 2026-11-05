@@ -10,6 +10,17 @@ export function isoDateToUtc(isoDate: string): Date {
 /** Day and month, read in UTC to match {@link isoDateToUtc}. */
 export const DAY_MONTH = { day: "numeric", month: "long", timeZone: "UTC" } as const;
 
+/** Day and short month for the week tabs ("2 nov"), read in UTC to match {@link isoDateToUtc}. */
+export const DAY_MONTH_SHORT = { day: "numeric", month: "short", timeZone: "UTC" } as const;
+
+/** Weekday, day and short month for cards ("gio 5 nov"), read in UTC to match {@link isoDateToUtc}. */
+export const WEEKDAY_DAY_MONTH = {
+  weekday: "short",
+  day: "numeric",
+  month: "short",
+  timeZone: "UTC",
+} as const;
+
 /** Day, month and year, read in UTC to match {@link isoDateToUtc}. */
 export const DAY_MONTH_YEAR = {
   day: "numeric",

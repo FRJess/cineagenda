@@ -12,10 +12,12 @@ vi.mock("@/i18n/navigation", () => ({
 
 const film: MovieDetails = {
   id: 1309373,
-  title: "Il canto della foresta (Le Chant des forêts)",
+  title: "Il canto della foresta",
+  subtitle: "Le Chant des forêts",
   originalTitle: "Le Chant des forêts",
   posterPath: "/poster.jpg",
   backdropPath: "/back.jpg",
+  popularity: 10,
   genres: ["Documentario"],
   releaseDateIt: "2026-11-12",
   releaseType: "limited",
@@ -37,7 +39,7 @@ describe("FilmDetail", () => {
     const { container } = renderWithIntl(<FilmDetail film={film} />);
 
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
-      "Il canto della foresta (Le Chant des forêts)",
+      "Il canto della foresta",
     );
     expect(container.querySelector("time")).toHaveAttribute("datetime", "2026-11-12");
     expect(container.querySelector("time")).toHaveTextContent("12 novembre");

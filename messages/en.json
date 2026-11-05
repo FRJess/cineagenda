@@ -6,7 +6,9 @@
   "Header": {
     "language": "Language",
     "it": "Italiano",
-    "en": "English"
+    "en": "English",
+    "itCode": "IT",
+    "enCode": "EN"
   },
   "Nav": {
     "from": "From",
@@ -15,14 +17,20 @@
     "today": "Today",
     "weeks": "More weeks",
     "more": "Go forward",
-    "earlier": "Go back"
+    "earlier": "Go back",
+    "thisWeekShort": "this week",
+    "pickDates": "Dates",
+    "weekTabs": "Weeks"
   },
   "Releases": {
     "heading": "Coming to Italian cinemas",
-    "week": "Week of {range}",
+    "week": "Week",
+    "thisWeek": "This week",
+    "nextWeek": "Next week",
+    "filmCount": "{count, plural, one {# film} other {# film}}",
+    "featured": "Featured",
     "noPoster": "No poster available",
     "limited": "Limited release",
-    "verify": "Check on ComingSoon",
     "emptyWeek": "No releases this week.",
     "loading": "Loading releases..."
   },
