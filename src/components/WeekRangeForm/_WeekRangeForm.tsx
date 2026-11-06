@@ -1,14 +1,13 @@
 import { useFormatter, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { quickRanges, type CalendarMonth, type QuickRange } from "@/lib/releases/shortcuts";
-import { MIN_DATE, type ReleaseWindow } from "@/lib/releases/window";
+import type { ReleaseWindow } from "@/lib/releases/window";
+import { RangeFields } from "./_RangeFields";
 import "./_WeekRangeForm.css";
-
-const WEEKS_LABEL = { 2: "weeks2", 4: "month1", 13: "months3" } as const;
 
 /**
  * Date-range popover body: a GET form so the URL carries the range and works without JS.
- * Shortcut links and the way back to today sit under the inputs.
+ * Shortcut links (this week, next week, this month, the next two months) sit under the calendar.
  * @param props Current normalized range and today's ISO date in Europe/Rome.
  * @returns Form with from/to inputs, shortcuts and actions.
  */
@@ -34,7 +33,7 @@ export function WeekRangeForm({
   };
 
   const label = (shortcut: QuickRange): string =>
-    shortcut.kind === "weeks" ? t(WEEKS_LABEL[shortcut.weeks]) : monthName(shortcut);
+    shortcut.kind === "month" ? monthName(shortcut) : t(shortcut.kind);
 
   const isCurrent = (shortcut: QuickRange) =>
     shortcut.range.from === range.from && shortcut.range.to === range.to;
@@ -43,25 +42,10 @@ export function WeekRangeForm({
     <form method="get" data-part="week-range">
       <h2>{t("pickTitle")}</h2>
       <p data-part="help">{t("pickHelp")}</p>
-      <div data-part="date-fields">
-        <p>
-          <label htmlFor="range-from">{t("from")}</label>
-          <input
-            id="range-from"
-            type="date"
-            name="from"
-            min={MIN_DATE}
-            defaultValue={range.from}
-            required
-          />
-        </p>
-        <p>
-          <label htmlFor="range-to">{t("to")}</label>
-          <input id="range-to" type="date" name="to" min={MIN_DATE} defaultValue={range.to} />
-        </p>
-      </div>
+      {/* Keyed by the range: a chip navigates on the client, and the calendar must restart from the new URL range. */}
+      <RangeFields key={`${range.from}_${range.to}`} from={range.from} to={range.to} />
       <ul aria-label={t("shortcuts")} data-part="shortcuts">
-        {quickRanges(range, today).map((shortcut, index) => (
+        {quickRanges(today).map((shortcut, index) => (
           <li key={index}>
             <Link
               href={{ pathname: "/", query: { from: shortcut.range.from, to: shortcut.range.to } }}
@@ -74,7 +58,6 @@ export function WeekRangeForm({
       </ul>
       <div data-part="date-actions">
         <button type="submit">{t("show")}</button>
-        <Link href="/">{t("today")}</Link>
       </div>
     </form>
   );

@@ -3,12 +3,11 @@ import { addDays, mondayOf, sundayOf, type ReleaseWindow } from "./window";
 /** A calendar month as year and 1-based month number. */
 export type CalendarMonth = { readonly year: number; readonly month: number };
 
-/** A date-picker shortcut: a number of whole weeks, or one calendar month. */
+/** A date-picker shortcut, relative to today: a fixed label, or a calendar month shown by name. */
 export type QuickRange =
-  | { readonly kind: "weeks"; readonly weeks: 2 | 4 | 13; readonly range: ReleaseWindow }
+  | { readonly kind: "thisWeek" | "nextWeek" | "thisMonth"; readonly range: ReleaseWindow }
   | ({ readonly kind: "month"; readonly range: ReleaseWindow } & CalendarMonth);
 
-const WEEKS_SHORTCUTS = [2, 4, 13] as const;
 const MONTH_SHORTCUTS = 2;
 
 /**
@@ -45,28 +44,27 @@ export function nextMonths(today: string, count: number): readonly CalendarMonth
 }
 
 /**
- * Date-picker shortcuts for a range: two, four and thirteen weeks from its start, then the
- * two calendar months after today.
- * @param range Current normalized range.
+ * Date-picker shortcuts: this week, next week, this month, then the two calendar months after
+ * it. They depend on today only, not on the range shown.
  * @param today ISO date in Europe/Rome.
  * @returns Shortcuts in display order.
  */
-export function quickRanges(range: ReleaseWindow, today: string): readonly QuickRange[] {
-  const weeks = WEEKS_SHORTCUTS.map(
-    (count): QuickRange => ({
-      kind: "weeks",
-      weeks: count,
-      range: { from: range.from, to: addDays(range.from, count * 7 - 1) },
-    }),
-  );
-  const months = nextMonths(today, MONTH_SHORTCUTS).map(
-    ({ year, month }): QuickRange => ({
-      kind: "month",
-      year,
-      month,
-      range: monthRange(year, month),
-    }),
-  );
+export function quickRanges(today: string): readonly QuickRange[] {
+  const nextMonday = addDays(mondayOf(today), 7);
+  const months = nextMonths(today, MONTH_SHORTCUTS).map(({ year, month }): QuickRange => ({
+    kind: "month",
+    year,
+    month,
+    range: monthRange(year, month),
+  }));
 
-  return [...weeks, ...months];
+  return [
+    { kind: "thisWeek", range: { from: mondayOf(today), to: sundayOf(today) } },
+    { kind: "nextWeek", range: { from: nextMonday, to: sundayOf(nextMonday) } },
+    {
+      kind: "thisMonth",
+      range: monthRange(Number(today.slice(0, 4)), Number(today.slice(5, 7))),
+    },
+    ...months,
+  ];
 }

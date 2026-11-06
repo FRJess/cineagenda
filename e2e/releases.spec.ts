@@ -73,28 +73,17 @@ test("the URL range selects the weeks shown", async ({ page }) => {
   const headings = page.getByRole("region").getByRole("heading", { level: 2 });
   await expect(headings).toHaveCount(2);
   await expect(headings.first()).toContainText("gennaio");
-  await expect(page.getByLabel("Dal", { exact: true })).toHaveValue("2026-01-05");
-  await expect(page.getByLabel("Al", { exact: true })).toHaveValue("2026-01-18");
+  await expect(page.locator("input[name='from']")).toHaveValue("2026-01-05");
+  await expect(page.locator("input[name='to']")).toHaveValue("2026-01-18");
 });
 
 test("the range cannot start before the week of 2026-01-01", async ({ page }) => {
   await page.goto("/it?from=2025-01-01&to=2025-02-01");
 
-  await expect(page.getByLabel("Dal", { exact: true })).toHaveValue("2025-12-29");
+  await expect(page.locator("input[name='from']")).toHaveValue("2025-12-29");
   await expect(
     page.getByRole("navigation", { name: "Settimane", exact: true }).getByRole("link"),
   ).toHaveCount(3);
-});
-
-test("the date form navigates to the chosen range", async ({ page }) => {
-  await page.goto("/it");
-  await page.getByText("Date", { exact: true }).click();
-  await page.getByLabel("Dal", { exact: true }).fill("2026-03-02");
-  await page.getByLabel("Al", { exact: true }).fill("2026-03-15");
-  await page.getByRole("button", { name: "Mostra" }).click();
-
-  await expect(page).toHaveURL(/from=2026-03-02&to=2026-03-15/);
-  await expect(page.getByRole("region")).toHaveCount(2);
 });
 
 test("the week tabs mark the week the range starts on", async ({ page }) => {
@@ -191,3 +180,70 @@ test.describe("dark mode", () => {
     expect(results.violations).toEqual([]);
   });
 });
+
+test("the date popover shows the calendar and picks a new range", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/it?from=2026-11-02&to=2026-11-15");
+  await page.getByText("Date", { exact: true }).click();
+  const calendar = page.getByLabel("Calendario", { exact: true });
+  const dayButton = (isoDate: string) =>
+    calendar.locator(`[data-day='${isoDate}']:not([data-outside]) button`);
+
+  await expect(calendar.getByRole("grid")).toHaveCount(2);
+  await page.getByRole("button", { name: /^Dal/ }).click();
+  await dayButton("2026-11-23").click();
+  await expect(page.getByRole("button", { name: /^Al/ })).toHaveAttribute("aria-pressed", "true");
+  await dayButton("2026-12-06").click();
+  await expect(page.locator("input[name='from']")).toHaveValue("2026-11-23");
+  await expect(page.locator("input[name='to']")).toHaveValue("2026-12-06");
+  await page.getByRole("button", { name: "Mostra" }).click();
+
+  await expect(page).toHaveURL(/from=2026-11-23&to=2026-12-06/);
+  await expect(page.getByRole("region")).toHaveCount(2);
+});
+
+test("a shortcut chip navigates and closes the date popover", async ({ page }) => {
+  await page.goto("/it?from=2026-11-02&to=2026-11-15");
+  await page.getByText("Date", { exact: true }).click();
+  await page
+    .getByRole("list", { name: "Scorciatoie" })
+    .getByRole("link", { name: "Prossima settimana" })
+    .click();
+
+  // The chips follow the real date, so only the change of range is checked.
+  await expect(page).not.toHaveURL(/from=2026-11-02&to=2026-11-15/);
+  await expect(page).toHaveURL(/from=\d{4}-\d{2}-\d{2}&to=\d{4}-\d{2}-\d{2}/);
+  await expect(page.locator("details[data-part='date-picker']")).not.toHaveAttribute("open");
+});
+
+test("the date popover shows one month on phones", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/it?from=2026-11-02&to=2026-11-15");
+  await page.getByText("Date", { exact: true }).click();
+
+  await expect(page.getByLabel("Calendario", { exact: true }).getByRole("grid")).toHaveCount(1);
+});
+
+for (const colorScheme of ["light", "dark"] as const) {
+  test(`the open date popover has no WCAG 2.2 AA violations (${colorScheme})`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme });
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/it?from=2026-11-02&to=2026-11-15");
+    await page.getByText("Date", { exact: true }).click();
+    await page.locator("[data-part='calendar'] [role='grid']").first().waitFor();
+    const axe = new AxeBuilder({ page }).include("[data-part='week-range']").withTags(WCAG_TAGS);
+    // Accepted by Jessica (2026-11-05, 2026-11-06): small text on or in the light accent
+    // #e8321a is 4.28:1 (submit button, range ends, today).
+    const results = await (
+      colorScheme === "light"
+        ? axe
+            .exclude("[data-part='date-actions'] button")
+            .exclude(".rdp-range_start .rdp-day_button")
+            .exclude(".rdp-range_end .rdp-day_button")
+            .exclude(".rdp-today .rdp-day_button")
+        : axe
+    ).analyze();
+
+    expect(results.violations).toEqual([]);
+  });
+}
