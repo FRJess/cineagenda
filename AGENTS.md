@@ -1,3 +1,5 @@
+Read docs/DESIGN.md before changing any CSS, component markup or user-facing copy.
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 ## This is NOT the Next.js you know
