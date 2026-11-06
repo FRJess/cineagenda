@@ -1,53 +1,56 @@
 import { describe, expect, it } from "vitest";
 import { details, tr } from "./fixtures";
-import { buildDisplayTitle } from "./title";
+import { buildDisplayTitles } from "./title";
 
-describe("buildDisplayTitle", () => {
-  it("uses the original title for Italian films", () => {
+describe("buildDisplayTitles", () => {
+  it("uses the original title alone for Italian films", () => {
     const film = details({
       original_title: "La Gradiva",
       original_language: "it",
       translations: { translations: [tr("en", "US", { title: "Gradiva" })] },
     });
 
-    expect(buildDisplayTitle(film)).toBe("La Gradiva");
+    expect(buildDisplayTitles(film)).toEqual({ title: "La Gradiva", subtitle: "" });
   });
 
-  it("shows the Italian title with the original in parentheses", () => {
+  it("shows the Italian title with the original as subtitle", () => {
     const film = details({
       original_title: "2001: A Space Odyssey",
       translations: { translations: [tr("it", "IT", { title: "2001: Odissea nello spazio" })] },
     });
 
-    expect(buildDisplayTitle(film)).toBe("2001: Odissea nello spazio (2001: A Space Odyssey)");
+    expect(buildDisplayTitles(film)).toEqual({
+      title: "2001: Odissea nello spazio",
+      subtitle: "2001: A Space Odyssey",
+    });
   });
 
-  it("omits the parentheses when the Italian title equals the original", () => {
+  it("leaves the subtitle empty when the Italian title equals the original", () => {
     const film = details({
       original_title: "shrek",
       translations: { translations: [tr("it", "IT", { title: "Shrek " })] },
     });
 
-    expect(buildDisplayTitle(film)).toBe("Shrek");
+    expect(buildDisplayTitles(film)).toEqual({ title: "Shrek", subtitle: "" });
   });
 
-  it("shows the original with the English title when there is no Italian translation", () => {
+  it("uses the original as title and the English title as subtitle without an Italian one", () => {
     const film = details({
       original_title: "زمزمه‌ها",
       original_language: "fa",
       translations: { translations: [tr("en", "US", { title: "The Whispers" })] },
     });
 
-    expect(buildDisplayTitle(film)).toBe("زمزمه‌ها (The Whispers)");
+    expect(buildDisplayTitles(film)).toEqual({ title: "زمزمه‌ها", subtitle: "The Whispers" });
   });
 
-  it("shows the original alone when the English title equals it", () => {
+  it("leaves the subtitle empty when the English title equals the original", () => {
     const film = details({
       original_title: "Avengers: Doomsday",
       translations: { translations: [tr("en", "US", { title: "Avengers: Doomsday" })] },
     });
 
-    expect(buildDisplayTitle(film)).toBe("Avengers: Doomsday");
+    expect(buildDisplayTitles(film)).toEqual({ title: "Avengers: Doomsday", subtitle: "" });
   });
 
   it("treats an empty Italian title as missing", () => {
@@ -59,7 +62,7 @@ describe("buildDisplayTitle", () => {
       },
     });
 
-    expect(buildDisplayTitle(film)).toBe("Fjord");
+    expect(buildDisplayTitles(film)).toEqual({ title: "Fjord", subtitle: "" });
   });
 
   it("prefers the US English title over other English ones", () => {
@@ -71,7 +74,7 @@ describe("buildDisplayTitle", () => {
       },
     });
 
-    expect(buildDisplayTitle(film)).toBe("Original (American)");
+    expect(buildDisplayTitles(film)).toEqual({ title: "Original", subtitle: "American" });
   });
 
   it("falls back to the first English title without a US one", () => {
@@ -81,6 +84,6 @@ describe("buildDisplayTitle", () => {
       translations: { translations: [tr("en", "GB", { title: "British" })] },
     });
 
-    expect(buildDisplayTitle(film)).toBe("Original (British)");
+    expect(buildDisplayTitles(film)).toEqual({ title: "Original", subtitle: "British" });
   });
 });

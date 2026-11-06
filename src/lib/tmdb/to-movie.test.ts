@@ -22,7 +22,8 @@ describe("toMovie", () => {
 
     expect(toMovie(film, window, "it", genreNames)).toMatchObject({
       id: 62,
-      title: "2001: Odissea nello spazio (2001: A Space Odyssey)",
+      title: "2001: Odissea nello spazio",
+      subtitle: "2001: A Space Odyssey",
       originalTitle: "2001: A Space Odyssey",
       releaseDateIt: "2026-11-16",
       posterPath: "/poster.jpg",
@@ -107,6 +108,21 @@ describe("toMovie", () => {
     expect(
       toMovie(details({ runtime: null }, [rd(3, "2026-11-05")]), window, "it", genreNames),
     ).not.toBeNull();
+  });
+
+  it("maps the backdrop and the popularity for the featured pick", () => {
+    const film = details({ backdrop_path: "/back.jpg", popularity: 42.5 }, [rd(3, "2026-11-05")]);
+
+    expect(toMovie(film, window, "it", genreNames)).toMatchObject({
+      backdropPath: "/back.jpg",
+      popularity: 42.5,
+    });
+  });
+
+  it("keeps a missing backdrop as null", () => {
+    const film = details({ backdrop_path: undefined }, [rd(3, "2026-11-05")]);
+
+    expect(toMovie(film, window, "it", genreNames)?.backdropPath).toBeNull();
   });
 
   it("keeps a missing poster as null", () => {

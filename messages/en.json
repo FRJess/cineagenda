@@ -6,24 +6,35 @@
   "Header": {
     "language": "Language",
     "it": "Italiano",
-    "en": "English"
+    "en": "English",
+    "itCode": "IT",
+    "enCode": "EN"
   },
   "Nav": {
     "from": "From",
     "to": "To",
-    "show": "Show",
-    "today": "Today",
-    "weeks": "More weeks",
-    "more": "Go forward",
-    "earlier": "Go back"
+    "show": "Show releases",
+    "today": "Back to today",
+    "thisWeekShort": "this week",
+    "pickDates": "Dates",
+    "pickHint": "customize",
+    "pickTitle": "Pick a range",
+    "pickHelp": "From 1 January 2026 on, up to 26 weeks at a time. Weeks start on Monday.",
+    "shortcuts": "Shortcuts",
+    "weeks2": "2 weeks",
+    "month1": "1 month",
+    "months3": "3 months",
+    "weekTabs": "Weeks"
   },
   "Releases": {
-    "heading": "Coming to Italian cinemas",
-    "week": "Week of {range}",
+    "week": "Week",
+    "thisWeek": "This week",
+    "nextWeek": "Next week",
+    "featured": "Most anticipated",
     "noPoster": "No poster available",
     "limited": "Limited release",
-    "verify": "Check on ComingSoon",
-    "emptyWeek": "No releases this week.",
+    "limitedShort": "Limited",
+    "noReleases": "No releases",
     "loading": "Loading releases..."
   },
   "Film": {
@@ -33,20 +44,23 @@
     "production": "Production",
     "runtime": "{minutes} min",
     "trailer": "Trailer",
-    "back": "All releases",
+    "back": "Releases",
     "notFound": "Film not found.",
     "releaseDate": "In cinemas from <time>{date}</time>",
     "originalTitle": "Original title",
     "genres": "Genres",
     "overview": "Plot",
     "noOverview": "Plot not available.",
-    "runtimeLabel": "Running time"
+    "runtimeLabel": "Running time",
+    "watchTrailer": "Watch the trailer",
+    "runtimeShort": "{hours}h {minutes}"
   },
   "Error": {
     "title": "Could not load the releases.",
     "retry": "Try again"
   },
   "Footer": {
-    "attribution": "This product uses the TMDB API but is not endorsed or certified by TMDB."
+    "attribution": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
+    "theme": "Dark theme"
   }
 }

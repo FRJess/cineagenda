@@ -1,6 +1,6 @@
 /**
  * FILE: _WeekSection.css
- * USAGE: Styles for WeekSection
+ * USAGE: Styles for WeekSection: the week title with its eyebrow and count, then the featured card and the poster grid
  * SCOPE: [data-part="week-section"]
  */
 
@@ -9,49 +9,77 @@
 [data-part="week-section"] {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: 0.625rem;
 }
 
-/* ─── Week heading row ─── */
+/* ─── Week heading row: title and count share the baseline ─── */
 
 [data-part="week-section"] > header {
   display: flex;
-  flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
   gap: var(--space-2) var(--space-4);
-  padding-bottom: var(--space-3);
-  border-bottom: 2px solid var(--accent);
 }
 
 [data-part="week-section"] h2 {
   font-family: var(--font-display);
-  font-size: clamp(1.375rem, 1.1rem + 1.2vw, 1.875rem);
-  font-weight: 400;
-  line-height: 1.15;
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.035em;
   color: var(--foreground);
 }
 
-[data-part="week-section"] > header a {
-  font-size: 0.8125rem;
+[data-part="week-section"] h2 small {
+  display: block;
+  margin-bottom: var(--space-1);
+  font-family: var(--font-text);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
-[data-part="week-section"] > p {
+[data-part="week-section"][data-today] h2 small {
+  color: var(--accent);
+}
+
+[data-part="week-section"] > header > p {
+  flex: 0 0 auto;
+  font-size: 0.6875rem;
+  font-weight: 400;
   color: var(--muted);
 }
 
 /* ─── Poster grid ─── */
 
-/* grid: auto-fit tracks, poster tiles fill the row and wrap by width */
+/* grid: auto-fill tracks, poster tiles fill the row and wrap by width */
 [data-part="week-section"] ol {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
-  gap: var(--space-6) var(--space-4);
+  grid-template-columns: repeat(auto-fill, minmax(9.375rem, 1fr));
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
   list-style: none;
 }
 
+/* grid: explicit placement; the featured film takes a whole row on phones, whatever the column count. */
+[data-part="week-section"] ol > li[data-featured] {
+  grid-column: 1 / -1;
+}
+
+/* 11rem min with the 72rem column (1104px inside the padding): at most five posters per row. */
 @media (min-width: 48rem) {
+  [data-part="week-section"] h2 {
+    font-size: 1.75rem;
+  }
+
   [data-part="week-section"] ol {
     grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  }
+
+  [data-part="week-section"] ol > li[data-featured] {
+    grid-column: span 3;
   }
 }

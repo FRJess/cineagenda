@@ -3,10 +3,12 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { LocaleSwitch } from "@/components/LocaleSwitch";
-import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import "../globals.css";
+
+/* Applies a stored theme before first paint, so a dark-mode viewer does not see a light flash. */
+const THEME_BOOT_SCRIPT = `try{var t=localStorage.getItem("cineagenda-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){console.warn("theme storage unavailable",e)}`;
 
 /**
  * Prerenders one tree per locale.
@@ -32,7 +34,8 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
 }
 
 /**
- * Root layout per locale: header with locale switch, page, TMDB footer.
+ * Root layout per locale: page and TMDB footer. Each page renders its own SiteHeader, so the
+ * home page can place the week tabs in it.
  * @param props Route props.
  * @returns Document shell.
  */
@@ -48,16 +51,30 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 
   return (
     <html lang={locale}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
+        <link
+          rel="preload"
+          href="/fonts/syne-latin.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="/fonts/instrument-sans-latin.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+      </head>
       <body>
         <NextIntlClientProvider>
-          <header data-part="site-header">
-            <Link href="/">Cineagenda</Link>
-            <LocaleSwitch />
-          </header>
           {children}
           <footer data-part="site-footer">
             <Image src="/tmdb-logo.svg" alt="TMDB" width={273} height={36} />
             <p>{t("attribution")}</p>
+            <ThemeToggle />
           </footer>
         </NextIntlClientProvider>
       </body>

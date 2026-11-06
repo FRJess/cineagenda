@@ -13,7 +13,7 @@ test("a card opens the film page with its facts", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(title ?? "");
   await expect(page.locator("dl")).toBeVisible();
   await expect(page.getByRole("heading", { level: 2, name: "Trama" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Tutte le uscite" })).toHaveAttribute("href", "/it");
+  await expect(page.getByRole("link", { name: "Uscite" })).toHaveAttribute("href", "/it");
 });
 
 test("the film page has no WCAG 2.2 AA violations", async ({ page }) => {
@@ -30,7 +30,7 @@ test("an unknown id shows the not-found state", async ({ page }) => {
   await page.goto("/it/film/0");
 
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Film non trovato.");
-  await expect(page.getByRole("link", { name: "Tutte le uscite" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Uscite" })).toBeVisible();
 });
 
 test("the English film page uses English labels", async ({ page }) => {
@@ -38,5 +38,18 @@ test("the English film page uses English labels", async ({ page }) => {
   await page.locator("article a").first().click();
 
   await expect(page.getByRole("heading", { level: 2, name: "Plot" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "All releases" })).toHaveAttribute("href", "/en");
+  await expect(page.getByRole("link", { name: "Releases" })).toHaveAttribute("href", "/en");
+});
+
+test.describe("dark mode", () => {
+  test.use({ colorScheme: "dark" });
+
+  test("the film page has no WCAG 2.2 AA violations", async ({ page }) => {
+    await page.goto("/it");
+    await page.locator("article a").first().click();
+    await page.locator("dl").waitFor();
+    const results = await new AxeBuilder({ page }).withTags(WCAG_TAGS).exclude("iframe").analyze();
+
+    expect(results.violations).toEqual([]);
+  });
 });

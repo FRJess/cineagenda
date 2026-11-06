@@ -13,7 +13,11 @@ vi.mock("@/i18n/navigation", () => ({
 const group = {
   weekStart: "2026-11-02",
   weekEnd: "2026-11-08",
-  movies: [movie({ id: 1, title: "Primo" }), movie({ id: 2, title: "Secondo" })],
+  movies: [
+    movie({ id: 1, title: "Primo", popularity: 5 }),
+    movie({ id: 2, title: "Secondo", popularity: 50 }),
+    movie({ id: 3, title: "Terzo", popularity: 20 }),
+  ],
 };
 
 const range = new Intl.DateTimeFormat("it", {
@@ -24,36 +28,81 @@ const range = new Intl.DateTimeFormat("it", {
 
 describe("WeekSection", () => {
   it("is a region named by its week heading", () => {
-    renderWithIntl(<WeekSection group={group} todayMonday="2026-10-26" />);
+    renderWithIntl(<WeekSection group={group} todayMonday="2026-10-19" />);
 
     expect(screen.getByRole("region", { name: `Settimana ${range}` })).toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent(`Settimana ${range}`);
   });
 
-  it("lists one item per movie in input order", () => {
+  it("labels the current and the next week", () => {
+    const { unmount } = renderWithIntl(<WeekSection group={group} todayMonday="2026-11-02" />);
+
+    expect(screen.getByRole("region", { name: `Questa settimana ${range}` })).toHaveAttribute(
+      "data-today",
+    );
+    unmount();
+
     renderWithIntl(<WeekSection group={group} todayMonday="2026-10-26" />);
+
+    expect(screen.getByRole("region", { name: `Prossima settimana ${range}` })).not.toHaveAttribute(
+      "data-today",
+    );
+  });
+
+  it("does not count the films of the week", () => {
+    renderWithIntl(<WeekSection group={group} todayMonday="2026-10-19" />);
+
+    expect(screen.queryByText("3 film")).not.toBeInTheDocument();
+  });
+
+  it("lists one item per movie in input order when no film can be featured", () => {
+    const noBackdrops = { ...group, movies: group.movies.map((m) => ({ ...m, backdropPath: null })) };
+    renderWithIntl(<WeekSection group={noBackdrops} todayMonday="2026-10-19" />);
 
     const titles = screen.getAllByRole("heading", { level: 3 }).map((h) => h.textContent);
 
-    expect(titles).toEqual(["Primo", "Secondo"]);
+    expect(titles).toEqual(["Primo", "Secondo", "Terzo"]);
   });
 
-  it("links to the same week on ComingSoon in a new tab", () => {
-    renderWithIntl(<WeekSection group={group} todayMonday="2026-10-26" />);
+  it("features the most popular film of the week as the first grid item", () => {
+    const { container } = renderWithIntl(<WeekSection group={group} todayMonday="2026-11-02" />);
+    const first = container.querySelector("ol > li:first-child");
+    const posterTitles = [...container.querySelectorAll("ol [data-part='movie-card'] h3")].map(
+      (h) => h.textContent,
+    );
 
-    const link = screen.getByRole("link", { name: /Verifica su ComingSoon/ });
-
-    expect(link).toHaveAttribute("href", "https://www.comingsoon.it/cinema/calendariouscite/?r=7");
-    expect(link).toHaveAttribute("target", "_blank");
-    expect(link).toHaveAttribute("rel", "noopener noreferrer");
+    expect(first?.querySelector("[data-part='featured-card']")).toHaveTextContent("Secondo");
+    expect(posterTitles).toEqual(["Primo", "Terzo"]);
   });
 
-  it("shows an empty state for a week without releases", () => {
+  it("features a film in every week, not only the current one", () => {
+    const { container } = renderWithIntl(<WeekSection group={group} todayMonday="2026-10-19" />);
+
+    expect(container.querySelector("[data-part='featured-card']")).toHaveTextContent("Secondo");
+  });
+
+  it("keeps the featured film in the grid when it is the only one", () => {
+    const { container } = renderWithIntl(
+      <WeekSection group={{ ...group, movies: [movie({ id: 9 })] }} todayMonday="2026-11-02" />,
+    );
+
+    expect(container.querySelectorAll("ol > li")).toHaveLength(1);
+    expect(container.querySelector("ol > li [data-part='featured-card']")).not.toBeNull();
+  });
+
+  it("has no external links", () => {
+    const { container } = renderWithIntl(<WeekSection group={group} todayMonday="2026-10-19" />);
+
+    expect(container.querySelector("a[target='_blank']")).toBeNull();
+  });
+
+  it("shows 'Nessuna uscita' beside the title for a week without releases", () => {
     const { container } = renderWithIntl(
       <WeekSection group={{ ...group, movies: [] }} todayMonday="2026-10-26" />,
     );
 
-    expect(screen.getByText("Nessuna uscita questa settimana.")).toBeInTheDocument();
+    expect(screen.getByText("Nessuna uscita")).toBeInTheDocument();
+    expect(screen.queryByText("0 film")).not.toBeInTheDocument();
     expect(container.querySelector("ol")).toBeNull();
   });
 });

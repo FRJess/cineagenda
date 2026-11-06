@@ -6,8 +6,11 @@ let nextId = 1;
 const movie = (title: string, releaseDateIt: string): Movie => ({
   id: nextId++,
   title,
+  subtitle: "",
   originalTitle: title,
   posterPath: null,
+  backdropPath: null,
+  popularity: 0,
   genres: [],
   releaseDateIt,
   releaseType: "theatrical",

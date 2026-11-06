@@ -2,11 +2,6 @@ import type { TmdbMovieDetails, TmdbTranslation } from "./types";
 
 const same = (a: string, b: string): boolean => a.trim().toLowerCase() === b.trim().toLowerCase();
 
-const withSecondary = (primary: string, secondary: string): string =>
-  !secondary || same(primary, secondary)
-    ? primary.trim()
-    : `${primary.trim()} (${secondary.trim()})`;
-
 const titleIn = (
   translations: readonly TmdbTranslation[],
   lang: string,
@@ -18,23 +13,28 @@ const titleIn = (
   return preferred?.data.title?.trim() ?? "";
 };
 
+/** Title for the card and its secondary line for the film page. */
+export type DisplayTitles = { readonly title: string; readonly subtitle: string };
+
 /**
- * Display title, same in every UI locale: Italian originals as is; otherwise
- * "Italian (original)", or "original (English)" without an Italian translation.
+ * Card title and film-page subtitle, the same in every UI locale. Italian originals stay
+ * alone; otherwise the Italian title is the card title and the original is the subtitle, or
+ * the original is the card title and the English title the subtitle when there is no Italian.
  * @param details Movie details with `translations`.
- * @returns Title to show.
+ * @returns Card title and subtitle, which is empty when there is nothing distinct to show.
  */
-export function buildDisplayTitle(details: TmdbMovieDetails): string {
-  const original = details.original_title;
+export function buildDisplayTitles(details: TmdbMovieDetails): DisplayTitles {
+  const original = details.original_title.trim();
 
   if (details.original_language === "it") {
-    return original.trim();
+    return { title: original, subtitle: "" };
   }
 
   const translations = details.translations.translations;
   const italian = titleIn(translations, "it");
+  const primary = italian || original;
+  const secondary = italian ? original : titleIn(translations, "en", "US");
+  const subtitle = secondary && !same(primary, secondary) ? secondary.trim() : "";
 
-  return italian
-    ? withSecondary(italian, original)
-    : withSecondary(original, titleIn(translations, "en", "US"));
+  return { title: primary.trim(), subtitle };
 }

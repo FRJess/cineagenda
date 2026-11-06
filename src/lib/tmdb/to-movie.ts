@@ -1,7 +1,7 @@
 import type { Movie } from "@/lib/releases/movie";
 import type { ReleaseWindow } from "@/lib/releases/window";
 import { pickItalianRelease } from "./release-date";
-import { buildDisplayTitle } from "./title";
+import { buildDisplayTitles } from "./title";
 import type { GenreNames, TmdbMovieDetails } from "./types";
 
 /** UI locales; overviews come from the matching translation. */
@@ -38,9 +38,11 @@ export function toMovie(
 
   return {
     id: details.id,
-    title: buildDisplayTitle(details),
+    ...buildDisplayTitles(details),
     originalTitle: details.original_title,
     posterPath: details.poster_path,
+    backdropPath: details.backdrop_path ?? null,
+    popularity: details.popularity,
     genres: details.genres.flatMap((genre) => genreNames[genre.id] ?? []),
     releaseDateIt: release.date,
     releaseType: release.type,

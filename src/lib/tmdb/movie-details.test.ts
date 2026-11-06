@@ -21,6 +21,7 @@ const full = (overrides: Partial<TmdbMovieDetails> = {}): TmdbMovieDetails =>
       original_title: "Le Chant des forêts",
       original_language: "fr",
       backdrop_path: "/back.jpg",
+      release_date: "2025-10-17",
       runtime: 99,
       genres: [{ id: 99 }],
       production_countries: [{ iso_3166_1: "FR", name: "France" }],
@@ -58,7 +59,8 @@ describe("toMovieDetails", () => {
 
     expect(result).toMatchObject({
       id: 1309373,
-      title: "Il canto della foresta (Le Chant des forêts)",
+      title: "Il canto della foresta",
+      subtitle: "Le Chant des forêts",
       originalTitle: "Le Chant des forêts",
       releaseDateIt: "2026-11-12",
       releaseType: "theatrical",
@@ -67,6 +69,7 @@ describe("toMovieDetails", () => {
       countries: ["France"],
       companies: ["Paprika Films", "Kobalann"],
       backdropPath: "/back.jpg",
+      year: 2025,
       overview: "Trama",
     });
   });
