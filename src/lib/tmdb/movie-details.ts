@@ -12,7 +12,8 @@ export type CastMember = {
 
 /** Everything the film page shows. */
 export type MovieDetails = Movie & {
-  readonly backdropPath: string | null;
+  /** Year of the world premiere, null when TMDB has none. */
+  readonly year: number | null;
   /** Minutes, null when TMDB has none. */
   readonly runtime: number | null;
   readonly directors: readonly string[];
@@ -67,7 +68,7 @@ export function toMovieDetails(
 
   return {
     ...movie,
-    backdropPath: details.backdrop_path ?? null,
+    year: details.release_date ? Number(details.release_date.slice(0, 4)) : null,
     runtime: details.runtime ?? null,
     directors: credits.crew.filter((member) => member.job === "Director").map((m) => m.name),
     cast: [...credits.cast]
