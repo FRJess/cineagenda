@@ -3,8 +3,10 @@
 import { useEffect, useRef, type ReactNode } from "react";
 
 /**
- * Date disclosure: a native details element that also closes on Escape and on a press outside
- * its summary and form. The page stays server-rendered; only this disclosure needs script.
+ * Date disclosure: a native details element that also closes on Escape, on a press outside
+ * its summary and form, and on a link inside it (a shortcut chip), since
+ * client navigation keeps the layout and the details open. The page stays server-rendered;
+ * only this disclosure needs script.
  * @param props Summary content and the panel content.
  * @returns Details element.
  */
@@ -45,7 +47,15 @@ export function DatePicker({
   }, []);
 
   return (
-    <details ref={ref} data-part="date-picker">
+    <details
+      ref={ref}
+      data-part="date-picker"
+      onClick={(event) => {
+        if (event.target instanceof Element && event.target.closest("a")) {
+          event.currentTarget.open = false;
+        }
+      }}
+    >
       <summary>{summary}</summary>
       {children}
     </details>

@@ -32,34 +32,20 @@ describe("nextMonths", () => {
 });
 
 describe("quickRanges", () => {
-  const range = { from: "2026-11-02", to: "2026-11-15" };
-
-  it("offers two, four and thirteen whole weeks from the range start", () => {
-    const [two, four, thirteen] = quickRanges(range, "2026-11-06");
-
-    expect(two).toEqual({ kind: "weeks", weeks: 2, range: { from: "2026-11-02", to: "2026-11-15" } });
-    expect(four).toEqual({ kind: "weeks", weeks: 4, range: { from: "2026-11-02", to: "2026-11-29" } });
-    expect(thirteen).toEqual({
-      kind: "weeks",
-      weeks: 13,
-      range: { from: "2026-11-02", to: "2027-01-31" },
-    });
+  it("offers this week, next week and this month, then the two months after it", () => {
+    expect(quickRanges("2026-11-06")).toEqual([
+      { kind: "thisWeek", range: { from: "2026-11-02", to: "2026-11-08" } },
+      { kind: "nextWeek", range: { from: "2026-11-09", to: "2026-11-15" } },
+      { kind: "thisMonth", range: { from: "2026-10-26", to: "2026-12-06" } },
+      { kind: "month", year: 2026, month: 12, range: { from: "2026-11-30", to: "2027-01-03" } },
+      { kind: "month", year: 2027, month: 1, range: { from: "2026-12-28", to: "2027-01-31" } },
+    ]);
   });
 
-  it("offers the two calendar months after today as whole-week ranges", () => {
-    expect(quickRanges(range, "2026-11-06").slice(3)).toEqual([
-      {
-        kind: "month",
-        year: 2026,
-        month: 12,
-        range: { from: "2026-11-30", to: "2027-01-03" },
-      },
-      {
-        kind: "month",
-        year: 2027,
-        month: 1,
-        range: { from: "2026-12-28", to: "2027-01-31" },
-      },
-    ]);
+  it("takes next week across the year end", () => {
+    expect(quickRanges("2026-12-31")[1]).toEqual({
+      kind: "nextWeek",
+      range: { from: "2027-01-04", to: "2027-01-10" },
+    });
   });
 });
