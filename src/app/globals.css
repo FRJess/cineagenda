@@ -36,8 +36,7 @@
   --foreground: #101018;
   --muted: #5d5e70;
   --border: #d3d3dd;
-  /* Darker than the spec's #e8321a: 4.7:1 on the page and 5.5:1 under white text (WCAG AA). */
-  --accent: #c82a12;
+  --accent: #e8321a;
   --accent-soft: #ffb3a6;
   --on-accent: #ffffff;
   --tab-bg: #101018;
@@ -68,7 +67,7 @@
     --on-accent: #121218;
     --tab-bg: #f1f0f5;
     --tab-fg: #121218;
-    --tab-muted: #c82a12;
+    --tab-muted: #e8321a;
     --poster-shadow: 0 1px 2px rgb(0 0 0 / 0.5), 0 10px 28px rgb(0 0 0 / 0.55);
     --logo-mark: url("/logo-mark-dark.svg");
   }
