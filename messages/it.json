@@ -41,14 +41,16 @@
     "production": "Produzione",
     "runtime": "{minutes} min",
     "trailer": "Trailer",
-    "back": "Tutte le uscite",
+    "back": "Uscite",
     "notFound": "Film non trovato.",
-    "releaseDate": "Al cinema dal <time>{date}</time>",
+    "releaseDate": "Al cinema da <time>{date}</time>",
     "originalTitle": "Titolo originale",
     "genres": "Generi",
     "overview": "Trama",
     "noOverview": "Trama non disponibile.",
-    "runtimeLabel": "Durata"
+    "runtimeLabel": "Durata",
+    "watchTrailer": "Guarda il trailer",
+    "runtimeShort": "{hours}h {minutes}"
   },
   "Error": {
     "title": "Impossibile caricare le uscite.",

@@ -1,211 +1,319 @@
 /**
  * FILE: _FilmDetail.css
- * USAGE: Styles for FilmDetail
- * SCOPE: [data-part="film"], [data-part="film-hero"], [data-part="film-summary"], [data-part="film-plot"], [data-part="film-cast"], [data-part="film-trailer"]
+ * USAGE: Styles for FilmDetail: blurred ambient backdrop, hero with title, sheet with genres, trailer, plot, facts and cast
+ * SCOPE: [data-part="film"], [data-part="film-ambient"], [data-part="film-hero"], [data-part="film-hero-text"], [data-part="film-date"], [data-part="film-byline"], [data-part="film-body"], [data-part="film-sheet"], [data-part="film-genres"], [data-part="film-trailer"], [data-part="film-plot"], [data-part="film-facts"], [data-part="film-cast"]
  */
 
 /* ─── Page ─── */
 
 [data-part="film"] {
-  gap: var(--space-6);
+  gap: 0;
   padding-top: 0;
 }
 
-/* ─── Hero: backdrop behind a fade to the page background ─── */
+/* ─── Ambient: the backdrop blurred behind the whole page, veiled in the theme color ─── */
+
+[data-part="film-ambient"] {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+}
+
+[data-part="film-ambient"] img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(64px) saturate(1.4);
+  transform: scale(1.2);
+}
+
+[data-part="film-ambient"]::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background: color-mix(in srgb, var(--background) 72%, transparent);
+}
+
+/* ─── Hero: ink background, backdrop image, fade to ink, title at the bottom ─── */
 
 [data-part="film-hero"] {
   position: relative;
   display: flex;
-  align-items: flex-start;
+  align-items: flex-end;
+  min-height: 18.75rem;
   margin-inline: calc(-1 * var(--space-4));
-  padding: var(--space-4);
-}
-
-[data-part="film"][data-backdrop] [data-part="film-hero"] {
-  min-height: 14rem;
+  padding: var(--space-4) var(--space-4) var(--space-8);
+  overflow: hidden;
+  color: #fff;
+  background: #101018;
 }
 
 [data-part="film-hero"] > img {
   position: absolute;
   inset: 0;
-  z-index: -1;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  mask-image: linear-gradient(to bottom, rgb(0 0 0 / 0.9), transparent);
+}
+
+/* Painted after the image, below the text. */
+[data-part="film-hero"]::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background: linear-gradient(transparent 20%, rgb(16 16 24 / 0.92));
+}
+
+[data-part="film-hero"] nav {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-4);
+  z-index: 1;
+}
+
+[data-part="film-hero"] nav a::before {
+  margin-right: var(--space-1);
+  content: "\2190";
 }
 
 [data-part="film-hero"] nav a {
+  display: inline-block;
   padding: var(--space-1) var(--space-3);
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--foreground);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
   text-decoration: none;
-  background: var(--background);
-  border: 1px solid var(--border);
-  border-radius: 999px;
+  background: rgb(0 0 0 / 0.45);
+  border-radius: var(--radius);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
 }
 
-/* ─── Summary: poster beside title and facts ─── */
+[data-part="film-hero-text"] {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
 
-[data-part="film-summary"] {
+[data-part="film-hero-text"] h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 1.2rem + 4vw, 2.75rem);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+[data-part="film-subtitle"] {
+  font-size: 0.9375rem;
+  color: #d9d9e3;
+}
+
+[data-part="film-date"] {
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-soft);
+}
+
+[data-part="film-byline"] {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-6);
+  gap: var(--space-2);
+  font-size: 0.8125rem;
+  color: #d9d9e3;
 }
 
-/* Only a backdrop leaves room for the poster to rise into the hero. */
-[data-part="film"][data-backdrop] [data-part="film-summary"] {
-  margin-top: -6rem;
+[data-part="film-byline"] span + span::before {
+  margin-right: var(--space-2);
+  content: "\00B7";
 }
 
-[data-part="film-summary"] > img {
-  flex: 0 0 min(13rem, 55vw);
-  align-self: flex-start;
-  width: min(13rem, 55vw);
-  height: auto;
-  aspect-ratio: 2 / 3;
-  object-fit: cover;
-  border-radius: var(--radius);
-  box-shadow: var(--poster-shadow);
-}
-
-[data-part="film-summary-text"] {
-  display: flex;
-  flex: 1 1 18rem;
-  flex-direction: column;
-  gap: var(--space-3);
-}
-
-[data-part="film-summary-text"] h1 {
-  font-family: var(--font-display);
-  font-size: clamp(1.75rem, 1.2rem + 2.5vw, 2.75rem);
-  font-weight: 400;
-  line-height: 1.1;
-}
-
-[data-part="film-summary-text"] > p {
-  color: var(--muted);
-}
-
-[data-part="film-summary-text"] [data-release="limited"] {
+[data-part="film-hero-text"] [data-release="limited"] {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-2);
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--accent-soft);
 }
 
-[data-part="film-summary-text"] [data-release="limited"]::before {
-  width: 0.5rem;
-  height: 0.5rem;
-  content: "";
-  background: currentColor;
-  border-radius: 50%;
-}
-
-[data-part="film-summary-text"] [data-release="limited"] span {
+[data-part="film-hero-text"] [data-release="limited"] span {
   font-weight: 400;
   letter-spacing: 0;
   text-transform: none;
-  color: var(--muted);
+  color: #d9d9e3;
 }
 
-/* ─── Facts ─── */
+/* ─── Body: the sheet slides over the hero; the poster joins it from 48rem ─── */
 
-[data-part="film-summary-text"] dl {
+[data-part="film-body"] {
+  position: relative;
   display: flex;
+  gap: var(--space-6);
+  margin-top: calc(-1 * var(--space-4));
+  margin-inline: calc(-1 * var(--space-4));
+}
+
+/* Hidden below 48rem: the hero already shows the film. */
+[data-part="film-body"] > img {
+  display: none;
+}
+
+[data-part="film-sheet"] {
+  display: flex;
+  flex: 1;
   flex-direction: column;
-  gap: var(--space-2);
-  font-size: 0.9375rem;
-}
-
-[data-part="film-summary-text"] dl > div {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1) var(--space-3);
-}
-
-[data-part="film-summary-text"] dt {
-  flex: 0 0 7rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-[data-part="film-summary-text"] dd {
-  flex: 1 1 12rem;
-}
-
-@media (min-width: 48rem) {
-  [data-part="film"][data-backdrop] [data-part="film-summary"] {
-    margin-top: -8rem;
-  }
-
-  [data-part="film-summary"] > img {
-    flex-basis: 18rem;
-    width: 18rem;
-  }
-
-  /* Text beside a risen poster must clear the hero overlap. */
-  [data-part="film"][data-backdrop] [data-part="film-summary-text"] {
-    padding-top: 8rem;
-  }
-}
-
-/* ─── Plot, cast, trailer ─── */
-
-[data-part="film-plot"],
-[data-part="film-cast"],
-[data-part="film-trailer"] {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-6);
+  min-width: 0;
+  padding: var(--space-4) var(--space-4) var(--space-8);
+  background: var(--surface);
+  border-radius: 1.125rem 1.125rem 0 0;
 }
 
 [data-part="film"] h2 {
+  margin-bottom: var(--space-2);
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* ─── Genres: chips, the first one in the accent ─── */
+
+[data-part="film-genres"] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  list-style: none;
+}
+
+[data-part="film-genres"] li {
+  padding: var(--space-1) var(--space-3);
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--background);
+  border-radius: var(--radius);
+}
+
+[data-part="film-genres"] li:first-child {
+  color: var(--on-accent);
+  background: var(--accent);
+}
+
+/* ─── Trailer: a 16:9 play tile that opens the embed; open, it shrinks to a bar above it ─── */
+
+[data-part="film-trailer"] summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  aspect-ratio: 16 / 9;
+  padding: var(--space-3) var(--space-4);
   font-size: 0.8125rem;
   font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted);
-  border-bottom: 1px solid var(--border);
-  padding-bottom: var(--space-2);
+  color: #fff;
+  list-style: none;
+  cursor: pointer;
+  background: #101018;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
 }
+
+[data-part="film-trailer"] summary::-webkit-details-marker {
+  display: none;
+}
+
+[data-part="film-trailer"] summary::before {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  font-size: 0.75rem;
+  content: "\25B6";
+  background: var(--accent);
+  border-radius: 50%;
+}
+
+[data-part="film-trailer"][open] summary {
+  justify-content: flex-start;
+  aspect-ratio: auto;
+}
+
+[data-part="film-trailer"] figure {
+  margin-top: var(--space-3);
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #000;
+  border-radius: var(--radius);
+}
+
+[data-part="film-trailer"] iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* ─── Plot, facts, cast ─── */
 
 [data-part="film-plot"] p {
   max-width: 65ch;
-  font-size: 1.0625rem;
+  font-size: 0.9375rem;
   line-height: 1.6;
+}
+
+[data-part="film-facts"] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-4);
+  font-size: 0.8125rem;
+}
+
+[data-part="film-facts"] > div {
+  display: flex;
+  flex: 1 1 40%;
+  flex-direction: column;
+  min-width: 0;
+}
+
+[data-part="film-facts"] dt {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
 [data-part="film-cast"] ul {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-4);
+  gap: var(--space-3);
+  overflow-x: auto;
   list-style: none;
+  scrollbar-width: thin;
 }
 
 [data-part="film-cast"] li {
   display: flex;
-  flex: 0 1 7rem;
+  flex: 0 0 4.5rem;
   flex-direction: column;
   gap: var(--space-1);
-  font-size: 0.8125rem;
-  text-align: center;
+  font-size: 0.6875rem;
 }
 
 [data-part="film-cast"] li img,
 [data-part="film-cast"] li span {
   width: 100%;
   height: auto;
-  aspect-ratio: 2 / 3;
+  aspect-ratio: 1;
   object-fit: cover;
   border-radius: var(--radius);
 }
@@ -215,25 +323,60 @@
   align-items: center;
   justify-content: center;
   font-family: var(--font-display);
-  font-size: 1.5rem;
+  font-size: 1.125rem;
+  font-weight: 800;
   color: var(--muted);
-  background: var(--surface);
-  border: 1px dashed var(--border);
+  background: var(--background);
 }
 
 [data-part="film-cast"] small {
   color: var(--muted);
 }
 
-[data-part="film-trailer"] figure {
-  aspect-ratio: 16 / 9;
-  border-radius: var(--radius);
-  overflow: hidden;
-  background: #000;
-}
+/* ─── From 48rem: poster beside the sheet, rising into the hero ─── */
 
-[data-part="film-trailer"] iframe {
-  width: 100%;
-  height: 100%;
-  border: 0;
+@media (min-width: 48rem) {
+  [data-part="film-hero"] {
+    min-height: 16.25rem;
+    padding-inline: var(--space-6);
+  }
+
+  [data-part="film-hero"] nav {
+    left: var(--space-6);
+  }
+
+  /* Leaves room for the poster that rises beside the sheet. */
+  [data-part="film"][data-backdrop] [data-part="film-hero-text"] {
+    margin-left: calc(11rem + var(--space-6));
+  }
+
+  [data-part="film-body"] {
+    margin-top: calc(-1 * var(--space-8));
+    margin-inline: 0;
+    padding-inline: var(--space-6);
+  }
+
+  [data-part="film-body"] > img {
+    display: block;
+    flex: 0 0 11rem;
+    align-self: flex-start;
+    width: 11rem;
+    height: auto;
+    aspect-ratio: 2 / 3;
+    margin-top: calc(-1 * var(--space-8));
+    object-fit: cover;
+    border: 3px solid var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--poster-shadow);
+  }
+
+  [data-part="film-sheet"] {
+    padding: var(--space-6);
+    border-radius: 1.125rem;
+  }
+
+  /* The sheet is wide here; a full 16:9 tile would push the plot below the fold. */
+  [data-part="film-trailer"]:not([open]) summary {
+    aspect-ratio: 21 / 7;
+  }
 }

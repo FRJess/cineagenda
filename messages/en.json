@@ -41,14 +41,16 @@
     "production": "Production",
     "runtime": "{minutes} min",
     "trailer": "Trailer",
-    "back": "All releases",
+    "back": "Releases",
     "notFound": "Film not found.",
     "releaseDate": "In cinemas from <time>{date}</time>",
     "originalTitle": "Original title",
     "genres": "Genres",
     "overview": "Plot",
     "noOverview": "Plot not available.",
-    "runtimeLabel": "Running time"
+    "runtimeLabel": "Running time",
+    "watchTrailer": "Watch the trailer",
+    "runtimeShort": "{hours}h {minutes}"
   },
   "Error": {
     "title": "Could not load the releases.",

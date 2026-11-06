@@ -60,6 +60,8 @@ export type TmdbMovieDetails = {
   /** TMDB trending score, global; picks the featured film of the week. */
   readonly popularity: number;
   readonly runtime?: number | null;
+  /** Primary (world) release, ISO date; empty when unknown. */
+  readonly release_date?: string;
   readonly genres: readonly { readonly id: number }[];
   readonly production_countries?: readonly { readonly iso_3166_1: string; readonly name: string }[];
   readonly production_companies?: readonly {
