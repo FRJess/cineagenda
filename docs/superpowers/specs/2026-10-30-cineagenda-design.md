@@ -189,6 +189,19 @@ Built from `docs/superpowers/plans/2026-10-30-cineagenda-v1.1.md`.
 - jsdom pinned to 29.1.1 (jsdom 30 needs Node 22.19+).
 - README written in English following the webidoo internal-repository sections.
 
+## Design base decisions (Jessica, 2026-11-05)
+
+Built from `docs/superpowers/plans/2026-11-05-cineagenda-design-base.md` after the Claude Design spec "Cartellone, versione definitiva".
+
+- Look: Syne (display) and Instrument Sans (text), cool ink palette in light and dark (`prefers-color-scheme`, no toggle). Fonts are self-hosted latin subsets in `public/fonts/` declared with `@font-face`; `next/font` was rejected because it only applies through `className`, which the zero-CSS-classes rule forbids.
+- Cards: date and title are printed on the poster over a glass gradient (`backdrop-filter: blur() saturate() brightness(0.7)` plus a black scrim), so the gradient is made of the poster's own colors. Fallback without `backdrop-filter`: a darker plain gradient. The film page blurs its backdrop behind the whole page under a theme-colored veil.
+- Featured film: back, chosen by data already fetched. In the current-week section only, the theatrical (not limited) film with the highest TMDB `popularity` that has a backdrop becomes one wide 16:9 card and leaves the grid (`pickFeatured` in `src/lib/releases/featured.ts`). Known bias: popularity is global, so a US blockbuster can outrank an Italian film. `sharp` dominant-color extraction was considered and deferred.
+- Week tabs: five Mondays around the range (two before, the start, two after), each linking to its two-week page; the date form lives in a closed disclosure at the end of the row. The row is sticky.
+- Week headings are labeled "Questa settimana", "Prossima settimana" or "Settimana" with the film count on the right. The ComingSoon verify link left the UI (V2 slot: a small link under each week; `src/lib/comingsoon.ts` stays).
+- Film page: hero with date, title and byline (director, running time) over the backdrop; a sheet with genre chips (first in the accent), the trailer behind a `details` disclosure (lazy iframe, loads on open), plot, facts, cast in a horizontal row. From 48rem the poster rises beside the sheet.
+- Limited releases (V1.1 rule, confirmed by Jessica 2026-11-05): festival and event entries are dropped by the note regex and by a premiere (type 1) within a week. Limited runs of new films by small distributors stay visible with the "Uscita limitata" chip.
+- V2 slots kept free: "interested" button top-left on posters (the limited chip is top-right), an "I miei film" tab in the week row, a per-week footer link for the cross-check.
+
 ## Left to the builder
 
 - Component breakdown inside the page, CSS details, skeleton shape, empty state copy.
