@@ -12,6 +12,7 @@ const renderPicker = () =>
             Dal
             <input />
           </label>
+          <a href="#two-weeks">2 settimane</a>
         </form>
       </DatePicker>
     </>,
@@ -55,6 +56,24 @@ describe("DatePicker", () => {
     const details = openPicker();
 
     fireEvent.pointerDown(screen.getByLabelText("Dal"));
+
+    expect(details.open).toBe(true);
+  });
+
+  it("closes when a link inside it is clicked, such as a shortcut chip", () => {
+    renderPicker();
+    const details = openPicker();
+
+    fireEvent.click(screen.getByRole("link", { name: "2 settimane" }));
+
+    expect(details.open).toBe(false);
+  });
+
+  it("stays open when the panel is clicked outside its links", () => {
+    renderPicker();
+    const details = openPicker();
+
+    fireEvent.click(screen.getByLabelText("Dal"));
 
     expect(details.open).toBe(true);
   });
