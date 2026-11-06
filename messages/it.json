@@ -6,24 +6,35 @@
   "Header": {
     "language": "Lingua",
     "it": "Italiano",
-    "en": "English"
+    "en": "English",
+    "itCode": "IT",
+    "enCode": "EN"
   },
   "Nav": {
     "from": "Dal",
     "to": "Al",
-    "show": "Mostra",
-    "today": "Oggi",
-    "weeks": "Altre settimane",
-    "more": "Vai avanti",
-    "earlier": "Vai indietro"
+    "show": "Mostra le uscite",
+    "today": "Torna a oggi",
+    "thisWeekShort": "questa",
+    "pickDates": "Date",
+    "pickHint": "personalizza",
+    "pickTitle": "Scegli un intervallo",
+    "pickHelp": "Dal 1 gennaio 2026 in poi, al massimo 26 settimane per volta. Le settimane iniziano di lunedì.",
+    "shortcuts": "Scorciatoie",
+    "weeks2": "2 settimane",
+    "month1": "1 mese",
+    "months3": "3 mesi",
+    "weekTabs": "Settimane"
   },
   "Releases": {
-    "heading": "Film in uscita al cinema",
-    "week": "Settimana {range}",
+    "week": "Settimana",
+    "thisWeek": "Questa settimana",
+    "nextWeek": "Prossima settimana",
+    "featured": "Molto atteso",
     "noPoster": "Locandina non disponibile",
     "limited": "Uscita limitata",
-    "verify": "Verifica su ComingSoon",
-    "emptyWeek": "Nessuna uscita questa settimana.",
+    "limitedShort": "Limitata",
+    "noReleases": "Nessuna uscita",
     "loading": "Caricamento delle uscite..."
   },
   "Film": {
@@ -33,20 +44,23 @@
     "production": "Produzione",
     "runtime": "{minutes} min",
     "trailer": "Trailer",
-    "back": "Tutte le uscite",
+    "back": "Uscite",
     "notFound": "Film non trovato.",
-    "releaseDate": "Al cinema dal <time>{date}</time>",
+    "releaseDate": "Al cinema da <time>{date}</time>",
     "originalTitle": "Titolo originale",
     "genres": "Generi",
     "overview": "Trama",
     "noOverview": "Trama non disponibile.",
-    "runtimeLabel": "Durata"
+    "runtimeLabel": "Durata",
+    "watchTrailer": "Guarda il trailer",
+    "runtimeShort": "{hours}h {minutes}"
   },
   "Error": {
     "title": "Impossibile caricare le uscite.",
     "retry": "Riprova"
   },
   "Footer": {
-    "attribution": "This product uses the TMDB API but is not endorsed or certified by TMDB."
+    "attribution": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
+    "theme": "Tema scuro"
   }
 }

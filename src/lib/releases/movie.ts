@@ -5,10 +5,15 @@ export type ReleaseType = "theatrical" | "limited";
 export type Movie = {
   /** TMDB id, stable key for V2 "interested" storage. */
   readonly id: number;
-  /** Display title built by the title rule. */
+  /** Card title: Italian title, or the original when there is none. */
   readonly title: string;
+  /** Secondary title for the film page, empty when there is nothing distinct to show. */
+  readonly subtitle: string;
   readonly originalTitle: string;
   readonly posterPath: string | null;
+  readonly backdropPath: string | null;
+  /** TMDB trending score, global; higher wins the featured slot of the current week. */
+  readonly popularity: number;
   readonly genres: readonly string[];
   /** ISO date of the Italian release. */
   readonly releaseDateIt: string;

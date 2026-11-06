@@ -22,7 +22,8 @@ export function LocaleSwitch() {
               lang={locale}
               aria-current={locale === current ? "page" : undefined}
             >
-              {t(locale)}
+              {locale === "it" ? t("itCode") : t("enCode")}
+              <span data-part="sr-only"> {t(locale)}</span>
             </Link>
           </li>
         ))}

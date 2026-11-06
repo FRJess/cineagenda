@@ -1,10 +1,10 @@
 /**
  * FILE: _MovieCard.css
- * USAGE: Styles for MovieCard, a poster-first tile in the week grid: poster, date line, title
- * SCOPE: [data-part="movie-card"], [data-part="poster-placeholder"]
+ * USAGE: Styles for MovieCard: the whole poster, then a band painted with a blurred copy of it that carries title and date
+ * SCOPE: [data-part="movie-card"], [data-part="poster-placeholder"], [data-part="card-text"], [data-part="card-blur"]
  */
 
-/* ─── Layout ─── */
+/* ─── Card: one link, poster on top, band below ─── */
 
 [data-part="movie-card"] {
   display: flex;
@@ -16,89 +16,149 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: var(--space-2);
+  overflow: hidden;
   color: inherit;
   text-decoration: none;
+  background: var(--surface);
   border-radius: var(--radius);
+  box-shadow: var(--poster-shadow);
 }
 
-/* ─── Poster with an optional status tag over its bottom edge ─── */
+/* ─── Poster: whole, never covered ─── */
 
-[data-part="poster"] {
-  position: relative;
-  display: flex;
-}
-
-[data-part="movie-card"] img,
+[data-part="movie-card"] > a > img,
 [data-part="poster-placeholder"] {
+  display: block;
   width: 100%;
   height: auto;
   aspect-ratio: 2 / 3;
   object-fit: cover;
-  border-radius: var(--radius);
-  box-shadow: var(--poster-shadow);
 }
 
 [data-part="poster-placeholder"] {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--space-2);
+  padding: var(--space-3);
   text-align: center;
   font-size: 0.75rem;
   color: var(--muted);
-  background: var(--surface);
   border: 1px dashed var(--border);
-  box-shadow: none;
+  border-bottom: 0;
+  border-radius: var(--radius) var(--radius) 0 0;
 }
 
-/* ─── Text ─── */
+/* ─── Band: blurred copy of the poster under a black veil, text on top ─── */
 
-[data-part="movie-card"] h3 {
+[data-part="movie-card"] [data-part="card-text"] {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-2) 0.625rem 0.5625rem;
+  overflow: hidden;
+  color: #fff;
+}
+
+/* Oversized so the blur has no light edge inside the band; the bottom of the poster sits behind it. */
+[data-part="card-blur"] {
+  position: absolute;
+  top: -2rem;
+  left: -1.25rem;
+  z-index: 0;
+  width: calc(100% + 2.5rem);
+  height: calc(100% + 4rem);
+  object-fit: cover;
+  object-position: bottom;
+  filter: blur(18px) saturate(1.2);
+}
+
+[data-part="movie-card"] [data-part="card-text"]::after {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  content: "";
+  background: rgb(0 0 0 / 0.45);
+}
+
+[data-part="movie-card"] [data-part="card-text"] > h3,
+[data-part="movie-card"] [data-part="card-text"] > p {
+  position: relative;
+  z-index: 1;
+}
+
+/* Always two lines tall, so every date in a row sits on the same line. */
+[data-part="movie-card"] [data-part="card-text"] > h3 {
+  display: -webkit-box;
+  height: 2.3em;
+  overflow: hidden;
   font-family: var(--font-display);
   font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.25;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
-/* ─── Date line ─── */
-
-[data-part="card-meta"] {
-  margin-top: var(--space-1);
+[data-part="movie-card"] [data-part="card-text"] > p {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-top: auto;
   font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
+  color: var(--accent-soft);
+}
+
+/* ─── "Limitata": text at the end of the date line, after a dot ─── */
+
+[data-part="movie-card"] [data-part="card-text"] [data-release="limited"] {
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  color: #ffb3a6;
+}
+
+[data-part="movie-card"] [data-part="card-text"] [data-release="limited"]::before {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  margin-right: var(--space-1);
+  vertical-align: 1px;
+  content: "";
+  background: currentColor;
+  border-radius: 50%;
+}
+
+/* ─── No poster: the band stays on the surface, in the theme's ink ─── */
+
+[data-part="movie-card"]:has([data-part="poster-placeholder"]) [data-part="card-text"] {
+  color: var(--foreground);
+}
+
+[data-part="movie-card"]:has([data-part="poster-placeholder"]) [data-part="card-text"]::after {
+  display: none;
+}
+
+[data-part="movie-card"]:has([data-part="poster-placeholder"]) [data-part="card-text"] > p {
   color: var(--muted);
 }
 
-/* ─── Limited tag: dark glass chip, legible on any poster, text plus dot ─── */
-
-[data-part="poster"] [data-release="limited"] {
-  position: absolute;
-  bottom: var(--space-2);
-  left: var(--space-2);
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
-  padding: 0.1875rem var(--space-2);
-  font-size: 0.625rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #fff;
-  background: rgb(0 0 0 / 0.72);
-  border-radius: 999px;
-  backdrop-filter: blur(4px);
+[data-part="movie-card"]:has([data-part="poster-placeholder"]) [data-release="limited"] {
+  color: var(--accent);
 }
 
-[data-part="poster"] [data-release="limited"]::before {
-  width: 0.375rem;
-  height: 0.375rem;
-  content: "";
-  background: #ff8a7a;
-  border-radius: 50%;
+@media (min-width: 48rem) {
+  [data-part="movie-card"] [data-part="card-text"] > h3 {
+    font-size: 1rem;
+  }
 }
+
 /* ─── Hover lift ─── */
 
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {

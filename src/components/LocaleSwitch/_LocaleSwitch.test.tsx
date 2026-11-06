@@ -28,12 +28,14 @@ describe("LocaleSwitch", () => {
     );
 
     const nav = screen.getByRole("navigation", { name: "Lingua" });
-    const italian = screen.getByRole("link", { name: "Italiano" });
-    const english = screen.getByRole("link", { name: "English" });
+    const italian = screen.getByRole("link", { name: /Italiano/ });
+    const english = screen.getByRole("link", { name: /English/ });
 
     expect(nav).toContainElement(italian);
     expect(italian).toHaveAttribute("aria-current", "page");
     expect(english).not.toHaveAttribute("aria-current");
     expect(english).toHaveAttribute("href", "/en");
+    expect(italian).toHaveTextContent("IT");
+    expect(english).toHaveTextContent("EN");
   });
 });

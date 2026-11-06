@@ -1,0 +1,116 @@
+/**
+ * FILE: _FeaturedCard.css
+ * USAGE: Styles for FeaturedCard, the current week's first grid item: backdrop under two black veils, text at the bottom left
+ * SCOPE: [data-part="featured-card"], [data-part="card-eyebrow"]
+ */
+
+/* ─── Card: the link fills the grid cell; 16:10 on phones, the row's height from 48rem ─── */
+
+[data-part="featured-card"] {
+  height: 100%;
+}
+
+[data-part="featured-card"] > a {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  height: 100%;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  color: #fff;
+  text-decoration: none;
+  background: #101018;
+  border-radius: var(--radius);
+  box-shadow: var(--poster-shadow);
+}
+
+[data-part="featured-card"] img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Painted after the image: a dark left edge for the text, and a dark bottom. */
+[data-part="featured-card"] > a::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background:
+    linear-gradient(90deg, rgb(0 0 0 / 0.85), rgb(0 0 0 / 0.2) 70%),
+    linear-gradient(transparent 40%, rgb(0 0 0 / 0.8));
+}
+
+/* ─── Text: eyebrow, title, date line ─── */
+
+[data-part="featured-card"] [data-part="card-text"] {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1875rem;
+  max-width: 32rem;
+  padding: 0.875rem;
+}
+
+[data-part="card-eyebrow"] {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #ffb3a6;
+}
+
+[data-part="featured-card"] h3 {
+  display: -webkit-box;
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+[data-part="featured-card"] [data-part="card-meta"] {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 0.8);
+}
+
+[data-part="featured-card"] time {
+  font-weight: 700;
+  color: #fff;
+}
+
+/* From 48rem the card spans three columns and takes the height of the posters beside it. */
+@media (min-width: 48rem) {
+  [data-part="featured-card"] > a {
+    min-height: 14rem;
+    aspect-ratio: auto;
+  }
+
+  [data-part="featured-card"] [data-part="card-text"] {
+    padding: 1.25rem;
+  }
+
+  [data-part="featured-card"] h3 {
+    font-size: 1.75rem;
+  }
+}
+
+/* ─── Hover lift ─── */
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  [data-part="featured-card"] > a {
+    transition: transform 160ms ease;
+  }
+
+  [data-part="featured-card"] > a:hover {
+    transform: translateY(-3px);
+  }
+}

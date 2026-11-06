@@ -2,7 +2,7 @@
 
 A personal, mobile-first web app that lists the films coming to Italian cinemas, week by week, with the Italian release date. One page replaces checking several Italian sites by hand.
 
-- **Italian dates only.** Every date comes from TMDB's Italian release entries, never from the worldwide one. Limited and festival runs are shown with a visible label.
+- **Italian dates only.** Every date comes from TMDB's Italian release entries, never from the worldwide one. Limited and festival runs are shown with a visible label; festival screenings and events are dropped.
 - **Week by week.** The current week and the next one by default; pick any range from 1 January 2026 onward, or page back and forward two weeks at a time.
 - **Film pages.** Plot, director, cast, country, production company, running time and the trailer when TMDB has one.
 - **Italian and English UI**, switchable, with the same Italian release data.
@@ -15,7 +15,7 @@ A personal, mobile-first web app that lists the films coming to Italian cinemas,
 A single Next.js 16 App Router app with Cache Components. There is no database and no backend of its own.
 
 - **Data source:** The Movie Database (TMDB) API v3, called only from the server with a v4 read token. Per week: one `discover/movie` query filtered on `region=IT`, then one details call per film with its release dates and translations. Per film page: one details call with credits and videos.
-- **Data rules** (`src/lib/tmdb`, `src/lib/releases`): the Italian date is the type 3 (theatrical) entry inside the week, else type 2 (limited); other types never show. The display title is the Italian title with the original in parentheses, or the original with the English title when there is no Italian one. Weeks run Monday to Sunday in Europe/Rome.
+- **Data rules** (`src/lib/tmdb`, `src/lib/releases`): the Italian date is the type 3 (theatrical) entry inside the week, else type 2 (limited); other types never show. Festival and event entries are dropped. The display title is the Italian title with the original in parentheses, or the original with the English title when there is no Italian one. Weeks run Monday to Sunday in Europe/Rome.
 - **Caching:** each week and each film page is a `"use cache"` function with a daily lifetime (weekly for past weeks), so TMDB is called at most once a day per week or film.
 - **Routing:** `/it` and `/en` via next-intl; `/` redirects to `/it`. The list range lives in the URL (`?from=YYYY-MM-DD&to=YYYY-MM-DD`). Film pages are `/[locale]/film/[id]`.
 - **Styling:** plain CSS, one file per component plus `src/app/globals.css`, element and `[data-part]` selectors only. No CSS classes, no inline styles, no CSS-in-JS.

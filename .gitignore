@@ -41,3 +41,7 @@ scratch/
 # playwright
 /test-results/
 /playwright-report/
+# work docs, kept local and never committed
+*.md
+!README.md
+/docs/design/
