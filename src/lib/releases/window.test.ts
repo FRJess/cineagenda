@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   defaultRange,
   getReleaseWindow,
+  MAX_RANGE_DAYS,
   mondayOf,
   parseRange,
   sundayOf,
@@ -121,5 +122,11 @@ describe("tabWeeks", () => {
       "2026-01-12",
       "2026-01-19",
     ]);
+  });
+});
+
+describe("MAX_RANGE_DAYS", () => {
+  it("is 26 weeks in days, the cap of parseRange", () => {
+    expect(MAX_RANGE_DAYS).toBe(182);
   });
 });

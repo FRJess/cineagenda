@@ -5,6 +5,7 @@ import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import "@daypicker/react/style.css";
 import "../globals.css";
 
 /* Applies a stored theme before first paint, so a dark-mode viewer does not see a light flash. */
