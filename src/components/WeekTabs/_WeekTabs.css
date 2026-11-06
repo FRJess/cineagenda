@@ -1,44 +1,55 @@
 /**
  * FILE: _WeekTabs.css
- * USAGE: Styles for WeekTabs, a sticky scrollable row of week pills; the active pill is inverted
- * SCOPE: [data-part="week-tabs"]
+ * USAGE: Styles for WeekTabs, the row of week tabs in the navbar and its Date disclosure; the active tab is inverted
+ * SCOPE: [data-part="week-tabs"], [data-part="date-picker"]
  */
 
-/* ─── Sticky row ─── */
+/* ─── Row: the list scrolls, the disclosure stays put beside it ─── */
 
 [data-part="week-tabs"] {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  margin-inline: calc(-1 * var(--space-4));
-  padding: var(--space-2) var(--space-4);
-  background: var(--background);
-}
-
-[data-part="week-tabs"] ul {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
   gap: var(--space-2);
-  list-style: none;
+  min-width: 0;
 }
 
-/* ─── Pills ─── */
+[data-part="week-tabs"] > ul {
+  display: flex;
+  flex: 1 1 auto;
+  gap: 0.375rem;
+  min-width: 0;
+  margin: 0;
+  padding: var(--space-1) 0;
+  overflow-x: auto;
+  list-style: none;
+  scrollbar-width: none;
+}
 
-[data-part="week-tabs"] a,
-[data-part="week-tabs"] summary {
+[data-part="week-tabs"] > ul > li {
+  flex: 0 0 auto;
+}
+
+/* ─── Tabs and the Date summary share one pill ─── */
+
+[data-part="week-tabs"] > ul > li > a,
+[data-part="date-picker"] > summary {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 2.75rem;
-  padding: var(--space-1) var(--space-3);
-  line-height: 1.1;
+  min-width: 2.75rem;
+  padding: 0.4375rem 0.6875rem;
+  line-height: 1.05;
   color: var(--foreground);
   text-decoration: none;
   white-space: nowrap;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: 0.5rem;
+}
+
+[data-part="week-tabs"] > ul > li > a:hover {
+  border-color: var(--foreground);
 }
 
 [data-part="week-tabs"] b {
@@ -48,49 +59,56 @@
   letter-spacing: -0.02em;
 }
 
-[data-part="week-tabs"] small {
-  font-size: 0.5625rem;
+[data-part="week-tabs"] > ul > li > a > small,
+[data-part="date-picker"] > summary > small {
+  margin-top: 0.125rem;
+  font-size: 0.625rem;
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--muted);
 }
 
-[data-part="week-tabs"] a[aria-current="page"] {
+[data-part="week-tabs"] > ul > li > a[aria-current="page"] {
   color: var(--tab-fg);
   background: var(--tab-bg);
   border-color: var(--tab-bg);
 }
 
-[data-part="week-tabs"] a[aria-current="page"] small {
+[data-part="week-tabs"] > ul > li > a[aria-current="page"] > small {
   color: var(--tab-muted);
 }
 
-/* ─── Date disclosure: dashed pill, the form opens below the row ─── */
+/* ─── Date disclosure: dashed pill, solid while open ─── */
 
-[data-part="week-tabs"] details {
-  display: flex;
-  flex-direction: column;
+[data-part="date-picker"] {
+  position: relative;
+  flex: 0 0 auto;
 }
 
-[data-part="week-tabs"] summary {
-  font-size: 0.75rem;
-  font-weight: 700;
+[data-part="date-picker"] > summary {
   cursor: pointer;
+  list-style: none;
   background: none;
   border-style: dashed;
-  list-style: none;
 }
 
-[data-part="week-tabs"] summary::-webkit-details-marker {
+[data-part="date-picker"] > summary::-webkit-details-marker {
   display: none;
 }
 
-[data-part="week-tabs"] details[open] {
-  flex-basis: 100%;
+[data-part="date-picker"][open] > summary {
+  border-style: solid;
+  border-color: var(--foreground);
 }
 
-[data-part="week-tabs"] details[open] summary {
-  align-self: flex-start;
-  margin-bottom: var(--space-2);
+/* Below 48rem the form is a bottom sheet; this scrim dims the page behind it. */
+@media (max-width: 47.99rem) {
+  [data-part="date-picker"][open]::before {
+    position: fixed;
+    inset: 0;
+    z-index: 4;
+    content: "";
+    background: rgb(0 0 0 / 0.45);
+  }
 }

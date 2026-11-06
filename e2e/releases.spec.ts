@@ -45,17 +45,23 @@ test("default view shows the current week and the next one", async ({ page }) =>
   );
 });
 
-test("go forward shows the next two weeks", async ({ page }) => {
+test("a later week tab shows that week and the next", async ({ page }) => {
   await page.goto("/it?from=2026-11-02&to=2026-11-15");
-  await page.getByRole("link", { name: "Vai avanti" }).click();
+  await page
+    .getByRole("navigation", { name: "Settimane", exact: true })
+    .getByRole("link", { name: /^16 nov/ })
+    .click();
 
   await expect(page).toHaveURL(/from=2026-11-16&to=2026-11-29/);
   await expect(page.getByRole("region")).toHaveCount(2);
 });
 
-test("go back shows the previous two weeks", async ({ page }) => {
+test("an earlier week tab shows that week and the next", async ({ page }) => {
   await page.goto("/it?from=2026-11-02&to=2026-11-15");
-  await page.getByRole("link", { name: "Vai indietro" }).click();
+  await page
+    .getByRole("navigation", { name: "Settimane", exact: true })
+    .getByRole("link", { name: /^19 ott/ })
+    .click();
 
   await expect(page).toHaveURL(/from=2026-10-19&to=2026-11-01/);
   await expect(page.getByRole("region")).toHaveCount(2);
@@ -75,7 +81,9 @@ test("the range cannot start before the week of 2026-01-01", async ({ page }) =>
   await page.goto("/it?from=2025-01-01&to=2025-02-01");
 
   await expect(page.getByLabel("Dal", { exact: true })).toHaveValue("2025-12-29");
-  await expect(page.getByRole("link", { name: "Vai indietro" })).toHaveCount(0);
+  await expect(
+    page.getByRole("navigation", { name: "Settimane", exact: true }).getByRole("link"),
+  ).toHaveCount(3);
 });
 
 test("the date form navigates to the chosen range", async ({ page }) => {
@@ -151,17 +159,18 @@ test("week headings stand out in the display face", async ({ page }) => {
   expect(style.family).toMatch(/^Syne\b/);
 });
 
-test("posters line up across a row of cards", async ({ page }) => {
+test("the featured film and the posters beside it line up in the first row", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/it");
   // Weeks stream in after load; read positions only once the cards exist.
   await page.locator("ol article").first().waitFor();
+  // At 1280px a row holds five columns: the featured film spans three, two posters follow.
   const edges = await page
     .getByRole("region")
     .first()
     .locator("ol article")
     .evaluateAll((els) =>
-      els.slice(0, 4).map((el) => {
+      els.slice(0, 3).map((el) => {
         const box = el.getBoundingClientRect();
 
         return `${Math.round(box.top)}-${Math.round(box.bottom)}`;

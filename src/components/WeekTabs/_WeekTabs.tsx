@@ -1,4 +1,5 @@
 import { useFormatter, useTranslations } from "next-intl";
+import { DatePicker } from "@/components/DatePicker";
 import { WeekRangeForm } from "@/components/WeekRangeForm";
 import { Link } from "@/i18n/navigation";
 import { DAY_MONTH_SHORT, isoDateToUtc } from "@/lib/releases/iso-date";
@@ -6,17 +7,20 @@ import { addDays, pageRange, tabWeeks, type ReleaseWindow } from "@/lib/releases
 import "./_WeekTabs.css";
 
 /**
- * Sticky week tabs: five Mondays around the range, each linking to its two-week page, and a
- * disclosure with the date form. The week the range starts on carries aria-current.
- * @param props Current normalized range and the Monday of the current week.
+ * Week tabs for the navbar: five Mondays around the range, each linking to its two-week page,
+ * and a disclosure beside the list that holds the date form. The week the range starts on
+ * carries aria-current.
+ * @param props Current normalized range, the Monday of the current week and today's ISO date.
  * @returns Navigation landmark.
  */
 export function WeekTabs({
   range,
   todayMonday,
+  today,
 }: {
   readonly range: ReleaseWindow;
   readonly todayMonday: string;
+  readonly today: string;
 }) {
   const t = useTranslations("Nav");
   const format = useFormatter();
@@ -38,13 +42,18 @@ export function WeekTabs({
             </Link>
           </li>
         ))}
-        <li>
-          <details>
-            <summary>{t("pickDates")}</summary>
-            <WeekRangeForm range={range} />
-          </details>
-        </li>
       </ul>
+      <DatePicker
+        summary={
+          <>
+            <b>{t("pickDates")}</b>
+            <small>{t("pickHint")}</small>
+          </>
+        }
+
+      >
+        <WeekRangeForm range={range} today={today} />
+      </DatePicker>
     </nav>
   );
 }

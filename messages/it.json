@@ -13,25 +13,28 @@
   "Nav": {
     "from": "Dal",
     "to": "Al",
-    "show": "Mostra",
-    "today": "Oggi",
-    "weeks": "Altre settimane",
-    "more": "Vai avanti",
-    "earlier": "Vai indietro",
+    "show": "Mostra le uscite",
+    "today": "Torna a oggi",
     "thisWeekShort": "questa",
     "pickDates": "Date",
+    "pickHint": "personalizza",
+    "pickTitle": "Scegli un intervallo",
+    "pickHelp": "Dal 1 gennaio 2026 in poi, al massimo 26 settimane per volta. Le settimane iniziano di lunedì.",
+    "shortcuts": "Scorciatoie",
+    "weeks2": "2 settimane",
+    "month1": "1 mese",
+    "months3": "3 mesi",
     "weekTabs": "Settimane"
   },
   "Releases": {
-    "heading": "Film in uscita al cinema",
     "week": "Settimana",
     "thisWeek": "Questa settimana",
     "nextWeek": "Prossima settimana",
-    "filmCount": "{count, plural, one {# film} other {# film}}",
-    "featured": "In evidenza",
+    "featured": "Molto atteso",
     "noPoster": "Locandina non disponibile",
     "limited": "Uscita limitata",
-    "emptyWeek": "Nessuna uscita questa settimana.",
+    "limitedShort": "Limitata",
+    "noReleases": "Nessuna uscita",
     "loading": "Caricamento delle uscite..."
   },
   "Film": {
@@ -57,6 +60,7 @@
     "retry": "Riprova"
   },
   "Footer": {
-    "attribution": "This product uses the TMDB API but is not endorsed or certified by TMDB."
+    "attribution": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
+    "theme": "Tema scuro"
   }
 }

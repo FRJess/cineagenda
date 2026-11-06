@@ -13,25 +13,28 @@
   "Nav": {
     "from": "From",
     "to": "To",
-    "show": "Show",
-    "today": "Today",
-    "weeks": "More weeks",
-    "more": "Go forward",
-    "earlier": "Go back",
+    "show": "Show releases",
+    "today": "Back to today",
     "thisWeekShort": "this week",
     "pickDates": "Dates",
+    "pickHint": "customize",
+    "pickTitle": "Pick a range",
+    "pickHelp": "From 1 January 2026 on, up to 26 weeks at a time. Weeks start on Monday.",
+    "shortcuts": "Shortcuts",
+    "weeks2": "2 weeks",
+    "month1": "1 month",
+    "months3": "3 months",
     "weekTabs": "Weeks"
   },
   "Releases": {
-    "heading": "Coming to Italian cinemas",
     "week": "Week",
     "thisWeek": "This week",
     "nextWeek": "Next week",
-    "filmCount": "{count, plural, one {# film} other {# films}}",
-    "featured": "Featured",
+    "featured": "Most anticipated",
     "noPoster": "No poster available",
     "limited": "Limited release",
-    "emptyWeek": "No releases this week.",
+    "limitedShort": "Limited",
+    "noReleases": "No releases",
     "loading": "Loading releases..."
   },
   "Film": {
@@ -57,6 +60,7 @@
     "retry": "Try again"
   },
   "Footer": {
-    "attribution": "This product uses the TMDB API but is not endorsed or certified by TMDB."
+    "attribution": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
+    "theme": "Dark theme"
   }
 }
