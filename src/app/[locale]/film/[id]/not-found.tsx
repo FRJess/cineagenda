@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import { SiteHeader } from "@/components/SiteHeader";
 import { Link } from "@/i18n/navigation";
 
 /**
@@ -9,9 +10,12 @@ export default function FilmNotFound() {
   const t = useTranslations("Film");
 
   return (
-    <main>
-      <h1>{t("notFound")}</h1>
-      <Link href="/">{t("back")}</Link>
-    </main>
+    <>
+      <SiteHeader />
+      <main>
+        <h1>{t("notFound")}</h1>
+        <Link href="/">{t("back")}</Link>
+      </main>
+    </>
   );
 }
