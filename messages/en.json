@@ -27,7 +27,7 @@
     "week": "Week",
     "thisWeek": "This week",
     "nextWeek": "Next week",
-    "filmCount": "{count, plural, one {# film} other {# film}}",
+    "filmCount": "{count, plural, one {# film} other {# films}}",
     "featured": "Featured",
     "noPoster": "No poster available",
     "limited": "Limited release",
