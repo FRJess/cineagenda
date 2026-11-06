@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { SiteHeader } from "@/components/SiteHeader";
 
 /**
  * Error boundary for the film page, e.g. TMDB unreachable.
@@ -11,11 +12,14 @@ export default function FilmError({ retry }: { error: unknown; retry: () => void
   const t = useTranslations("Error");
 
   return (
-    <main>
-      <h1>{t("title")}</h1>
-      <button type="button" onClick={retry}>
-        {t("retry")}
-      </button>
-    </main>
+    <>
+      <SiteHeader />
+      <main>
+        <h1>{t("title")}</h1>
+        <button type="button" onClick={retry}>
+          {t("retry")}
+        </button>
+      </main>
+    </>
   );
 }

@@ -4,6 +4,7 @@ import { hasLocale } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
 import { FilmDetail } from "@/components/FilmDetail";
+import { SiteHeader } from "@/components/SiteHeader";
 import { routing } from "@/i18n/routing";
 import { getMovieDetails } from "@/lib/tmdb/cached";
 import type { UiLocale } from "@/lib/tmdb/to-movie";
@@ -60,8 +61,11 @@ async function Film({ params }: { readonly params: Params }) {
  */
 export default function FilmPage({ params }: PageProps<"/[locale]/film/[id]">) {
   return (
-    <Suspense fallback={<main aria-busy="true" />}>
-      <Film params={params} />
-    </Suspense>
+    <>
+      <SiteHeader />
+      <Suspense fallback={<main aria-busy="true" />}>
+        <Film params={params} />
+      </Suspense>
+    </>
   );
 }
