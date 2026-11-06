@@ -38,56 +38,56 @@ describe("WeekSection", () => {
     const { unmount } = renderWithIntl(<WeekSection group={group} todayMonday="2026-11-02" />);
 
     expect(screen.getByRole("region", { name: `Questa settimana ${range}` })).toHaveAttribute(
-      "data-current",
+      "data-today",
     );
     unmount();
 
     renderWithIntl(<WeekSection group={group} todayMonday="2026-10-26" />);
 
     expect(screen.getByRole("region", { name: `Prossima settimana ${range}` })).not.toHaveAttribute(
-      "data-current",
+      "data-today",
     );
   });
 
-  it("counts the films of the week", () => {
+  it("does not count the films of the week", () => {
     renderWithIntl(<WeekSection group={group} todayMonday="2026-10-19" />);
 
-    expect(screen.getByText("3 film")).toBeInTheDocument();
+    expect(screen.queryByText("3 film")).not.toBeInTheDocument();
   });
 
-  it("lists one item per movie in input order", () => {
-    renderWithIntl(<WeekSection group={group} todayMonday="2026-10-19" />);
+  it("lists one item per movie in input order when no film can be featured", () => {
+    const noBackdrops = { ...group, movies: group.movies.map((m) => ({ ...m, backdropPath: null })) };
+    renderWithIntl(<WeekSection group={noBackdrops} todayMonday="2026-10-19" />);
 
     const titles = screen.getAllByRole("heading", { level: 3 }).map((h) => h.textContent);
 
     expect(titles).toEqual(["Primo", "Secondo", "Terzo"]);
   });
 
-  it("features the most popular film of the current week above the grid", () => {
+  it("features the most popular film of the week as the first grid item", () => {
     const { container } = renderWithIntl(<WeekSection group={group} todayMonday="2026-11-02" />);
-    const featured = container.querySelector("[data-part='featured-card']");
-    const gridTitles = [...container.querySelectorAll("ol h3")].map((h) => h.textContent);
-
-    expect(featured).toHaveTextContent("Secondo");
-    expect(featured?.compareDocumentPosition(container.querySelector("ol") as Node)).toBe(
-      Node.DOCUMENT_POSITION_FOLLOWING,
+    const first = container.querySelector("ol > li:first-child");
+    const posterTitles = [...container.querySelectorAll("ol [data-part='movie-card'] h3")].map(
+      (h) => h.textContent,
     );
-    expect(gridTitles).toEqual(["Primo", "Terzo"]);
+
+    expect(first?.querySelector("[data-part='featured-card']")).toHaveTextContent("Secondo");
+    expect(posterTitles).toEqual(["Primo", "Terzo"]);
   });
 
-  it("features nothing outside the current week", () => {
-    const { container } = renderWithIntl(<WeekSection group={group} todayMonday="2026-10-26" />);
+  it("features a film in every week, not only the current one", () => {
+    const { container } = renderWithIntl(<WeekSection group={group} todayMonday="2026-10-19" />);
 
-    expect(container.querySelector("[data-part='featured-card']")).toBeNull();
+    expect(container.querySelector("[data-part='featured-card']")).toHaveTextContent("Secondo");
   });
 
-  it("omits the grid when the featured film is the only one", () => {
+  it("keeps the featured film in the grid when it is the only one", () => {
     const { container } = renderWithIntl(
       <WeekSection group={{ ...group, movies: [movie({ id: 9 })] }} todayMonday="2026-11-02" />,
     );
 
-    expect(container.querySelector("[data-part='featured-card']")).not.toBeNull();
-    expect(container.querySelector("ol")).toBeNull();
+    expect(container.querySelectorAll("ol > li")).toHaveLength(1);
+    expect(container.querySelector("ol > li [data-part='featured-card']")).not.toBeNull();
   });
 
   it("has no external links", () => {
@@ -96,12 +96,12 @@ describe("WeekSection", () => {
     expect(container.querySelector("a[target='_blank']")).toBeNull();
   });
 
-  it("shows an empty state for a week without releases", () => {
+  it("shows 'Nessuna uscita' beside the title for a week without releases", () => {
     const { container } = renderWithIntl(
       <WeekSection group={{ ...group, movies: [] }} todayMonday="2026-10-26" />,
     );
 
-    expect(screen.getByText("Nessuna uscita questa settimana.")).toBeInTheDocument();
+    expect(screen.getByText("Nessuna uscita")).toBeInTheDocument();
     expect(screen.queryByText("0 film")).not.toBeInTheDocument();
     expect(container.querySelector("ol")).toBeNull();
   });

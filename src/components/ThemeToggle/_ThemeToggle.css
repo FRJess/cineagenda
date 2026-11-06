@@ -1,0 +1,66 @@
+/**
+ * FILE: _ThemeToggle.css
+ * USAGE: Styles for ThemeToggle, an icon-only switch pushed to the right end of the site footer
+ * SCOPE: [data-part="theme-toggle"], [data-part="theme-thumb"]
+ */
+
+/* Track: the global button rule (accent fill, flex-start) is reset here. margin-left pushes it right in the footer. */
+[data-part="theme-toggle"] {
+  position: relative;
+  flex: 0 0 auto;
+  align-self: center;
+  width: 2.75rem;
+  height: 1.5rem;
+  margin-left: auto;
+  padding: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+
+/* Thumb: slides to the right while dark; holds the icon of the theme in effect. */
+[data-part="theme-thumb"] {
+  position: absolute;
+  top: 0.125rem;
+  left: 0.125rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.125rem;
+  height: 1.125rem;
+  color: var(--tab-fg);
+  background: var(--tab-bg);
+  border-radius: 50%;
+}
+
+[data-part="theme-toggle"][aria-checked="true"] [data-part="theme-thumb"] {
+  transform: translateX(1.375rem);
+}
+
+[data-part="theme-thumb"] svg {
+  width: 0.75rem;
+  height: 0.75rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+[data-part="theme-thumb"] [data-icon="moon"] {
+  display: none;
+}
+
+[data-part="theme-toggle"][aria-checked="true"] [data-icon="sun"] {
+  display: none;
+}
+
+[data-part="theme-toggle"][aria-checked="true"] [data-icon="moon"] {
+  display: block;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-part="theme-thumb"] {
+    transition: transform 160ms ease;
+  }
+}

@@ -1,0 +1,92 @@
+/**
+ * FILE: _SiteHeader.css
+ * USAGE: Styles for SiteHeader: brand and locale switch on one row; on the home page the week tabs take the second row on phones and the middle of the first row from 48rem, and the header sticks
+ * SCOPE: [data-part="site-header"], [data-part="brand"]
+ */
+
+/* ─── Row: brand, locale switch, and on home the week tabs ─── */
+
+[data-part="site-header"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.625rem 1rem;
+  padding: var(--space-4) max(var(--space-4), calc((100% - 72rem) / 2 + var(--space-4)))
+    var(--space-2);
+  background: var(--background);
+}
+
+/* Only the home page renders the week tabs, so only its header sticks. */
+[data-part="site-header"]:has([data-part="week-tabs"]) {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+}
+
+[data-part="site-header"] > [data-part="locale-switch"] {
+  margin-left: auto;
+}
+
+[data-part="site-header"] > [data-part="week-tabs"] {
+  flex: 1 0 100%;
+}
+
+/* The heading wraps the brand on the home page; it takes the brand's type, not the browser's. */
+[data-part="site-header"] > h1 {
+  display: flex;
+  margin: 0;
+  font: inherit;
+}
+
+/* ─── Brand: mark, then the wordmark with "agenda" in the accent ─── */
+
+[data-part="brand"] {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--foreground);
+  text-decoration: none;
+}
+
+[data-part="brand"] span {
+  color: var(--accent);
+}
+
+[data-part="brand"] picture {
+  display: block;
+  width: 22px;
+  height: 22px;
+  margin-right: var(--space-2);
+}
+
+[data-part="brand"] img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ─── From 48rem: one row, brand | week tabs | language ─── */
+
+@media (min-width: 48rem) {
+  [data-part="site-header"] {
+    flex-wrap: nowrap;
+  }
+
+  /* Same side padding as the home list, see [data-part="home"] in globals.css. */
+  [data-part="site-header"]:has([data-part="week-tabs"]) {
+    padding-inline: max(var(--space-6), calc((100% - 72rem) / 2 + var(--space-6)));
+  }
+
+  [data-part="site-header"] > [data-part="week-tabs"] {
+    order: 1;
+    flex: 1 1 0;
+  }
+
+  [data-part="site-header"] > [data-part="locale-switch"] {
+    order: 2;
+  }
+}

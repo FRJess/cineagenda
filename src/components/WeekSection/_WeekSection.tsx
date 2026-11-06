@@ -8,8 +8,8 @@ import { addDays } from "@/lib/releases/window";
 import "./_WeekSection.css";
 
 /**
- * One release week: labeled heading with the date range and the film count, the featured
- * film when this is the current week, then the other films as a poster grid.
+ * One release week: labeled heading with the date range ("Nessuna uscita" beside it when the
+ * week is empty), then a grid that opens with the week's featured film and holds the others.
  * @param props Week group and the Monday of the current week.
  * @returns Section labeled by its heading.
  */
@@ -31,25 +31,28 @@ export function WeekSection({
   const isCurrent = group.weekStart === todayMonday;
   const isNext = group.weekStart === addDays(todayMonday, 7);
   const label = isCurrent ? t("thisWeek") : isNext ? t("nextWeek") : t("week");
-  const featured = isCurrent ? pickFeatured(group.movies) : null;
+  const featured = pickFeatured(group.movies);
   const others = featured ? group.movies.filter((movie) => movie.id !== featured.id) : group.movies;
 
   return (
     <section
       aria-labelledby={headingId}
       data-part="week-section"
-      data-current={isCurrent ? "" : undefined}
+      data-today={isCurrent ? "" : undefined}
     >
       <header>
         <h2 id={headingId}>
           <small>{label}</small> {range}
         </h2>
-        {group.movies.length > 0 && <p>{t("filmCount", { count: group.movies.length })}</p>}
+        {group.movies.length === 0 && <p>{t("noReleases")}</p>}
       </header>
-      {group.movies.length === 0 && <p>{t("emptyWeek")}</p>}
-      {featured && <FeaturedCard movie={featured} />}
-      {others.length > 0 && (
+      {group.movies.length > 0 && (
         <ol>
+          {featured && (
+            <li key={featured.id} data-featured="">
+              <FeaturedCard movie={featured} />
+            </li>
+          )}
           {others.map((movie) => (
             <li key={movie.id}>
               <MovieCard movie={movie} />

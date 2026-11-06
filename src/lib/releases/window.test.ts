@@ -4,7 +4,6 @@ import {
   getReleaseWindow,
   mondayOf,
   parseRange,
-  shiftRange,
   sundayOf,
   tabWeeks,
   todayInRome,
@@ -101,40 +100,6 @@ describe("weeksBetween", () => {
       "2026-10-26",
       "2026-11-02",
     ]);
-  });
-});
-
-describe("shiftRange", () => {
-  it("moves forward to the two weeks after the current end", () => {
-    expect(shiftRange({ from: "2026-10-26", to: "2026-11-08" }, "later")).toEqual({
-      from: "2026-11-09",
-      to: "2026-11-22",
-    });
-  });
-
-  it("moves back to the two weeks before the current start", () => {
-    expect(shiftRange({ from: "2026-10-26", to: "2026-11-08" }, "earlier")).toEqual({
-      from: "2026-10-12",
-      to: "2026-10-25",
-    });
-  });
-
-  it("always shows two weeks, even from a longer custom range", () => {
-    const range = { from: "2026-03-02", to: "2026-04-26" };
-
-    expect(shiftRange(range, "later")).toEqual({ from: "2026-04-27", to: "2026-05-10" });
-    expect(shiftRange(range, "earlier")).toEqual({ from: "2026-02-16", to: "2026-03-01" });
-  });
-
-  it("stops at the first two weeks when going back past the minimum", () => {
-    expect(shiftRange({ from: "2026-01-05", to: "2026-01-18" }, "earlier")).toEqual({
-      from: "2025-12-29",
-      to: "2026-01-11",
-    });
-  });
-
-  it("returns null when the start is already at the minimum", () => {
-    expect(shiftRange({ from: "2025-12-29", to: "2026-01-11" }, "earlier")).toBeNull();
   });
 });
 
