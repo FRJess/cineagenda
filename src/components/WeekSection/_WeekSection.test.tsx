@@ -56,7 +56,10 @@ describe("WeekSection", () => {
   });
 
   it("lists one item per movie in input order when no film can be featured", () => {
-    const noBackdrops = { ...group, movies: group.movies.map((m) => ({ ...m, backdropPath: null })) };
+    const noBackdrops = {
+      ...group,
+      movies: group.movies.map((m) => ({ ...m, backdropPath: null })),
+    };
     renderWithIntl(<WeekSection group={noBackdrops} todayMonday="2026-10-19" />);
 
     const titles = screen.getAllByRole("heading", { level: 3 }).map((h) => h.textContent);
