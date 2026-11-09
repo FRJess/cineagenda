@@ -28,13 +28,7 @@ export function MovieCard({
     <article data-part="movie-card">
       <Link href={`/film/${movie.id}`}>
         {poster ? (
-          <Image
-            src={poster}
-            alt=""
-            width={342}
-            height={513}
-            loading={eager ? "eager" : "lazy"}
-          />
+          <Image src={poster} alt="" width={342} height={513} loading={eager ? "eager" : "lazy"} />
         ) : (
           <figure data-part="poster-placeholder">
             <figcaption>{t("noPoster")}</figcaption>
