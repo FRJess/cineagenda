@@ -1,12 +1,12 @@
 /**
  * FILE: _WeekRangeForm.css
- * USAGE: Styles for WeekRangeForm, the date popover body: a 576px panel (two months) under the Date button, a bottom sheet with one month on phones
- * SCOPE: [data-part="week-range"], [data-part="help"], [data-part="date-fields"], [data-part="calendar"], [data-part="shortcuts"], [data-part="date-actions"], .rdp-* (DayPicker)
+ * USAGE: Date popover body: week picker (DayPicker overrides), shortcuts, footer
+ * SCOPE: [data-part="week-range"], [data-part="calendar"], [data-part="shortcuts"], [data-part="picker-footer"], .rdp-* (DayPicker)
  */
 
-/* ─── Panel: 576px under the Date button (two months), from 48rem; a bottom sheet below ─── */
+/* ─── Popover: 39rem with two months from 48rem; a bottom sheet below ─── */
 
-[data-part="week-range"] {
+[data-part="date-picker"] > [data-part="week-range"] {
   position: fixed;
   right: 0;
   bottom: 0;
@@ -16,22 +16,21 @@
   flex-direction: column;
   gap: var(--space-3);
   max-height: 100dvh;
-  padding: var(--space-4) var(--space-4) var(--space-6);
+  padding: var(--space-4) var(--space-4) max(var(--space-6), env(safe-area-inset-bottom));
   overflow-y: auto;
   background: var(--surface);
   border-radius: 1.125rem 1.125rem 0 0;
 }
 
 @media (min-width: 48rem) {
-  [data-part="week-range"] {
+  [data-part="date-picker"] > [data-part="week-range"] {
     position: absolute;
     top: calc(100% + var(--space-2));
     right: 0;
     bottom: auto;
     left: auto;
-    width: 36rem;
+    width: 39rem;
     max-height: none;
-    padding: var(--space-4);
     overflow-y: visible;
     border: 1px solid var(--border);
     border-radius: 0.875rem;
@@ -39,7 +38,7 @@
   }
 
   /* Arrow under the Date button. */
-  [data-part="week-range"]::before {
+  [data-part="date-picker"] > [data-part="week-range"]::before {
     position: absolute;
     top: -0.375rem;
     right: 1.75rem;
@@ -53,91 +52,138 @@
   }
 }
 
-/* ─── Title and help ─── */
+/* ─── Calendar: DayPicker, themed through the project tokens ─── */
 
-[data-part="week-range"] h2 {
+[data-part="week-range"] .rdp-root {
+  --rdp-accent-color: var(--accent);
+  --rdp-accent-background-color: transparent;
+  --rdp-range_start-background: transparent;
+  --rdp-range_end-background: transparent;
+  --rdp-range_middle-background-color: transparent;
+  --rdp-selected-border: 0;
+  --rdp-day-width: 2.5rem;
+  --rdp-day-height: 2.25rem;
+  --rdp-day_button-width: 2.5rem;
+  --rdp-day_button-height: 2.25rem;
+  --rdp-day_button-border-radius: 0;
+  --rdp-nav_button-width: 2rem;
+  --rdp-nav_button-height: 2rem;
+  --rdp-months-gap: 1.5rem;
+  --rdp-weekday-opacity: 1;
+  --rdp-outside-opacity: 0.35;
+  --rdp-disabled-opacity: 0.3;
+  color: var(--foreground);
+  font-family: var(--font-text);
+  font-size: 0.9375rem;
+}
+
+[data-part="week-range"] .rdp-month_caption {
   font-family: var(--font-display);
   font-size: 0.9375rem;
   font-weight: 800;
   letter-spacing: -0.02em;
+  text-transform: capitalize;
+}
+
+[data-part="week-range"] .rdp-button_previous,
+[data-part="week-range"] .rdp-button_next {
   color: var(--foreground);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
 }
 
-[data-part="week-range"] [data-part="help"] {
+[data-part="week-range"] .rdp-month_grid {
+  border-collapse: separate;
+  border-spacing: 0 3px;
+}
+
+[data-part="week-range"] .rdp-weekday {
   font-size: 0.6875rem;
-  line-height: 1.4;
-  color: var(--muted);
-}
-
-/* ─── Date fields: native inputs without JS; with it, select-like buttons that pick the end to set ─── */
-
-[data-part="date-fields"] {
-  display: flex;
-  gap: var(--space-3);
-}
-
-[data-part="week-range"] p:not([data-part="help"]) {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: var(--space-1);
-  min-width: 0;
-}
-
-[data-part="week-range"] label,
-[data-part="date-fields"] > p > span {
-  font-size: 0.625rem;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted);
 }
 
-[data-part="week-range"] input,
-[data-part="date-fields"] > p > button {
-  padding: var(--space-2) 0.625rem;
-  font: inherit;
-  font-size: 0.875rem;
+/* Thursday is the fourth column because weeks start on Monday. */
+[data-part="week-range"] .rdp-weekday:nth-child(4) {
+  color: var(--accent);
+}
+
+[data-part="week-range"] .rdp-day_button {
   font-weight: 500;
-  font-variant-numeric: tabular-nums;
-  color: var(--foreground);
-  background: var(--background);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
 }
 
-[data-part="date-fields"] > p > button {
-  display: flex;
-  align-self: stretch;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-2);
-  text-align: start;
+[data-part="week-range"] .rdp-day_thursday .rdp-day_button {
+  font-weight: 700;
 }
 
-/* Chevron: the field reads like a select, as in the design. */
-[data-part="date-fields"] > p > button::after {
-  width: 0.4375rem;
-  height: 0.4375rem;
-  margin-top: -0.1875rem;
+/* Today is a dot, not a color. */
+[data-part="week-range"] .rdp-today .rdp-day_button {
+  position: relative;
+  color: inherit;
+  font-weight: inherit;
+}
+
+[data-part="week-range"] .rdp-today .rdp-day_button::after {
+  position: absolute;
+  bottom: 0.1875rem;
+  left: 50%;
+  width: 0.25rem;
+  height: 0.25rem;
   content: "";
-  border-right: 1.5px solid var(--muted);
-  border-bottom: 1.5px solid var(--muted);
-  transform: rotate(45deg);
+  background: var(--accent);
+  border-radius: 50%;
+  transform: translateX(-50%);
 }
 
-[data-part="date-fields"] > p > button[aria-pressed="true"] {
-  border-color: var(--foreground);
+/* Hovering a day lights its whole week. */
+@media (hover: hover) {
+  [data-part="week-range"] .rdp-week:has(.rdp-day_button:hover) .rdp-day {
+    background: color-mix(in srgb, var(--foreground) 9%, transparent);
+  }
 }
 
-/* ─── Calendar: under the fields, one month on phones, two from 48rem ─── */
-
-[data-part="calendar"] {
-  display: flex;
-  justify-content: center;
+/* Selected weeks: an inverted band per row. Start and end are always a Monday and a Sunday. */
+[data-part="week-range"] .rdp-range_start,
+[data-part="week-range"] .rdp-range_middle,
+[data-part="week-range"] .rdp-range_end {
+  background: var(--tab-bg);
+  color: var(--tab-fg);
 }
 
-/* ─── Shortcuts: pills, the current range inverted ─── */
+[data-part="week-range"] .rdp-range_start .rdp-day_button,
+[data-part="week-range"] .rdp-range_middle .rdp-day_button,
+[data-part="week-range"] .rdp-range_end .rdp-day_button {
+  color: inherit;
+  background: none;
+  border: 0;
+}
+
+[data-part="week-range"] .rdp-range_start .rdp-day_thursday .rdp-day_button,
+[data-part="week-range"] .rdp-range_middle.rdp-day_thursday .rdp-day_button {
+  color: var(--tab-muted);
+}
+
+[data-part="week-range"] .rdp-range_middle.rdp-today .rdp-day_button::after {
+  background: var(--tab-muted);
+}
+
+[data-part="week-range"] .rdp-range_start {
+  border-radius: 0.5rem 0 0 0.5rem;
+}
+
+[data-part="week-range"] .rdp-range_end {
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+
+[data-part="week-range"] .rdp-day_button:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: -3px;
+}
+
+/* ─── Shortcuts: pills, the one matching the URL inverted ─── */
 
 [data-part="shortcuts"] {
   display: flex;
@@ -165,128 +211,62 @@
   border-color: var(--tab-bg);
 }
 
-/* ─── Actions: primary button full width ─── */
+/* ─── Footer: range and length on the left, the submit button on the right ─── */
 
-[data-part="date-actions"] {
+[data-part="picker-footer"] {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: var(--space-3);
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
 }
 
-[data-part="date-actions"] button {
-  flex: 1;
-  align-self: auto;
-  padding: 0.625rem;
-  font-size: 0.8125rem;
-  font-weight: 700;
-  border-radius: 0.625rem;
+[data-part="picker-footer"] output {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
 }
 
-/* ─── Calendar: DayPicker, themed through the project tokens (docs/design/cineagenda-design.html) ─── */
-
-/* Range ends in full accent like the active tab, the middle in accent at 16%. */
-[data-part="calendar"] .rdp-root {
-  --rdp-accent-color: var(--accent);
-  --rdp-accent-background-color: color-mix(in srgb, var(--accent) 16%, transparent);
-  --rdp-range_middle-background-color: color-mix(in srgb, var(--accent) 16%, transparent);
-  --rdp-range_middle-color: var(--foreground);
-  --rdp-range_start-color: var(--on-accent);
-  --rdp-range_end-color: var(--on-accent);
-  --rdp-selected-border: 0;
-  --rdp-today-color: var(--accent);
-  --rdp-day-width: 2.25rem;
-  --rdp-day-height: 2.25rem;
-  --rdp-day_button-width: 2.25rem;
-  --rdp-day_button-height: 2.25rem;
-  --rdp-day_button-border-radius: 0.5rem;
-  --rdp-nav_button-width: 2rem;
-  --rdp-nav_button-height: 2rem;
-  --rdp-nav-height: 2rem;
-  --rdp-months-gap: 1.5rem;
-  --rdp-weekday-opacity: 1;
-  --rdp-disabled-opacity: 0.3;
-  font-family: var(--font-text);
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: var(--foreground);
-}
-
-[data-part="calendar"] .rdp-month_caption {
-  justify-content: center;
+[data-part="picker-footer"] b {
   font-family: var(--font-display);
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   font-weight: 800;
   letter-spacing: -0.02em;
-  text-transform: capitalize; /* date-fns gives "novembre 2026" in Italian */
 }
 
-[data-part="calendar"] .rdp-weekday {
-  height: 1.75rem;
+[data-part="picker-footer"] small {
   font-size: 0.625rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted);
 }
 
-[data-part="calendar"] .rdp-button_previous,
-[data-part="calendar"] .rdp-button_next {
-  color: var(--foreground);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
-}
-
-[data-part="calendar"] .rdp-chevron {
-  fill: var(--foreground);
-}
-
-/* The default stylesheet sets selected days to "large" and bold; only the ends are bold. */
-[data-part="calendar"] .rdp-selected {
-  font-size: inherit;
-}
-
-[data-part="calendar"] .rdp-range_middle {
-  font-weight: inherit;
-}
-
-[data-part="calendar"] .rdp-today:not(.rdp-range_start, .rdp-range_end) .rdp-day_button {
-  font-weight: 700;
+/* At the 26-week cap the count turns accent, so the limit reads as a state. */
+[data-part="picker-footer"] output[data-max] small {
   color: var(--accent);
-  outline: 1px solid var(--accent);
-  outline-offset: -1px;
 }
 
-@media (hover: hover) {
-  [data-part="calendar"] .rdp-day_button:hover {
-    box-shadow: inset 0 0 0 1px var(--foreground);
+[data-part="picker-footer"] button {
+  flex: 0 0 auto;
+  padding: 0.625rem 1rem;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--on-accent);
+  background: var(--accent);
+  border: 0;
+  border-radius: 0.625rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+/* ─── Phone: one month, bottom sheet ─── */
+
+@media (max-width: 47.99rem) {
+  [data-part="week-range"] .rdp-month + .rdp-month {
+    display: none;
   }
-}
-
-/* Thursday: release day, a dot under the number. */
-[data-part="calendar"] .rdp-day_thursday .rdp-day_button {
-  position: relative;
-}
-
-[data-part="calendar"] .rdp-day_thursday .rdp-day_button::after {
-  position: absolute;
-  bottom: 0.25rem;
-  left: 50%;
-  width: 0.25rem;
-  height: 0.25rem;
-  content: "";
-  background: var(--accent-soft);
-  border-radius: 50%;
-  transform: translateX(-50%);
-}
-
-[data-part="calendar"] .rdp-range_start .rdp-day_button::after,
-[data-part="calendar"] .rdp-range_end .rdp-day_button::after {
-  background: var(--on-accent);
-}
-
-/* Beats the 1px ring of today. */
-[data-part="calendar"] .rdp-day .rdp-day_button:focus-visible {
-  outline: 3px solid var(--accent);
-  outline-offset: 2px;
 }

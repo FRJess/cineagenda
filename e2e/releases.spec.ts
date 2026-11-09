@@ -237,7 +237,7 @@ for (const colorScheme of ["light", "dark"] as const) {
     const results = await (
       colorScheme === "light"
         ? axe
-            .exclude("[data-part='date-actions'] button")
+            .exclude("[data-part='picker-footer'] button")
             .exclude(".rdp-range_start .rdp-day_button")
             .exclude(".rdp-range_end .rdp-day_button")
             .exclude(".rdp-today .rdp-day_button")

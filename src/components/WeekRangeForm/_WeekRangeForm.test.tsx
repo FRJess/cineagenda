@@ -31,19 +31,11 @@ describe("WeekRangeForm", () => {
     expect(container.querySelector("form")).toHaveAttribute("method", "get");
     expect(container.querySelector('input[name="from"]')).toHaveValue("2026-11-02");
     expect(container.querySelector('input[name="to"]')).toHaveValue("2026-11-15");
-    expect(screen.getByRole("button", { name: /Dal/ })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Al/ })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Mostra le uscite" })).toHaveAttribute(
+    expect(container.querySelector('input[type="date"]')).toBeNull();
+    expect(screen.getByRole("button", { name: "Mostra 2 settimane" })).toHaveAttribute(
       "type",
       "submit",
     );
-  });
-
-  it("titles the popover and states the range rule", () => {
-    renderWithIntl(<WeekRangeForm range={range} today="2026-11-06" />);
-
-    expect(screen.getByRole("heading", { level: 2, name: "Scegli un intervallo" })).toBeVisible();
-    expect(screen.getByText(/al massimo 26 settimane/)).toBeInTheDocument();
   });
 
   it("offers this week, next week, this month and the next two months by name, as links", () => {
