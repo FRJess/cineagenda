@@ -51,7 +51,8 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
   const t = await getTranslations({ locale, namespace: "Footer" });
 
   return (
-    <html lang={locale}>
+    // THEME_BOOT_SCRIPT sets data-theme before hydration; the server cannot know the stored theme.
+    <html lang={locale} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
         <link
