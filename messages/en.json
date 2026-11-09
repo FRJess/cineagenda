@@ -11,20 +11,19 @@
     "enCode": "EN"
   },
   "Nav": {
-    "from": "From",
-    "to": "To",
-    "show": "Show releases",
     "thisWeekShort": "this week",
     "pickDates": "Dates",
     "pickHint": "customize",
-    "pickTitle": "Pick a range",
-    "pickHelp": "From 1 January 2026 on, up to 26 weeks at a time. Weeks start on Monday.",
     "thisWeek": "This week",
     "nextWeek": "Next week",
     "thisMonth": "This month",
     "shortcuts": "Shortcuts",
     "weekTabs": "Weeks",
-    "calendar": "Calendar"
+    "calendar": "Calendar",
+    "weeksCount": "{count, plural, one {# week} other {# weeks}}",
+    "maxWeeks": "max {max}",
+    "maxReached": "maximum reached",
+    "showWeeks": "Show {count, plural, one {# week} other {# weeks}}"
   },
   "Releases": {
     "week": "Week",

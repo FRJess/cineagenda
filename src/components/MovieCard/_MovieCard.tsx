@@ -10,10 +10,16 @@ const POSTER_BASE = "https://image.tmdb.org/t/p/w342";
 /**
  * One release in the poster grid: the whole poster, then a band painted with a blurred copy
  * of it that carries the title and the date. Nothing covers the poster.
- * @param props Movie to show.
+ * @param props Movie to show; `eager` loads the poster at once when it sits above the fold.
  * @returns Article with one link.
  */
-export function MovieCard({ movie }: { readonly movie: Movie }) {
+export function MovieCard({
+  movie,
+  eager = false,
+}: {
+  readonly movie: Movie;
+  readonly eager?: boolean;
+}) {
   const t = useTranslations("Releases");
   const format = useFormatter();
   const poster = movie.posterPath ? POSTER_BASE + movie.posterPath : null;
@@ -22,7 +28,7 @@ export function MovieCard({ movie }: { readonly movie: Movie }) {
     <article data-part="movie-card">
       <Link href={`/film/${movie.id}`}>
         {poster ? (
-          <Image src={poster} alt="" width={342} height={513} />
+          <Image src={poster} alt="" width={342} height={513} loading={eager ? "eager" : "lazy"} />
         ) : (
           <figure data-part="poster-placeholder">
             <figcaption>{t("noPoster")}</figcaption>

@@ -68,6 +68,7 @@ async function Weeks({ locale, searchParams }: { locale: UiLocale; searchParams:
           key={weekStart}
           group={{ weekStart, weekEnd: sundayOf(weekStart), movies: releases[index] }}
           todayMonday={todayMonday}
+          eager={index === 0}
         />
       ))}
     </div>

@@ -8,7 +8,8 @@ const DAY_MS = 86_400_000;
 const WEEK_MS = 7 * DAY_MS;
 const WINDOW_DAYS = 90;
 const DEFAULT_WEEKS = 2;
-const MAX_WEEKS = 26;
+/** Longest range in weeks the user can pick; the cap of {@link parseRange}. */
+export const MAX_WEEKS = 26;
 
 /** Longest range the user can pick, in days; matches the cap of {@link parseRange}. */
 export const MAX_RANGE_DAYS = MAX_WEEKS * 7;

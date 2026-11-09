@@ -56,7 +56,10 @@ describe("WeekSection", () => {
   });
 
   it("lists one item per movie in input order when no film can be featured", () => {
-    const noBackdrops = { ...group, movies: group.movies.map((m) => ({ ...m, backdropPath: null })) };
+    const noBackdrops = {
+      ...group,
+      movies: group.movies.map((m) => ({ ...m, backdropPath: null })),
+    };
     renderWithIntl(<WeekSection group={noBackdrops} todayMonday="2026-10-19" />);
 
     const titles = screen.getAllByRole("heading", { level: 3 }).map((h) => h.textContent);
@@ -88,6 +91,23 @@ describe("WeekSection", () => {
 
     expect(container.querySelectorAll("ol > li")).toHaveLength(1);
     expect(container.querySelector("ol > li [data-part='featured-card']")).not.toBeNull();
+  });
+
+  it("loads only the posters beside the featured film eagerly in an above-the-fold week", () => {
+    const four = { ...group, movies: [...group.movies, movie({ id: 4, title: "Quarto" })] };
+    const posterLoading = (container: HTMLElement) =>
+      [...container.querySelectorAll("[data-part='movie-card'] a > img")].map((img) =>
+        img.getAttribute("loading"),
+      );
+
+    const { container, unmount } = renderWithIntl(
+      <WeekSection group={four} todayMonday="2026-11-02" eager />,
+    );
+    expect(posterLoading(container)).toEqual(["eager", "eager", "lazy"]);
+    unmount();
+
+    const lazy = renderWithIntl(<WeekSection group={four} todayMonday="2026-11-02" />);
+    expect(posterLoading(lazy.container)).toEqual(["lazy", "lazy", "lazy"]);
   });
 
   it("has no external links", () => {

@@ -67,6 +67,18 @@ describe("MovieCard", () => {
     expect(parts[1]).toHaveAttribute("data-part", "card-text");
   });
 
+  it("lazy-loads the poster by default", () => {
+    const { container } = renderWithIntl(<MovieCard movie={movie()} />);
+
+    expect(container.querySelector("a > img")).toHaveAttribute("loading", "lazy");
+  });
+
+  it("loads the poster eagerly when it is above the fold", () => {
+    const { container } = renderWithIntl(<MovieCard movie={movie()} eager />);
+
+    expect(container.querySelector("a > img")).toHaveAttribute("loading", "eager");
+  });
+
   it("puts the title before the date in the band under the poster", () => {
     const { container } = renderWithIntl(<MovieCard movie={movie()} />);
     const heading = container.querySelector("[data-part='card-text'] h3");

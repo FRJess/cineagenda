@@ -28,3 +28,11 @@ export const DAY_MONTH_YEAR = {
   year: "numeric",
   timeZone: "UTC",
 } as const;
+
+/** Day, short month and year for the picker footer ("9 nov 2026"), read in UTC. */
+export const DAY_MONTH_SHORT_YEAR = {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+  timeZone: "UTC",
+} as const;
