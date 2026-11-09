@@ -11,20 +11,19 @@
     "enCode": "EN"
   },
   "Nav": {
-    "from": "Dal",
-    "to": "Al",
-    "show": "Mostra le uscite",
     "thisWeekShort": "questa",
     "pickDates": "Date",
     "pickHint": "personalizza",
-    "pickTitle": "Scegli un intervallo",
-    "pickHelp": "Dal 1 gennaio 2026 in poi, al massimo 26 settimane per volta. Le settimane iniziano di lunedì.",
     "thisWeek": "Questa settimana",
     "nextWeek": "Prossima settimana",
     "thisMonth": "Questo mese",
     "shortcuts": "Scorciatoie",
     "weekTabs": "Settimane",
-    "calendar": "Calendario"
+    "calendar": "Calendario",
+    "weeksCount": "{count, plural, one {# settimana} other {# settimane}}",
+    "maxWeeks": "max {max}",
+    "maxReached": "massimo raggiunto",
+    "showWeeks": "Mostra {count, plural, one {# settimana} other {# settimane}}"
   },
   "Releases": {
     "week": "Settimana",
