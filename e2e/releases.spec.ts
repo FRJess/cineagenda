@@ -190,16 +190,15 @@ test("the date popover shows the calendar and picks a new range", async ({ page 
     calendar.locator(`[data-day='${isoDate}']:not([data-outside]) button`);
 
   await expect(calendar.getByRole("grid")).toHaveCount(2);
-  await page.getByRole("button", { name: /^Dal/ }).click();
-  await dayButton("2026-11-23").click();
-  await expect(page.getByRole("button", { name: /^Al/ })).toHaveAttribute("aria-pressed", "true");
-  await dayButton("2026-12-06").click();
-  await expect(page.locator("input[name='from']")).toHaveValue("2026-11-23");
-  await expect(page.locator("input[name='to']")).toHaveValue("2026-12-06");
-  await page.getByRole("button", { name: "Mostra" }).click();
+  // Inside the range: restart from that week. After it: extend the end to that week.
+  await dayButton("2026-11-11").click();
+  await dayButton("2026-11-25").click();
+  await expect(page.locator("input[name='from']")).toHaveValue("2026-11-09");
+  await expect(page.locator("input[name='to']")).toHaveValue("2026-11-29");
+  await page.getByRole("button", { name: "Mostra 3 settimane" }).click();
 
-  await expect(page).toHaveURL(/from=2026-11-23&to=2026-12-06/);
-  await expect(page.getByRole("region")).toHaveCount(2);
+  await expect(page).toHaveURL(/from=2026-11-09&to=2026-11-29/);
+  await expect(page.getByRole("region")).toHaveCount(3);
 });
 
 test("a shortcut chip navigates and closes the date popover", async ({ page }) => {
@@ -230,7 +229,7 @@ for (const colorScheme of ["light", "dark"] as const) {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/it?from=2026-11-02&to=2026-11-15");
     await page.getByText("Date", { exact: true }).click();
-    await page.locator("[data-part='calendar'] [role='grid']").first().waitFor();
+    await page.locator("[data-part='week-range'] [role='grid']").first().waitFor();
     const axe = new AxeBuilder({ page }).include("[data-part='week-range']").withTags(WCAG_TAGS);
     // Accepted by Jessica (2026-11-05, 2026-11-06): small text on or in the light accent
     // #e8321a is 4.28:1 (submit button, range ends, today).
