@@ -70,7 +70,7 @@
   --rdp-nav_button-height: 2rem;
   --rdp-months-gap: 1.5rem;
   --rdp-weekday-opacity: 1;
-  --rdp-outside-opacity: 0.35;
+  --rdp-outside-opacity: 1;
   --rdp-disabled-opacity: 0.3;
   color: var(--foreground);
   font-family: var(--font-text);
@@ -108,11 +108,16 @@
 
 /* Thursday is the fourth column because weeks start on Monday. */
 [data-part="week-range"] .rdp-weekday:nth-child(4) {
-  color: var(--accent);
+  color: var(--accent-strong);
 }
 
 [data-part="week-range"] .rdp-day_button {
   font-weight: 500;
+}
+
+/* Days outside the month are muted text, not faded: opacity fails 4.5:1. */
+[data-part="week-range"] .rdp-outside .rdp-day_button {
+  color: var(--muted);
 }
 
 [data-part="week-range"] .rdp-day_thursday .rdp-day_button {
@@ -159,6 +164,15 @@
   color: inherit;
   background: none;
   border: 0;
+}
+
+/* Outside days inside a selected band: faded --tab-fg, 9.5:1 light and 6.5:1 dark at 0.7. */
+[data-part="week-range"]
+  :is(.rdp-range_start, .rdp-range_middle, .rdp-range_end)
+  .rdp-outside
+  .rdp-day_button {
+  color: inherit;
+  opacity: 0.7;
 }
 
 [data-part="week-range"] .rdp-range_start .rdp-day_thursday .rdp-day_button,
@@ -246,7 +260,7 @@
 
 /* At the 26-week cap the count turns accent, so the limit reads as a state. */
 [data-part="picker-footer"] output[data-max] small {
-  color: var(--accent);
+  color: var(--accent-strong);
 }
 
 [data-part="picker-footer"] button {
@@ -256,7 +270,7 @@
   font-size: 0.8125rem;
   font-weight: 700;
   color: var(--on-accent);
-  background: var(--accent);
+  background: var(--accent-strong);
   border: 0;
   border-radius: 0.625rem;
   white-space: nowrap;

@@ -230,18 +230,10 @@ for (const colorScheme of ["light", "dark"] as const) {
     await page.goto("/it?from=2026-11-02&to=2026-11-15");
     await page.getByText("Date", { exact: true }).click();
     await page.locator("[data-part='week-range'] [role='grid']").first().waitFor();
-    const axe = new AxeBuilder({ page }).include("[data-part='week-range']").withTags(WCAG_TAGS);
-    // Accepted by Jessica (2026-11-05, 2026-11-06): small text on or in the light accent
-    // #e8321a is 4.28:1 (submit button, range ends, today).
-    const results = await (
-      colorScheme === "light"
-        ? axe
-            .exclude("[data-part='picker-footer'] button")
-            .exclude(".rdp-range_start .rdp-day_button")
-            .exclude(".rdp-range_end .rdp-day_button")
-            .exclude(".rdp-today .rdp-day_button")
-        : axe
-    ).analyze();
+    const results = await new AxeBuilder({ page })
+      .include("[data-part='week-range']")
+      .withTags(WCAG_TAGS)
+      .analyze();
 
     expect(results.violations).toEqual([]);
   });
