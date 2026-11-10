@@ -38,6 +38,9 @@
   --border: #d3d3dd;
   --accent: #e8321a;
   --accent-soft: #ffb3a6;
+  /* Accent for small text and filled buttons: #e8321a misses WCAG AA on light surfaces (3.6:1);
+     this passes 4.85:1 on --background and 5.7:1 under white text. */
+  --accent-strong: #c42913;
   --on-accent: #ffffff;
   --tab-bg: #101018;
   --tab-fg: #ffffff;
@@ -64,6 +67,7 @@
     --muted: #9b9bb0;
     --border: #2b2b38;
     --accent: #ff6a4d;
+    --accent-strong: #ff6a4d;
     --on-accent: #121218;
     --tab-bg: #f1f0f5;
     --tab-fg: #121218;
@@ -79,6 +83,7 @@
   --muted: #9b9bb0;
   --border: #2b2b38;
   --accent: #ff6a4d;
+  --accent-strong: #ff6a4d;
   --on-accent: #121218;
   --tab-bg: #f1f0f5;
   --tab-fg: #121218;

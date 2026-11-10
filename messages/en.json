@@ -45,7 +45,6 @@
     "trailer": "Trailer",
     "back": "All releases",
     "backLabel": "Back to releases",
-    "notFound": "Film not found.",
     "releaseDate": "In cinemas from <time>{date}</time>",
     "genres": "Genres",
     "overview": "Plot",
@@ -63,8 +62,23 @@
     "source": "Data and images: TMDB",
     "openTmdb": "Open on TMDB ↗"
   },
+  "NotFound": {
+    "eyebrow": "Not showing",
+    "title": "This page is not in the listings.",
+    "text": "The address is wrong or the page no longer exists.",
+    "documentTitle": "Page not found · Cineagenda",
+    "filmEyebrow": "Film not found",
+    "filmTitle": "This film is not in the listings.",
+    "filmText": "There is no film with this id, or it has no release in Italian cinemas.",
+    "filmDocumentTitle": "Film not found · Cineagenda",
+    "home": "Go to releases",
+    "searchTmdb": "Search on TMDB ↗"
+  },
   "Error": {
-    "title": "Could not load the releases.",
+    "eyebrow": "Screening interrupted",
+    "title": "We cannot load the releases.",
+    "filmTitle": "We cannot load the film.",
+    "text": "TMDB is not responding. Try again in a few seconds.",
     "retry": "Try again"
   },
   "Footer": {

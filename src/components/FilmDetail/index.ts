@@ -1,1 +1,1 @@
-export { FilmDetail, FilmSkeleton, FilmState } from "./_FilmDetail";
+export { FilmDetail, FilmSkeleton } from "./_FilmDetail";

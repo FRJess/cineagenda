@@ -45,7 +45,6 @@
     "trailer": "Trailer",
     "back": "Tutte le uscite",
     "backLabel": "Torna alle uscite",
-    "notFound": "Film non trovato.",
     "releaseDate": "Al cinema da <time>{date}</time>",
     "genres": "Generi",
     "overview": "Trama",
@@ -63,8 +62,23 @@
     "source": "Dati e immagini: TMDB",
     "openTmdb": "Apri su TMDB ↗"
   },
+  "NotFound": {
+    "eyebrow": "Fuori programmazione",
+    "title": "Questa pagina non è in cartellone.",
+    "text": "L'indirizzo è sbagliato o la pagina non esiste più.",
+    "documentTitle": "Pagina non trovata · Cineagenda",
+    "filmEyebrow": "Film non trovato",
+    "filmTitle": "Questo film non è in cartellone.",
+    "filmText": "Non c'è nessun film con questo identificativo oppure il link è errato.",
+    "filmDocumentTitle": "Film non trovato · Cineagenda",
+    "home": "Vai alle uscite",
+    "searchTmdb": "Cerca su TMDB ↗"
+  },
   "Error": {
-    "title": "Impossibile caricare le uscite.",
+    "eyebrow": "Proiezione interrotta",
+    "title": "Non riusciamo a caricare le uscite.",
+    "filmTitle": "Non riusciamo a caricare il film.",
+    "text": "TMDB non risponde. Riprova tra qualche secondo.",
     "retry": "Riprova"
   },
   "Footer": {
