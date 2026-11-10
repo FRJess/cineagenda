@@ -27,6 +27,20 @@ const range = new Intl.DateTimeFormat("it", {
 }).formatRange(new Date("2026-11-02T00:00:00Z"), new Date("2026-11-08T00:00:00Z"));
 
 describe("WeekSection", () => {
+  it("hands the list range to every card link", () => {
+    renderWithIntl(
+      <WeekSection
+        group={group}
+        todayMonday="2026-11-02"
+        range={{ from: "2026-11-02", to: "2026-11-15" }}
+      />,
+    );
+
+    for (const link of screen.getAllByRole("link")) {
+      expect(link.getAttribute("href")).toMatch(/^\/film\/\d+\?from=2026-11-02&to=2026-11-15$/);
+    }
+  });
+
   it("is a region named by its week heading", () => {
     renderWithIntl(<WeekSection group={group} todayMonday="2026-10-19" />);
 

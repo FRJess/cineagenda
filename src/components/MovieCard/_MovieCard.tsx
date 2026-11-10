@@ -3,6 +3,7 @@ import { useFormatter, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { formatCardDate } from "@/lib/releases/card-date";
 import type { Movie } from "@/lib/releases/movie";
+import type { ReleaseWindow } from "@/lib/releases/window";
 import "./_MovieCard.css";
 
 const POSTER_BASE = "https://image.tmdb.org/t/p/w342";
@@ -10,23 +11,27 @@ const POSTER_BASE = "https://image.tmdb.org/t/p/w342";
 /**
  * One release in the poster grid: the whole poster, then a band painted with a blurred copy
  * of it that carries the title and the date. Nothing covers the poster.
- * @param props Movie to show; `eager` loads the poster at once when it sits above the fold.
+ * @param props Movie to show; `eager` loads the poster at once when it sits above the fold;
+ * `range` is the list range, passed to the film page for its back link.
  * @returns Article with one link.
  */
 export function MovieCard({
   movie,
   eager = false,
+  range,
 }: {
   readonly movie: Movie;
   readonly eager?: boolean;
+  readonly range?: ReleaseWindow;
 }) {
   const t = useTranslations("Releases");
   const format = useFormatter();
   const poster = movie.posterPath ? POSTER_BASE + movie.posterPath : null;
+  const query = range ? `?from=${range.from}&to=${range.to}` : "";
 
   return (
     <article data-part="movie-card">
-      <Link href={`/film/${movie.id}`}>
+      <Link href={`/film/${movie.id}${query}`}>
         {poster ? (
           <Image src={poster} alt="" width={342} height={513} loading={eager ? "eager" : "lazy"} />
         ) : (
