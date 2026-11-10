@@ -1,4 +1,4 @@
-import { screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import type { MovieDetails } from "@/lib/tmdb/movie-details";
 import { renderWithIntl } from "@/test/intl";
@@ -54,7 +54,11 @@ const renderFilm = (
   extra: { today?: string; range?: { from: string; to: string } } = {},
 ) =>
   renderWithIntl(
-    <FilmDetail film={{ ...film, ...overrides }} today={extra.today ?? TODAY} range={extra.range} />,
+    <FilmDetail
+      film={{ ...film, ...overrides }}
+      today={extra.today ?? TODAY}
+      range={extra.range}
+    />,
   );
 
 describe("FilmDetail", () => {
@@ -100,14 +104,23 @@ describe("FilmDetail", () => {
 
   it("links back to the release list, keeping the range the film was opened from", () => {
     const withRange = renderFilm({}, { range: { from: "2026-11-16", to: "2026-11-29" } });
-    expect(screen.getByRole("link", { name: "Uscite" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Tutte le uscite" })).toHaveAttribute(
       "href",
       "/?from=2026-11-16&to=2026-11-29",
     );
     withRange.unmount();
 
     renderFilm();
-    expect(screen.getByRole("link", { name: "Uscite" })).toHaveAttribute("href", "/");
+    expect(screen.getByRole("link", { name: "Tutte le uscite" })).toHaveAttribute("href", "/");
+  });
+
+  it("puts the back link in a 'Torna alle uscite' nav, with a decorative icon", () => {
+    renderFilm();
+    const nav = screen.getByRole("navigation", { name: "Torna alle uscite" });
+    const link = screen.getByRole("link", { name: "Tutte le uscite" });
+
+    expect(nav).toContainElement(link);
+    expect(link.querySelector("[data-part='back-icon']")).toHaveAttribute("aria-hidden", "true");
   });
 
   it("opens the sheet with the limited-release note", () => {
@@ -156,14 +169,71 @@ describe("FilmDetail", () => {
     expect(container.querySelector("iframe")).toBeNull();
   });
 
-  it("renders the plot under a heading, with a fallback when it is missing", () => {
-    const withPlot = renderFilm();
-    expect(screen.getByRole("heading", { level: 2, name: "Trama" })).toBeInTheDocument();
-    expect(screen.getByText("Un viaggio nella foresta.")).toBeInTheDocument();
-    withPlot.unmount();
+  it("hides the plot behind a closed spoiler veil under its heading", () => {
+    const { container } = renderFilm();
+    const spoiler = container.querySelector("[data-part='film-plot'] details[data-part='spoiler']");
+    const summary = spoiler?.querySelector("summary");
 
-    renderFilm({ overview: "" });
-    expect(screen.getByText("Trama non disponibile.")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 2, name: "Trama" })).toBeInTheDocument();
+    expect(spoiler).not.toHaveAttribute("open");
+    expect(summary).toHaveAccessibleName(/^Mostra la trama/);
+    expect(summary).toHaveTextContent("Può contenere spoiler");
+    expect(summary?.querySelector("[data-part='spoiler-copy']")).toHaveAttribute(
+      "aria-hidden",
+      "true",
+    );
+    expect(spoiler?.querySelector(":scope > p")).toHaveTextContent("Un viaggio nella foresta.");
+  });
+
+  it("opens the spoiler on a click on the veil, and veils the plot again on a second click", () => {
+    const { container } = renderFilm();
+    const spoiler = container.querySelector("details[data-part='spoiler']");
+    const summary = spoiler?.querySelector("summary");
+
+    if (summary) {
+      fireEvent.click(summary);
+    }
+    expect(spoiler).toHaveAttribute("open");
+
+    if (summary) {
+      fireEvent.click(summary);
+    }
+    expect(spoiler).not.toHaveAttribute("open");
+  });
+
+  it("keeps a hide label in the summary for the open state", () => {
+    const { container } = renderFilm();
+
+    expect(
+      container.querySelector("[data-part='spoiler'] > summary [data-part='spoiler-hide']"),
+    ).toHaveTextContent(/^Nascondi la trama$/);
+  });
+
+  it("shows the missing-plot fallback in plain sight, with no spoiler", () => {
+    const { container } = renderFilm({ overview: "" });
+
+    expect(screen.getByText("Trama non disponibile.")).toHaveAttribute("data-empty");
+    expect(container.querySelector("[data-part='spoiler']")).toBeNull();
+  });
+
+  it("puts the facts under a Dettagli heading", () => {
+    const { container } = renderFilm();
+    const section = screen.getByRole("region", { name: "Dettagli" });
+
+    expect(section).toHaveAttribute("data-part", "film-facts");
+    expect(section).toContainElement(container.querySelector("dl"));
+  });
+
+  it("drops the facts section when no fact is left", () => {
+    renderFilm({
+      writers: [],
+      countries: [],
+      originalLanguage: "",
+      companies: [],
+      runtime: null,
+    });
+
+    expect(screen.queryByRole("heading", { name: "Dettagli" })).not.toBeInTheDocument();
   });
 
   it("lists the facts in order and skips the empty ones", () => {
@@ -243,7 +313,9 @@ describe("FilmDetail", () => {
     expect(withBackdrop.container.querySelector("[data-part='film']")).toHaveAttribute(
       "data-backdrop",
     );
-    expect(withBackdrop.container.querySelector("[data-part='film-hero'] > img")).toBeInTheDocument();
+    expect(
+      withBackdrop.container.querySelector("[data-part='film-hero'] > img"),
+    ).toBeInTheDocument();
     withBackdrop.unmount();
 
     const { container } = renderFilm({ backdropPath: null });
@@ -261,7 +333,7 @@ describe("FilmState", () => {
     );
 
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Film non trovato.");
-    expect(screen.getByRole("link", { name: "Uscite" })).toHaveAttribute("href", "/");
+    expect(screen.getByRole("link", { name: "Tutte le uscite" })).toHaveAttribute("href", "/");
     expect(container.querySelector("[data-part='film-hero'] img")).toBeNull();
     expect(container.querySelector("[data-part='film-body']")).toContainElement(
       screen.getByRole("button", { name: "Riprova" }),
