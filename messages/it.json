@@ -9,8 +9,10 @@
     "language": "Lingua",
     "it": "Italiano",
     "en": "English",
+    "fr": "Français",
     "itCode": "IT",
-    "enCode": "EN"
+    "enCode": "EN",
+    "frCode": "FR"
   },
   "Nav": {
     "thisWeekShort": "questa",

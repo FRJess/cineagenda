@@ -1,14 +1,14 @@
 "use client";
 
 import { DayPicker, type DateRange } from "@daypicker/react";
-import { enGB, it } from "@daypicker/react/locale";
+import { enGB, fr, it } from "@daypicker/react/locale";
 import { useFormatter, useLocale, useTranslations } from "next-intl";
 import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { DAY_MONTH_SHORT_YEAR, isoDateToUtc } from "@/lib/releases/iso-date";
 import { clampWeeks, extendWeeks, type WeekRange } from "@/lib/releases/week-range";
 import { MAX_WEEKS, MIN_DATE, todayInRome, weeksBetween } from "@/lib/releases/window";
 
-const LOCALES = { it, en: enGB } as const;
+const LOCALES = { it, en: enGB, fr } as const;
 
 const subscribeNever = () => () => undefined;
 const isClient = () => true;

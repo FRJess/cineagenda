@@ -53,6 +53,35 @@ describe("toMovie", () => {
     });
   });
 
+  it("uses the French overview, then the English one, for the French UI", () => {
+    const withFrench = details(
+      {
+        translations: {
+          translations: [
+            tr("it", "IT", { overview: "Trama" }),
+            tr("en", "US", { overview: "Plot" }),
+            tr("fr", "FR", { overview: "Synopsis" }),
+          ],
+        },
+      },
+      [rd(3, "2026-11-05")],
+    );
+    const withoutFrench = details(
+      {
+        translations: {
+          translations: [
+            tr("it", "IT", { overview: "Trama" }),
+            tr("en", "US", { overview: "Plot" }),
+          ],
+        },
+      },
+      [rd(3, "2026-11-05")],
+    );
+
+    expect(toMovie(withFrench, window, "fr", genreNames)?.overview).toBe("Synopsis");
+    expect(toMovie(withoutFrench, window, "fr", genreNames)?.overview).toBe("Plot");
+  });
+
   it("maps genres in API order and skips unknown ids", () => {
     const film = details({ genres: [{ id: 35 }, { id: 999 }, { id: 18 }] }, [rd(3, "2026-11-05")]);
 

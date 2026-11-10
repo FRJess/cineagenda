@@ -6,7 +6,7 @@ import { buildDisplayTitles } from "./title";
 import type { GenreNames, TmdbMovieDetails } from "./types";
 
 /** UI locales; overviews come from the matching translation. */
-export type UiLocale = "it" | "en";
+export type UiLocale = "it" | "en" | "fr";
 
 /** Films shorter than this are shorts and are not listed; unknown running times pass. */
 const MIN_RUNTIME_MINUTES = 60;
@@ -15,6 +15,9 @@ const overviewIn = (details: TmdbMovieDetails, lang: UiLocale): string =>
   details.translations.translations
     .find((t) => t.iso_639_1 === lang && t.data.overview?.trim())
     ?.data.overview?.trim() ?? "";
+
+// UI language first, then English, then Italian.
+const overviewOrder = (locale: UiLocale): readonly UiLocale[] => [locale, "en", "it"];
 
 /**
  * Maps TMDB details to a Movie for one UI locale.
@@ -51,6 +54,9 @@ export function toMovie(
     releaseDate: release.date,
     releaseType: release.type,
     releaseNote: release.note,
-    overview: overviewIn(details, locale) || overviewIn(details, locale === "it" ? "en" : "it"),
+    overview:
+      overviewOrder(locale)
+        .map((lang) => overviewIn(details, lang))
+        .find(Boolean) ?? "",
   };
 }

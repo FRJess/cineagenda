@@ -9,7 +9,7 @@ import { WeekPicker } from "./_WeekPicker";
 const renderPicker = (
   from = "2026-11-02",
   to = "2026-11-15",
-  locale: "it" | "en" = "it",
+  locale: "it" | "en" | "fr" = "it",
   releaseDay = 4,
 ) =>
   renderWithIntl(
@@ -54,6 +54,12 @@ describe("WeekPicker", () => {
     renderPicker("2026-11-02", "2026-11-15", "en");
 
     expect(screen.getByText("November 2026")).toBeInTheDocument();
+  });
+
+  it("names the weekdays in French", () => {
+    const { container } = renderPicker("2026-11-02", "2026-11-15", "fr");
+
+    expect(container.querySelectorAll(".rdp-weekday")[3]).toHaveTextContent("jeu.");
   });
 
   it("shows no days of the neighboring months", () => {

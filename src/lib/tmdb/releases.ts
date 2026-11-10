@@ -6,7 +6,11 @@ import type { GenreNames, TmdbDiscoverPage, TmdbGenreList, TmdbMovieDetails } fr
 
 const MAX_DISCOVER_PAGES = 20;
 const MAX_IN_FLIGHT = 8;
-const TMDB_LANGUAGE: Readonly<Record<UiLocale, string>> = { it: "it-IT", en: "en-US" };
+const TMDB_LANGUAGE: Readonly<Record<UiLocale, string>> = {
+  it: "it-IT",
+  en: "en-US",
+  fr: "fr-FR",
+};
 
 async function discoverIds(window: ReleaseWindow, country: Country): Promise<readonly number[]> {
   const ids = new Set<number>();
@@ -88,12 +92,12 @@ export async function fetchGenreNames(locale: UiLocale): Promise<GenreNames> {
 /**
  * Full details of one film for the film page.
  * @param id TMDB movie id.
- * @returns Details with credits, Italian and English videos, release dates and translations.
+ * @returns Details with credits, Italian, English and French videos, release dates and translations.
  * @throws {TmdbError} With status 404 when the id does not exist.
  */
 export async function fetchMovieDetails(id: number): Promise<TmdbMovieDetails> {
   return tmdbGet<TmdbMovieDetails>(`/movie/${id}`, {
     append_to_response: "credits,videos,release_dates,translations",
-    include_video_language: "it,en",
+    include_video_language: "it,en,fr",
   });
 }

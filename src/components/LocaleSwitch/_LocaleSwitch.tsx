@@ -1,12 +1,17 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
+import { Suspense } from "react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import "./_LocaleSwitch.css";
 
-/** Links to the current page in every locale; the active one carries aria-current. */
-export function LocaleSwitch() {
+type Query = Readonly<Record<string, string>>;
+
+const CODE_KEY = { it: "itCode", en: "enCode", fr: "frCode" } as const;
+
+function Links({ query }: { readonly query: Query }) {
   const t = useTranslations("Header");
   const current = useLocale();
   const pathname = usePathname();
@@ -17,17 +22,38 @@ export function LocaleSwitch() {
         {routing.locales.map((locale) => (
           <li key={locale}>
             <Link
-              href={pathname}
+              href={{ pathname, query }}
               locale={locale}
               lang={locale}
               aria-current={locale === current ? "page" : undefined}
             >
-              {locale === "it" ? t("itCode") : t("enCode")}
+              {/* The visible code stays in the name (WCAG 2.5.3); the full name follows it. */}
+              {t(CODE_KEY[locale])}
               <span data-part="sr-only"> {t(locale)}</span>
             </Link>
           </li>
         ))}
       </ul>
     </nav>
+  );
+}
+
+// Reads the query so changing language keeps the country and the dates.
+function LinksWithQuery() {
+  return <Links query={Object.fromEntries(useSearchParams())} />;
+}
+
+/**
+ * Links to the current page in every locale: the two-letter code, then the language's own name
+ * for screen readers;
+ * the active one carries aria-current. The links keep the query, so the country and the dates
+ * stay; until the query is read they point to the bare page.
+ * @returns Navigation landmark.
+ */
+export function LocaleSwitch() {
+  return (
+    <Suspense fallback={<Links query={{}} />}>
+      <LinksWithQuery />
+    </Suspense>
   );
 }

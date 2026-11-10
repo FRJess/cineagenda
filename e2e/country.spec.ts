@@ -91,3 +91,23 @@ test("the page title and description name the country", async ({ page }) => {
   await page.goto("/en?country=us");
   await expect(page).toHaveTitle("Cinema releases in the United States · Cineagenda");
 });
+
+test("the French UI keeps the chosen country and dates when switching language", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/it?country=us&from=2026-11-09&to=2026-11-15");
+  await page
+    .locator("[data-part='site-footer']")
+    .getByRole("link", { name: /Français/ })
+    .click();
+
+  await expect(page).toHaveURL(/\/fr\?country=us&from=2026-11-09&to=2026-11-15$/);
+  await expect(page.locator("html")).toHaveAttribute("lang", "fr");
+  await expect(page.getByRole("navigation", { name: "Semaines", exact: true })).toBeVisible();
+  await expect(page).toHaveTitle("Sorties au cinéma aux États-Unis · Cineagenda");
+  // Next keeps the previous page mounted but hidden, so only the visible summary counts.
+  await expect(page.locator("[data-part='country-picker'] > summary:visible")).toHaveAccessibleName(
+    "Pays des sorties : États-Unis",
+  );
+});
