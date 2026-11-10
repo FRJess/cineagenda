@@ -71,7 +71,7 @@
     --on-accent: #121218;
     --tab-bg: #f1f0f5;
     --tab-fg: #121218;
-    --tab-muted: #e8321a;
+    --tab-muted: #c42913;
     --poster-shadow: 0 1px 2px rgb(0 0 0 / 0.5), 0 10px 28px rgb(0 0 0 / 0.55);
   }
 }
@@ -87,7 +87,7 @@
   --on-accent: #121218;
   --tab-bg: #f1f0f5;
   --tab-fg: #121218;
-  --tab-muted: #e8321a;
+  --tab-muted: #c42913;
   --poster-shadow: 0 1px 2px rgb(0 0 0 / 0.5), 0 10px 28px rgb(0 0 0 / 0.55);
   color-scheme: dark;
 }
@@ -215,7 +215,7 @@ button {
   font: inherit;
   font-weight: 600;
   color: var(--on-accent);
-  background: var(--accent);
+  background: var(--accent-strong);
   border: 0;
   border-radius: var(--radius);
   cursor: pointer;
