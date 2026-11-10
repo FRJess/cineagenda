@@ -39,20 +39,24 @@
   "Film": {
     "director": "Regia",
     "cast": "Cast",
-    "country": "Paese",
-    "production": "Produzione",
+    "country": "{count, plural, one {Paese di origine} other {Paesi di origine}}",
+    "production": "Prodotto da",
     "runtime": "{minutes} min",
     "trailer": "Trailer",
     "back": "Uscite",
     "notFound": "Film non trovato.",
     "releaseDate": "Al cinema da <time>{date}</time>",
-    "originalTitle": "Titolo originale",
     "genres": "Generi",
     "overview": "Trama",
     "noOverview": "Trama non disponibile.",
     "runtimeLabel": "Durata",
     "watchTrailer": "Guarda il trailer",
-    "runtimeShort": "{hours}h {minutes}"
+    "screenplay": "Sceneggiatura",
+    "originalLanguage": "Lingua originale",
+    "fromToday": "da oggi",
+    "fromYesterday": "da ieri",
+    "source": "Dati e immagini: TMDB",
+    "openTmdb": "Apri su TMDB ↗"
   },
   "Error": {
     "title": "Impossibile caricare le uscite.",

@@ -39,20 +39,24 @@
   "Film": {
     "director": "Director",
     "cast": "Cast",
-    "country": "Country",
-    "production": "Production",
+    "country": "{count, plural, one {Country of origin} other {Countries of origin}}",
+    "production": "Produced by",
     "runtime": "{minutes} min",
     "trailer": "Trailer",
     "back": "Releases",
     "notFound": "Film not found.",
     "releaseDate": "In cinemas from <time>{date}</time>",
-    "originalTitle": "Original title",
     "genres": "Genres",
     "overview": "Plot",
     "noOverview": "Plot not available.",
     "runtimeLabel": "Running time",
     "watchTrailer": "Watch the trailer",
-    "runtimeShort": "{hours}h {minutes}"
+    "screenplay": "Screenplay",
+    "originalLanguage": "Original language",
+    "fromToday": "from today",
+    "fromYesterday": "since yesterday",
+    "source": "Data and images: TMDB",
+    "openTmdb": "Open on TMDB ↗"
   },
   "Error": {
     "title": "Could not load the releases.",
