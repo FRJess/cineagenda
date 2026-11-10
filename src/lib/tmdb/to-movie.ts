@@ -1,3 +1,4 @@
+import { type Country, DEFAULT_COUNTRY } from "@/lib/country";
 import type { Movie } from "@/lib/releases/movie";
 import type { ReleaseWindow } from "@/lib/releases/window";
 import { pickRelease } from "./release-date";
@@ -21,15 +22,18 @@ const overviewIn = (details: TmdbMovieDetails, lang: UiLocale): string =>
  * @param window Release window.
  * @param locale UI locale for the overview.
  * @param genreNames Localized genre names.
- * @returns Movie, or null when it has no Italian cinema release in the window or is a short.
+ * @param country Country whose release date and title are shown; Italy by default.
+ * @returns Movie, or null when it has no cinema release in that country in the window or is a
+ * short.
  */
 export function toMovie(
   details: TmdbMovieDetails,
   window: ReleaseWindow,
   locale: UiLocale,
   genreNames: GenreNames,
+  country: Country = DEFAULT_COUNTRY,
 ): Movie | null {
-  const release = pickRelease(details, window);
+  const release = pickRelease(details, window, country);
   const isShort = !!details.runtime && details.runtime < MIN_RUNTIME_MINUTES;
 
   if (!release || isShort) {
@@ -38,7 +42,7 @@ export function toMovie(
 
   return {
     id: details.id,
-    ...buildDisplayTitles(details),
+    ...buildDisplayTitles(details, country),
     originalTitle: details.original_title,
     posterPath: details.poster_path,
     backdropPath: details.backdrop_path ?? null,

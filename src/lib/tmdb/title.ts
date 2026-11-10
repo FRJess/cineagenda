@@ -1,3 +1,4 @@
+import { type Country, DEFAULT_COUNTRY, titleLanguage } from "@/lib/country";
 import type { TmdbMovieDetails, TmdbTranslation } from "./types";
 
 const same = (a: string, b: string): boolean => a.trim().toLowerCase() === b.trim().toLowerCase();
@@ -17,23 +18,30 @@ const titleIn = (
 export type DisplayTitles = { readonly title: string; readonly subtitle: string };
 
 /**
- * Card title and film-page subtitle, the same in every UI locale. Italian originals stay
- * alone; otherwise the Italian title is the card title and the original is the subtitle, or
- * the original is the card title and the English title the subtitle when there is no Italian.
+ * Card title and film-page subtitle for one country, the same in every UI locale. A film in the
+ * country's language keeps its original title alone; otherwise the country's title is the card
+ * title and the original the subtitle. Without a local title the original is the card title,
+ * with the English title as subtitle outside English-speaking countries.
  * @param details Movie details with `translations`.
+ * @param country Country of the listing; Italy by default.
  * @returns Card title and subtitle, which is empty when there is nothing distinct to show.
  */
-export function buildDisplayTitles(details: TmdbMovieDetails): DisplayTitles {
+export function buildDisplayTitles(
+  details: TmdbMovieDetails,
+  country: Country = DEFAULT_COUNTRY,
+): DisplayTitles {
   const original = details.original_title.trim();
+  const lang = titleLanguage(country);
 
-  if (details.original_language === "it") {
+  if (details.original_language === lang) {
     return { title: original, subtitle: "" };
   }
 
   const translations = details.translations.translations;
-  const italian = titleIn(translations, "it");
-  const primary = italian || original;
-  const secondary = italian ? original : titleIn(translations, "en", "US");
+  const local = titleIn(translations, lang, country);
+  const primary = local || original;
+  const fallback = lang === "en" ? "" : titleIn(translations, "en", "US");
+  const secondary = local ? original : fallback;
   const subtitle = secondary && !same(primary, secondary) ? secondary.trim() : "";
 
   return { title: primary.trim(), subtitle };

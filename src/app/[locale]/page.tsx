@@ -7,6 +7,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { WeekSection } from "@/components/WeekSection";
 import { WeekTabs } from "@/components/WeekTabs";
 import { routing } from "@/i18n/routing";
+import { DEFAULT_COUNTRY, parseCountry } from "@/lib/country";
 import { mondayOf, parseRange, sundayOf, todayInRome, weeksBetween } from "@/lib/releases/window";
 import { getWeekReleases } from "@/lib/tmdb/cached";
 import type { UiLocale } from "@/lib/tmdb/to-movie";
@@ -31,7 +32,7 @@ function WeekSkeleton({ label }: { readonly label: string }) {
 const first = (value: string | string[] | undefined): string | undefined =>
   Array.isArray(value) ? value[0] : value;
 
-// Request-time: reads searchParams and the clock. The header and the weeks both need it.
+// Request-time: reads searchParams and the clock. The header and the weeks both need them.
 async function loadRange(searchParams: SearchParams) {
   const params = await searchParams;
 
@@ -43,6 +44,7 @@ async function loadRange(searchParams: SearchParams) {
     today,
     todayMonday: mondayOf(today),
     range: parseRange(first(params.from), first(params.to), today),
+    country: parseCountry(first(params.country)) ?? DEFAULT_COUNTRY,
   };
 }
 
@@ -55,10 +57,10 @@ async function HeaderTabs({ searchParams }: { readonly searchParams: SearchParam
 
 // Streams into the page: one section per week. Paging happens in the navbar.
 async function Weeks({ locale, searchParams }: { locale: UiLocale; searchParams: SearchParams }) {
-  const { todayMonday, range } = await loadRange(searchParams);
+  const { todayMonday, range, country } = await loadRange(searchParams);
   const weeks = weeksBetween(range);
   const releases = await Promise.all(
-    weeks.map((weekStart) => getWeekReleases(weekStart, locale, weekStart < todayMonday)),
+    weeks.map((weekStart) => getWeekReleases(weekStart, locale, weekStart < todayMonday, country)),
   );
 
   return (

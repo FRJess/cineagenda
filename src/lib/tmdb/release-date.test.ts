@@ -30,6 +30,23 @@ describe("pickRelease", () => {
     });
   });
 
+  it("reads the release of the chosen country", () => {
+    const film = details({
+      release_dates: {
+        results: [
+          { iso_3166_1: "IT", release_dates: [rd(3, "2026-11-12")] },
+          { iso_3166_1: "FR", release_dates: [rd(3, "2026-11-11")] },
+        ],
+      },
+    });
+
+    expect(pickRelease(film, window, "FR")).toEqual({
+      date: "2026-11-11",
+      type: "theatrical",
+      note: "",
+    });
+  });
+
   it("ignores other countries", () => {
     const film = details({
       release_dates: { results: [{ iso_3166_1: "US", release_dates: [rd(3, "2026-11-05")] }] },

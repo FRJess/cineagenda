@@ -1,3 +1,4 @@
+import { type Country, DEFAULT_COUNTRY } from "@/lib/country";
 import type { ReleaseWindow } from "@/lib/releases/window";
 import { tmdbGet } from "./client";
 import type { UiLocale } from "./to-movie";
@@ -7,12 +8,12 @@ const MAX_DISCOVER_PAGES = 20;
 const MAX_IN_FLIGHT = 8;
 const TMDB_LANGUAGE: Readonly<Record<UiLocale, string>> = { it: "it-IT", en: "en-US" };
 
-async function discoverIds(window: ReleaseWindow): Promise<readonly number[]> {
+async function discoverIds(window: ReleaseWindow, country: Country): Promise<readonly number[]> {
   const ids = new Set<number>();
 
   for (let page = 1; page <= MAX_DISCOVER_PAGES; page++) {
     const result = await tmdbGet<TmdbDiscoverPage>("/discover/movie", {
-      region: "IT",
+      region: country,
       with_release_type: "3|2",
       "release_date.gte": window.from,
       "release_date.lte": window.to,
@@ -53,14 +54,16 @@ async function mapLimited<T, R>(
 }
 
 /**
- * Details of every film TMDB lists as an Italian theatrical release in the window.
+ * Details of every film TMDB lists as a theatrical release of the country in the window.
  * @param window Release window.
+ * @param country Country of the releases; Italy by default.
  * @returns Details with release dates and translations, in discover order.
  */
 export async function fetchReleaseDetails(
   window: ReleaseWindow,
+  country: Country = DEFAULT_COUNTRY,
 ): Promise<readonly TmdbMovieDetails[]> {
-  const ids = await discoverIds(window);
+  const ids = await discoverIds(window, country);
 
   return mapLimited(ids, MAX_IN_FLIGHT, (id) =>
     tmdbGet<TmdbMovieDetails>(`/movie/${id}`, {

@@ -30,6 +30,29 @@ describe("toMovie", () => {
     });
   });
 
+  it("uses the date and title of the chosen country", () => {
+    const film = details({
+      original_title: "2001: A Space Odyssey",
+      release_dates: {
+        results: [
+          { iso_3166_1: "IT", release_dates: [rd(3, "2026-11-12")] },
+          { iso_3166_1: "FR", release_dates: [rd(3, "2026-11-11")] },
+        ],
+      },
+      translations: {
+        translations: [
+          tr("it", "IT", { title: "2001: Odissea nello spazio" }),
+          tr("fr", "FR", { title: "2001, l'Odyssée de l'espace" }),
+        ],
+      },
+    });
+
+    expect(toMovie(film, window, "it", genreNames, "FR")).toMatchObject({
+      title: "2001, l'Odyssée de l'espace",
+      releaseDate: "2026-11-11",
+    });
+  });
+
   it("maps genres in API order and skips unknown ids", () => {
     const film = details({ genres: [{ id: 35 }, { id: 999 }, { id: 18 }] }, [rd(3, "2026-11-05")]);
 

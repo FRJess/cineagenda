@@ -7,6 +7,7 @@ import { Suspense } from "react";
 import { FilmDetail, FilmSkeleton } from "@/components/FilmDetail";
 import { SiteHeader } from "@/components/SiteHeader";
 import { routing } from "@/i18n/routing";
+import { DEFAULT_COUNTRY, parseCountry } from "@/lib/country";
 import { parseRange, todayInRome } from "@/lib/releases/window";
 import { getMovieDetails } from "@/lib/tmdb/cached";
 import type { MovieDetails } from "@/lib/tmdb/movie-details";
@@ -26,15 +27,16 @@ const parseId = (value: string): number | null => (/^\d{1,9}$/.test(value) ? Num
 const first = (value: string | string[] | undefined): string | undefined =>
   Array.isArray(value) ? value[0] : value;
 
-async function loadFilm(params: Params) {
+async function loadFilm(params: Params, searchParams: SearchParams) {
   const { locale, id } = await params;
+  const country = parseCountry(first((await searchParams).country)) ?? DEFAULT_COUNTRY;
   const movieId = parseId(id);
 
   if (!hasLocale(routing.locales, locale) || movieId === null) {
     return null;
   }
 
-  return { locale, film: await getMovieDetails(movieId, locale) };
+  return { locale, country, film: await getMovieDetails(movieId, locale, country) };
 }
 
 /**
@@ -42,9 +44,15 @@ async function loadFilm(params: Params) {
  * @param props Route props.
  * @returns Metadata.
  */
-export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+  searchParams,
+}: {
+  params: Params;
+  searchParams: SearchParams;
+}): Promise<Metadata> {
   const { locale } = await params;
-  const loaded = await loadFilm(params);
+  const loaded = await loadFilm(params, searchParams);
 
   if (loaded?.film) {
     return { title: `${loaded.film.title} | Cineagenda` };
@@ -84,7 +92,7 @@ async function Film({
  * @returns Film details, or the not-found page.
  */
 export default async function FilmPage({ params, searchParams }: PageProps<"/[locale]/film/[id]">) {
-  const loaded = await loadFilm(params);
+  const loaded = await loadFilm(params, searchParams);
 
   if (!loaded?.film) {
     notFound();
