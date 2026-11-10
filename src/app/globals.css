@@ -41,9 +41,9 @@
   /* Accent for small text and filled buttons: #e8321a misses WCAG AA on light surfaces (3.6:1);
      this passes 4.85:1 on --background and 5.7:1 under white text. */
   --accent-strong: #c42913;
-  /* Genre pills: a label, not a button. Dark-red text on rose, 5.8:1. */
-  --chip-fg: #a8230f;
-  --chip-bg: #fce0dd;
+  /* Genre pills: a label, not a button. Dark red on the card-date pink, 6.2:1. */
+  --chip-fg: #7a1a0b;
+  --chip-bg: #ffb3a6;
   --on-accent: #ffffff;
   --tab-bg: #101018;
   --tab-fg: #ffffff;
