@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   pageRange,
+  shiftRange,
   defaultRange,
   getReleaseWindow,
   MAX_RANGE_DAYS,
@@ -49,6 +50,17 @@ describe("getReleaseWindow", () => {
 describe("sundayOf", () => {
   it("returns the Sunday of a Monday's week", () => {
     expect(sundayOf("2026-11-02")).toBe("2026-11-08");
+  });
+});
+
+describe("shiftRange", () => {
+  it("moves a range by its own length, forward and back", () => {
+    const week = { from: "2026-11-09", to: "2026-11-15" };
+    const three = { from: "2026-11-02", to: "2026-11-22" };
+
+    expect(shiftRange(week, 1)).toEqual({ from: "2026-11-16", to: "2026-11-22" });
+    expect(shiftRange(week, -1)).toEqual({ from: "2026-11-02", to: "2026-11-08" });
+    expect(shiftRange(three, 1)).toEqual({ from: "2026-11-23", to: "2026-12-13" });
   });
 });
 

@@ -1,7 +1,7 @@
 /**
  * FILE: _WeekTabs.css
- * USAGE: Styles for WeekTabs, the row of week tabs in the navbar and its Date disclosure; the active tab is inverted
- * SCOPE: [data-part="week-tabs"], [data-part="date-picker"]
+ * USAGE: Styles for WeekTabs: from 48rem the row of week tabs and its Date disclosure, the active tab inverted; below 48rem the period bar (arrows around the same disclosure, whose summary shows the period)
+ * SCOPE: [data-part="week-tabs"], [data-part="date-picker"], [data-part="date-label"], [data-part="period"], [data-part="step-previous"], [data-part="step-next"]
  */
 
 /* ─── Row: the list scrolls, the disclosure stays put beside it ─── */
@@ -60,7 +60,7 @@
 }
 
 [data-part="week-tabs"] > ul > li > a > small,
-[data-part="date-picker"] > summary > small {
+[data-part="date-label"] > small {
   margin-top: 0.125rem;
   font-size: 0.625rem;
   font-weight: 600;
@@ -100,6 +100,112 @@
 [data-part="date-picker"][open] > summary {
   border-style: solid;
   border-color: var(--foreground);
+}
+
+[data-part="date-label"] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* The period bar exists only below 48rem. */
+[data-part="period"],
+[data-part="step-previous"],
+[data-part="step-next"] {
+  display: none;
+}
+
+/* ─── Below 48rem: the period bar, previous | period | next, all 2.75rem tall ─── */
+
+@media (max-width: 47.99rem) {
+  [data-part="week-tabs"] {
+    gap: 0.5rem;
+  }
+
+  [data-part="week-tabs"] > ul,
+  [data-part="date-label"] {
+    display: none;
+  }
+
+  [data-part="step-previous"],
+  [data-part="step-next"] {
+    display: flex;
+    flex: 0 0 2.75rem;
+    align-items: center;
+    justify-content: center;
+    height: 2.75rem;
+    color: var(--foreground);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.625rem;
+  }
+
+  [data-part="step-previous"]::after,
+  [data-part="step-next"]::after {
+    width: 0.5rem;
+    height: 0.5rem;
+    content: "";
+    border-bottom: 2px solid currentColor;
+    border-left: 2px solid currentColor;
+  }
+
+  [data-part="step-previous"]::after {
+    margin-left: 0.1875rem;
+    transform: rotate(45deg);
+  }
+
+  [data-part="step-next"]::after {
+    margin-right: 0.1875rem;
+    transform: rotate(-135deg);
+  }
+
+  /* Source order is previous, tabs, next, disclosure; the period sits between the arrows. */
+  [data-part="step-next"] {
+    order: 2;
+  }
+
+  [data-part="date-picker"] {
+    flex: 1 1 auto;
+    order: 1;
+    min-width: 0;
+  }
+
+  [data-part="date-picker"] > summary,
+  [data-part="date-picker"][open] > summary {
+    flex-direction: row;
+    height: 2.75rem;
+    padding: 0 0.75rem;
+    color: var(--tab-fg);
+    background: var(--tab-bg);
+    border: 0;
+    border-radius: 0.625rem;
+  }
+
+  [data-part="period"] {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    min-width: 0;
+  }
+
+  [data-part="period"] > span {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  [data-part="period"] b {
+    font-size: 0.9375rem;
+  }
+
+  [data-part="period"] small {
+    margin-top: 0.125rem;
+    font-size: 0.5625rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--tab-muted);
+  }
 }
 
 /* Below 48rem the form is a bottom sheet; this scrim dims the page behind it. */

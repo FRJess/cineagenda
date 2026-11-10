@@ -119,6 +119,18 @@ export function parseRange(
 }
 
 /**
+ * The range of the same length just before or after, for the period arrows on phones.
+ * @param range Monday-to-Sunday range.
+ * @param direction 1 for the next period, -1 for the previous one.
+ * @returns Shifted range.
+ */
+export function shiftRange(range: ReleaseWindow, direction: 1 | -1): ReleaseWindow {
+  const days = weeksBetween(range).length * 7 * direction;
+
+  return { from: addDays(range.from, days), to: addDays(range.to, days) };
+}
+
+/**
  * The single-week page of a week tab.
  * @param monday ISO date of a Monday.
  * @returns Monday to the Sunday of that week.

@@ -25,7 +25,11 @@
     "weeksCount": "{count, plural, one {# week} other {# weeks}}",
     "maxWeeks": "max {max}",
     "maxReached": "maximum reached",
-    "showWeeks": "Show {count, plural, one {# week} other {# weeks}}"
+    "showWeeks": "Show {count, plural, one {# week} other {# weeks}}",
+    "previousPeriod": "Previous period",
+    "nextPeriod": "Next period",
+    "periodThisWeek": "this week",
+    "periodFromThisWeek": "from this week"
   },
   "Country": {
     "label": "Release country: {country}",

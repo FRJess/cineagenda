@@ -43,15 +43,6 @@ describe("SiteHeader", () => {
     expect(container.querySelector("picture img")).toHaveAttribute("alt", "");
   });
 
-  it("wraps the wordmark text so phones can show the mark alone, keeping the link name", () => {
-    const { container } = renderWithIntl(<SiteHeader />);
-
-    expect(container.querySelector("[data-part='brand'] [data-part='wordmark']")).toHaveTextContent(
-      "cineagenda",
-    );
-    expect(screen.getByRole("link", { name: "cineagenda" })).toBeInTheDocument();
-  });
-
   it("leaves the language to the footer", () => {
     renderWithIntl(<SiteHeader />);
 

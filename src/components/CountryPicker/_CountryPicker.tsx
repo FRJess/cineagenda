@@ -45,7 +45,7 @@ export function CountryPicker({
       summary={
         <>
           <Flag country={country} />
-          {name(country)}
+          <span data-part="country-name">{name(country)}</span>
         </>
       }
     >
