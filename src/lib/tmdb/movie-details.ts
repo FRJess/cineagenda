@@ -17,8 +17,13 @@ export type MovieDetails = Movie & {
   /** Minutes, null when TMDB has none. */
   readonly runtime: number | null;
   readonly directors: readonly string[];
+  /** Screenplay and writer credits, each name once. */
+  readonly writers: readonly string[];
+  /** ISO 639-1 code of the original language, e.g. "fr". */
+  readonly originalLanguage: string;
   /** Top-billed cast, at most ten. */
   readonly cast: readonly CastMember[];
+  /** ISO 3166-1 codes of the production countries, e.g. "FR". */
   readonly countries: readonly string[];
   readonly companies: readonly string[];
   /** YouTube video id, null when TMDB has no trailer in the UI language or English. */
@@ -26,6 +31,7 @@ export type MovieDetails = Movie & {
 };
 
 const MAX_CAST = 10;
+const WRITER_JOBS: ReadonlySet<string> = new Set(["Screenplay", "Writer"]);
 
 /**
  * YouTube trailer to embed: UI language first, then English; official first, then newest.
@@ -71,6 +77,10 @@ export function toMovieDetails(
     year: details.release_date ? Number(details.release_date.slice(0, 4)) : null,
     runtime: details.runtime ?? null,
     directors: credits.crew.filter((member) => member.job === "Director").map((m) => m.name),
+    writers: [
+      ...new Set(credits.crew.filter((member) => WRITER_JOBS.has(member.job)).map((m) => m.name)),
+    ],
+    originalLanguage: details.original_language,
     cast: [...credits.cast]
       .sort((a, b) => a.order - b.order)
       .slice(0, MAX_CAST)
@@ -79,7 +89,7 @@ export function toMovieDetails(
         character: member.character,
         profilePath: member.profile_path,
       })),
-    countries: (details.production_countries ?? []).map((country) => country.name),
+    countries: (details.production_countries ?? []).map((country) => country.iso_3166_1),
     companies: (details.production_companies ?? []).map((company) => company.name),
     trailerKey: pickTrailer(details.videos?.results ?? [], locale),
   };

@@ -66,7 +66,7 @@ describe("toMovieDetails", () => {
       releaseType: "theatrical",
       runtime: 99,
       genres: ["Documentario"],
-      countries: ["France"],
+      countries: ["FR"],
       companies: ["Paprika Films", "Kobalann"],
       backdropPath: "/back.jpg",
       year: 2025,
@@ -76,6 +76,23 @@ describe("toMovieDetails", () => {
 
   it("lists directors from the crew", () => {
     expect(toMovieDetails(full(), window, "it", {})?.directors).toEqual(["Vincent Munier"]);
+  });
+
+  it("lists screenplay and writer credits once each", () => {
+    const crew = [
+      { id: 3, name: "Vincent Munier", job: "Director" },
+      { id: 3, name: "Vincent Munier", job: "Screenplay" },
+      { id: 5, name: "Ann Lee", job: "Writer" },
+      { id: 5, name: "Ann Lee", job: "Screenplay" },
+      { id: 6, name: "Bo Kim", job: "Novel" },
+    ];
+    const result = toMovieDetails(full({ credits: { cast: [], crew } }), window, "it", {});
+
+    expect(result?.writers).toEqual(["Vincent Munier", "Ann Lee"]);
+  });
+
+  it("keeps the original language code", () => {
+    expect(toMovieDetails(full(), window, "it", {})?.originalLanguage).toBe("fr");
   });
 
   it("orders the cast by TMDB order and keeps at most ten", () => {

@@ -4,7 +4,7 @@ import { MovieCard } from "@/components/MovieCard";
 import { pickFeatured } from "@/lib/releases/featured";
 import type { WeekGroup } from "@/lib/releases/group-by-week";
 import { DAY_MONTH, isoDateToUtc } from "@/lib/releases/iso-date";
-import { addDays } from "@/lib/releases/window";
+import { addDays, type ReleaseWindow } from "@/lib/releases/window";
 import "./_WeekSection.css";
 
 // On wide screens the featured card spans 3 of 5 columns, so 2 posters share the first row.
@@ -13,23 +13,25 @@ const EAGER_POSTERS = 2;
 /**
  * One release week: labeled heading with the date range ("Nessuna uscita" beside it when the
  * week is empty), then a grid that opens with the week's featured film and holds the others.
- * @param props Week group, the Monday of the current week, and `eager` for the week shown
- * above the fold.
+ * @param props Week group, the Monday of the current week, `eager` for the week shown above
+ * the fold, and the list range the cards pass to the film page.
  * @returns Section labeled by its heading.
  */
 export function WeekSection({
   group,
   todayMonday,
   eager = false,
+  range,
 }: {
   readonly group: WeekGroup;
   readonly todayMonday: string;
   readonly eager?: boolean;
+  readonly range?: ReleaseWindow;
 }) {
   const t = useTranslations("Releases");
   const format = useFormatter();
   const headingId = `week-${group.weekStart}`;
-  const range = format.dateTimeRange(
+  const dates = format.dateTimeRange(
     isoDateToUtc(group.weekStart),
     isoDateToUtc(group.weekEnd),
     DAY_MONTH,
@@ -48,7 +50,7 @@ export function WeekSection({
     >
       <header>
         <h2 id={headingId}>
-          <small>{label}</small> {range}
+          <small>{label}</small> {dates}
         </h2>
         {group.movies.length === 0 && <p>{t("noReleases")}</p>}
       </header>
@@ -56,12 +58,12 @@ export function WeekSection({
         <ol>
           {featured && (
             <li key={featured.id} data-featured="">
-              <FeaturedCard movie={featured} />
+              <FeaturedCard movie={featured} range={range} />
             </li>
           )}
           {others.map((movie, index) => (
             <li key={movie.id}>
-              <MovieCard movie={movie} eager={eager && index < EAGER_POSTERS} />
+              <MovieCard movie={movie} eager={eager && index < EAGER_POSTERS} range={range} />
             </li>
           ))}
         </ol>
