@@ -1,7 +1,7 @@
 /**
  * FILE: _SiteHeader.css
  * USAGE: Styles for SiteHeader: brand and country on one row; on the home page the week tabs take the second row on phones and the middle of the first row from 48rem, and the header sticks
- * SCOPE: [data-part="site-header"], [data-part="brand"]
+ * SCOPE: [data-part="site-header"], [data-part="brand"], [data-part="wordmark"]
  */
 
 /* ─── Row: brand and country; on home the week tabs wrap to a second row ─── */
@@ -54,7 +54,7 @@
   text-decoration: none;
 }
 
-[data-part="brand"] span {
+[data-part="wordmark"] span {
   color: var(--accent);
 }
 
@@ -69,6 +69,25 @@
   display: block;
   width: 100%;
   height: 100%;
+}
+
+/* ─── Below 32rem: the mark alone, so brand and country fit one row ─── */
+
+/* The widest country button ("United Kingdom") does not fit beside the wordmark on a phone.
+   The text stays in the link for screen readers; only its box is clipped. */
+@media (max-width: 31.99rem) {
+  [data-part="wordmark"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  [data-part="brand"] picture {
+    margin-right: 0;
+  }
 }
 
 /* ─── From 48rem: one row, brand | week tabs | country ─── */

@@ -26,7 +26,9 @@ export function SiteHeader({
         {/* next/image is for raster content; the mark is a static SVG from public/. */}
         <img src="/logo-mark.svg" alt="" width={22} height={22} />
       </picture>
-      cine<span>agenda</span>
+      <span data-part="wordmark">
+        cine<span>agenda</span>
+      </span>
     </Link>
   );
 
