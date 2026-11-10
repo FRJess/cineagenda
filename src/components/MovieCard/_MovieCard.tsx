@@ -52,9 +52,7 @@ export function MovieCard({
           )}
           <h3>{movie.title}</h3>
           <p>
-            <time dateTime={movie.releaseDateIt}>
-              {formatCardDate(format, movie.releaseDateIt)}
-            </time>
+            <time dateTime={movie.releaseDate}>{formatCardDate(format, movie.releaseDate)}</time>
             {movie.releaseType === "limited" && (
               <span data-release="limited">{t("limitedShort")}</span>
             )}

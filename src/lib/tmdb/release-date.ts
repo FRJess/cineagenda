@@ -3,7 +3,7 @@ import type { ReleaseWindow } from "@/lib/releases/window";
 import type { TmdbMovieDetails, TmdbReleaseDate } from "./types";
 
 /** Italian release picked for a window. */
-export type ItalianRelease = {
+export type Release = {
   readonly date: string;
   readonly type: ReleaseType;
   readonly note: string;
@@ -29,10 +29,7 @@ const daysApart = (a: string, b: string): number =>
  * @param window Inclusive window.
  * @returns The release, or null when no cinema entry falls in the window.
  */
-export function pickItalianRelease(
-  details: TmdbMovieDetails,
-  window: ReleaseWindow,
-): ItalianRelease | null {
+export function pickRelease(details: TmdbMovieDetails, window: ReleaseWindow): Release | null {
   const entries =
     details.release_dates.results.find((country) => country.iso_3166_1 === "IT")?.release_dates ??
     [];

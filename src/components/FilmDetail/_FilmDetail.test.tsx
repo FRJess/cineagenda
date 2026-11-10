@@ -29,7 +29,7 @@ const film: MovieDetails = {
   backdropPath: "/back.jpg",
   popularity: 10,
   genres: ["Documentario", "Natura"],
-  releaseDateIt: "2026-11-12",
+  releaseDate: "2026-11-12",
   releaseType: "limited",
   releaseNote: "IMAX",
   overview: "Un viaggio nella foresta.",

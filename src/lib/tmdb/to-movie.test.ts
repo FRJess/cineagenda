@@ -25,7 +25,7 @@ describe("toMovie", () => {
       title: "2001: Odissea nello spazio",
       subtitle: "2001: A Space Odyssey",
       originalTitle: "2001: A Space Odyssey",
-      releaseDateIt: "2026-11-16",
+      releaseDate: "2026-11-16",
       posterPath: "/poster.jpg",
     });
   });

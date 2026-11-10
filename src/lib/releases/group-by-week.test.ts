@@ -3,7 +3,7 @@ import { groupByWeek } from "./group-by-week";
 import type { Movie } from "./movie";
 
 let nextId = 1;
-const movie = (title: string, releaseDateIt: string): Movie => ({
+const movie = (title: string, releaseDate: string): Movie => ({
   id: nextId++,
   title,
   subtitle: "",
@@ -12,7 +12,7 @@ const movie = (title: string, releaseDateIt: string): Movie => ({
   backdropPath: null,
   popularity: 0,
   genres: [],
-  releaseDateIt,
+  releaseDate,
   releaseType: "theatrical",
   releaseNote: "",
   overview: "",

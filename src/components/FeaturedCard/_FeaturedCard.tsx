@@ -45,9 +45,7 @@ export function FeaturedCard({
           <p data-part="card-eyebrow">{t("featured")}</p>
           <h3>{movie.title}</h3>
           <p data-part="card-meta">
-            <time dateTime={movie.releaseDateIt}>
-              {formatCardDate(format, movie.releaseDateIt)}
-            </time>
+            <time dateTime={movie.releaseDate}>{formatCardDate(format, movie.releaseDate)}</time>
             {genres && ` · ${genres}`}
           </p>
         </div>

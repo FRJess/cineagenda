@@ -17,7 +17,7 @@ export type WeekGroup = {
  * @returns Negative, zero or positive.
  */
 export const byDateThenTitle = (a: Movie, b: Movie): number =>
-  a.releaseDateIt.localeCompare(b.releaseDateIt) || a.title.localeCompare(b.title, "it");
+  a.releaseDate.localeCompare(b.releaseDate) || a.title.localeCompare(b.title, "it");
 
 /**
  * Groups movies by release week, weeks ascending, movies by date then title.
@@ -28,7 +28,7 @@ export function groupByWeek(movies: readonly Movie[]): readonly WeekGroup[] {
   const weeks = new Map<string, Movie[]>();
 
   for (const movie of [...movies].sort(byDateThenTitle)) {
-    const monday = mondayOf(movie.releaseDateIt);
+    const monday = mondayOf(movie.releaseDate);
 
     weeks.set(monday, [...(weeks.get(monday) ?? []), movie]);
   }
