@@ -6,6 +6,7 @@ import { daysFromToday } from "@/lib/releases/days-from-today";
 import { isoDateToUtc, WEEKDAY_DAY_MONTH } from "@/lib/releases/iso-date";
 import type { ReleaseWindow } from "@/lib/releases/window";
 import type { CastMember, MovieDetails } from "@/lib/tmdb/movie-details";
+import { FilmSpoiler } from "./_FilmSpoiler";
 import { FilmTrailer } from "./_FilmTrailer";
 import "./_FilmDetail.css";
 
@@ -44,7 +45,8 @@ function CastItem({ member }: { readonly member: CastMember }) {
 
 /**
  * Film page body: backdrop hero with date, title and byline, then a single-column sheet with the
- * limited release note, genres, plot, facts, cast, trailer and the TMDB attribution; from 48rem
+ * limited release note, genres, plot behind a spoiler, details, cast, trailer and the TMDB
+ * attribution; from 48rem
  * the poster sits beside the sheet.
  * @param props Film details, today's ISO date in Europe/Rome, and the list range the film was
  * opened from, kept on the back link.
@@ -103,8 +105,11 @@ export function FilmDetail({
             priority
           />
         )}
-        <nav aria-label={t("back")}>
-          <Link href={backHref}>{t("back")}</Link>
+        <nav aria-label={t("backLabel")}>
+          <Link href={backHref}>
+            <span data-part="back-icon" aria-hidden="true" />
+            {t("back")}
+          </Link>
         </nav>
         <div data-part="film-hero-text">
           <p data-part="film-date">
@@ -145,17 +150,24 @@ export function FilmDetail({
           )}
           <section aria-labelledby="film-plot" data-part="film-plot">
             <h2 id="film-plot">{t("overview")}</h2>
-            <p>{film.overview || t("noOverview")}</p>
+            {film.overview ? (
+              <FilmSpoiler overview={film.overview} />
+            ) : (
+              <p data-empty="">{t("noOverview")}</p>
+            )}
           </section>
           {facts.length > 0 && (
-            <dl data-part="facts">
-              {facts.map(([term, value]) => (
-                <div key={term}>
-                  <dt>{term}</dt>
-                  <dd>{value}</dd>
-                </div>
-              ))}
-            </dl>
+            <section aria-labelledby="film-facts" data-part="film-facts">
+              <h2 id="film-facts">{t("details")}</h2>
+              <dl data-part="facts">
+                {facts.map(([term, value]) => (
+                  <div key={term}>
+                    <dt>{term}</dt>
+                    <dd>{value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
           )}
           {film.cast.length > 0 && (
             <section aria-labelledby="film-cast" data-part="film-cast">
@@ -207,8 +219,11 @@ export function FilmState({
   return (
     <main data-part="film">
       <header data-part="film-hero">
-        <nav aria-label={t("back")}>
-          <Link href="/">{t("back")}</Link>
+        <nav aria-label={t("backLabel")}>
+          <Link href="/">
+            <span data-part="back-icon" aria-hidden="true" />
+            {t("back")}
+          </Link>
         </nav>
         <div data-part="film-hero-text">
           <h1>{title}</h1>

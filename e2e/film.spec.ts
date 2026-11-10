@@ -14,7 +14,7 @@ test("a card opens the film page with its facts", async ({ page }) => {
   await expect(page.locator("dl")).toBeVisible();
   await expect(page.getByRole("heading", { level: 2, name: "Trama" })).toBeVisible();
   // The back link returns to the range the card was opened from.
-  await expect(page.getByRole("link", { name: "Uscite" })).toHaveAttribute(
+  await expect(page.getByRole("link", { name: "Tutte le uscite" })).toHaveAttribute(
     "href",
     /^\/it\?from=\d{4}-\d{2}-\d{2}&to=\d{4}-\d{2}-\d{2}$/,
   );
@@ -34,7 +34,7 @@ test("an unknown id shows the not-found state", async ({ page }) => {
   await page.goto("/it/film/0");
 
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Film non trovato.");
-  await expect(page.getByRole("link", { name: "Uscite" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Tutte le uscite" })).toBeVisible();
 });
 
 test("the English film page uses English labels", async ({ page }) => {
@@ -42,7 +42,7 @@ test("the English film page uses English labels", async ({ page }) => {
   await page.locator("article a").first().click();
 
   await expect(page.getByRole("heading", { level: 2, name: "Plot" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Releases" })).toHaveAttribute(
+  await expect(page.getByRole("link", { name: "All releases" })).toHaveAttribute(
     "href",
     /^\/en\?from=/,
   );
