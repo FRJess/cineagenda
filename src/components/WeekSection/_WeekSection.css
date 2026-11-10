@@ -42,7 +42,7 @@
 }
 
 [data-part="week-section"][data-today] h2 small {
-  color: var(--accent);
+  color: var(--accent-strong);
 }
 
 [data-part="week-section"] > header > p {
