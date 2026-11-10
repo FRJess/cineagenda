@@ -177,7 +177,7 @@ describe("FilmDetail", () => {
     expect(screen.getByRole("heading", { level: 2, name: "Trama" })).toBeInTheDocument();
     expect(spoiler).not.toHaveAttribute("open");
     expect(summary).toHaveAccessibleName(/^Mostra la trama/);
-    expect(summary).toHaveTextContent("Può contenere spoiler");
+    expect(summary?.querySelector("small")?.textContent ?? "").not.toBe("");
     expect(summary?.querySelector("[data-part='spoiler-copy']")).toHaveAttribute(
       "aria-hidden",
       "true",
@@ -201,12 +201,12 @@ describe("FilmDetail", () => {
     expect(spoiler).not.toHaveAttribute("open");
   });
 
-  it("keeps a hide label in the summary for the open state", () => {
+  it("keeps a short hide label in the summary for the open state", () => {
     const { container } = renderFilm();
 
     expect(
       container.querySelector("[data-part='spoiler'] > summary [data-part='spoiler-hide']"),
-    ).toHaveTextContent(/^Nascondi la trama$/);
+    ).toHaveTextContent(/^Nascondi$/);
   });
 
   it("shows the missing-plot fallback in plain sight, with no spoiler", () => {

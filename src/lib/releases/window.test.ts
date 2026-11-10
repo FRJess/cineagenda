@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  pageRange,
   defaultRange,
   getReleaseWindow,
   MAX_RANGE_DAYS,
@@ -51,9 +52,15 @@ describe("sundayOf", () => {
   });
 });
 
+describe("pageRange", () => {
+  it("covers the tab's week only", () => {
+    expect(pageRange("2026-11-16")).toEqual({ from: "2026-11-16", to: "2026-11-22" });
+  });
+});
+
 describe("defaultRange", () => {
-  it("covers the current week and the next one", () => {
-    expect(defaultRange("2026-10-30")).toEqual({ from: "2026-10-26", to: "2026-11-08" });
+  it("covers the current week only", () => {
+    expect(defaultRange("2026-10-30")).toEqual({ from: "2026-10-26", to: "2026-11-01" });
   });
 });
 
@@ -86,7 +93,7 @@ describe("parseRange", () => {
   it("uses the default end when only the start is valid", () => {
     expect(parseRange("2026-01-05", undefined, today)).toEqual({
       from: "2026-01-05",
-      to: "2026-01-18",
+      to: "2026-01-11",
     });
   });
 

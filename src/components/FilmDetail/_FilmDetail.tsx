@@ -6,6 +6,7 @@ import { isoDateToUtc, WEEKDAY_DAY_MONTH } from "@/lib/releases/iso-date";
 import type { ReleaseWindow } from "@/lib/releases/window";
 import type { CastMember, MovieDetails } from "@/lib/tmdb/movie-details";
 import { FilmSpoiler } from "./_FilmSpoiler";
+import { randomSpoilerLine } from "./spoiler-line";
 import { FilmTrailer } from "./_FilmTrailer";
 import "./_FilmDetail.css";
 
@@ -150,7 +151,10 @@ export function FilmDetail({
           <section aria-labelledby="film-plot" data-part="film-plot">
             <h2 id="film-plot">{t("overview")}</h2>
             {film.overview ? (
-              <FilmSpoiler overview={film.overview} />
+              <FilmSpoiler
+                overview={film.overview}
+                hint={randomSpoilerLine(t.raw("spoilerLines"))}
+              />
             ) : (
               <p data-empty="">{t("noOverview")}</p>
             )}

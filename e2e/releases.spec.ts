@@ -36,35 +36,35 @@ test("footer shows TMDB attribution and logo", async ({ page }) => {
   await expect(footer.getByRole("img", { name: "TMDB" })).toBeVisible();
 });
 
-test("default view shows the current week and the next one", async ({ page }) => {
+test("default view shows only the current week", async ({ page }) => {
   await page.goto("/it");
 
-  await expect(page.getByRole("region")).toHaveCount(2);
+  await expect(page.getByRole("region")).toHaveCount(1);
   await expect(page.getByRole("region").first().getByRole("heading", { level: 2 })).toHaveText(
     /^Questa settimana /,
   );
 });
 
-test("a later week tab shows that week and the next", async ({ page }) => {
+test("a later week tab shows only that week", async ({ page }) => {
   await page.goto("/it?from=2026-11-02&to=2026-11-15");
   await page
     .getByRole("navigation", { name: "Settimane", exact: true })
     .getByRole("link", { name: /^16 nov/ })
     .click();
 
-  await expect(page).toHaveURL(/from=2026-11-16&to=2026-11-29/);
-  await expect(page.getByRole("region")).toHaveCount(2);
+  await expect(page).toHaveURL(/from=2026-11-16&to=2026-11-22$/);
+  await expect(page.getByRole("region")).toHaveCount(1);
 });
 
-test("an earlier week tab shows that week and the next", async ({ page }) => {
+test("an earlier week tab shows only that week", async ({ page }) => {
   await page.goto("/it?from=2026-11-02&to=2026-11-15");
   await page
     .getByRole("navigation", { name: "Settimane", exact: true })
     .getByRole("link", { name: /^19 ott/ })
     .click();
 
-  await expect(page).toHaveURL(/from=2026-10-19&to=2026-11-01/);
-  await expect(page.getByRole("region")).toHaveCount(2);
+  await expect(page).toHaveURL(/from=2026-10-19&to=2026-10-25$/);
+  await expect(page.getByRole("region")).toHaveCount(1);
 });
 
 test("the URL range selects the weeks shown", async ({ page }) => {
@@ -93,7 +93,7 @@ test("the week tabs mark the week the range starts on", async ({ page }) => {
   await expect(tabs.getByRole("link")).toHaveCount(5);
   await expect(tabs.locator("a[aria-current='page']")).toHaveAttribute(
     "href",
-    /from=2026-11-02&to=2026-11-15/,
+    /from=2026-11-02&to=2026-11-08$/,
   );
 });
 

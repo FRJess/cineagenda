@@ -24,7 +24,7 @@ const range = { from: "2026-11-02", to: "2026-11-15" };
 const today = "2026-11-06";
 
 describe("WeekTabs", () => {
-  it("links five weeks around the range, each to a two-week page", () => {
+  it("links five weeks around the range, each to a one-week page", () => {
     renderWithIntl(<WeekTabs range={range} todayMonday="2026-11-02" today={today} />);
     const nav = screen.getByRole("navigation", { name: "Settimane" });
     const links = [...nav.querySelectorAll(":scope > ul > li > a")].map((a) =>
@@ -32,11 +32,11 @@ describe("WeekTabs", () => {
     );
 
     expect(links).toEqual([
-      "/?from=2026-10-19&to=2026-11-01",
-      "/?from=2026-10-26&to=2026-11-08",
-      "/?from=2026-11-02&to=2026-11-15",
-      "/?from=2026-11-09&to=2026-11-22",
-      "/?from=2026-11-16&to=2026-11-29",
+      "/?from=2026-10-19&to=2026-10-25",
+      "/?from=2026-10-26&to=2026-11-01",
+      "/?from=2026-11-02&to=2026-11-08",
+      "/?from=2026-11-09&to=2026-11-15",
+      "/?from=2026-11-16&to=2026-11-22",
     ]);
   });
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { details, rd } from "./fixtures";
+import { details, rd } from "@/test/tmdb-fixtures";
 import { pickItalianRelease } from "./release-date";
 
 const window = { from: "2026-10-26", to: "2027-01-28" };

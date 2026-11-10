@@ -1,3 +1,5 @@
+import "server-only";
+
 const BASE_URL = "https://api.themoviedb.org/3";
 
 /** TMDB request failure; `status` is null when the request was never sent. */

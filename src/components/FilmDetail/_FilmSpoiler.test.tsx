@@ -7,8 +7,20 @@ import it_ from "../../../messages/it.json";
 import { FilmSpoiler } from "./_FilmSpoiler";
 
 describe("FilmSpoiler", () => {
+  it("shows the hint line in the veil", () => {
+    const { container } = renderWithIntl(
+      <FilmSpoiler overview="Un viaggio nella foresta." hint="Niente spoiler prima dei popcorn" />,
+    );
+
+    expect(container.querySelector("summary")).toHaveTextContent(
+      "Niente spoiler prima dei popcorn",
+    );
+  });
+
   it("starts veiled", () => {
-    const { container } = renderWithIntl(<FilmSpoiler overview="Un viaggio nella foresta." />);
+    const { container } = renderWithIntl(
+      <FilmSpoiler overview="Un viaggio nella foresta." hint="Niente spoiler prima dei popcorn" />,
+    );
 
     expect(container.querySelector("details")).not.toHaveAttribute("open");
   });
@@ -17,7 +29,10 @@ describe("FilmSpoiler", () => {
     const view = (mode: "visible" | "hidden") => (
       <NextIntlClientProvider locale="it" messages={it_} timeZone="Europe/Rome">
         <Activity mode={mode}>
-          <FilmSpoiler overview="Un viaggio nella foresta." />
+          <FilmSpoiler
+            overview="Un viaggio nella foresta."
+            hint="Niente spoiler prima dei popcorn"
+          />
         </Activity>
       </NextIntlClientProvider>
     );

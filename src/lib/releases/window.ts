@@ -7,7 +7,8 @@ export const MIN_DATE = "2026-01-01";
 const DAY_MS = 86_400_000;
 const WEEK_MS = 7 * DAY_MS;
 const WINDOW_DAYS = 90;
-const DEFAULT_WEEKS = 2;
+/** Weeks shown on first visit and when the URL has no end date. */
+const DEFAULT_WEEKS = 1;
 /** Longest range in weeks the user can pick; the cap of {@link parseRange}. */
 export const MAX_WEEKS = 26;
 
@@ -80,9 +81,9 @@ export function getReleaseWindow(today: string): ReleaseWindow {
 }
 
 /**
- * Default view: the current week and the next one.
+ * Default view: the current week.
  * @param today ISO date in Europe/Rome.
- * @returns Monday of this week to Sunday of next week.
+ * @returns Monday of this week to its Sunday.
  */
 export function defaultRange(today: string): ReleaseWindow {
   const from = mondayOf(today);
@@ -118,12 +119,12 @@ export function parseRange(
 }
 
 /**
- * The two-week page that starts on a Monday; tabs and paging share it.
+ * The single-week page of a week tab.
  * @param monday ISO date of a Monday.
- * @returns Monday to the Sunday of the following week.
+ * @returns Monday to the Sunday of that week.
  */
 export function pageRange(monday: string): ReleaseWindow {
-  return { from: monday, to: addDays(monday, DEFAULT_WEEKS * 7 - 1) };
+  return { from: monday, to: addDays(monday, 6) };
 }
 
 /**

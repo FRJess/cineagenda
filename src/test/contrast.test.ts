@@ -72,6 +72,10 @@ describe.each(Object.entries(THEMES))("%s theme on the page", (_name, t) => {
     expect(ratio(t["tab-muted"], t["tab-bg"])).toBeGreaterThanOrEqual(4.5);
   });
 
+  it("keeps genre chip text at 4.5:1", () => {
+    expect(ratio(t["chip-fg"], t["chip-bg"])).toBeGreaterThanOrEqual(4.5);
+  });
+
   it("keeps the focus ring at 3:1 (non-text)", () => {
     for (const bg of [t.background, t.surface]) {
       expect(ratio(t.accent, bg)).toBeGreaterThanOrEqual(3);

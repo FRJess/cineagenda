@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { details, tr } from "./fixtures";
+import { details, tr } from "@/test/tmdb-fixtures";
 import { buildDisplayTitles } from "./title";
 
 describe("buildDisplayTitles", () => {
