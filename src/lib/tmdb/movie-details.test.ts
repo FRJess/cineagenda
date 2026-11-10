@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { details, rd, tr } from "./fixtures";
+import { details, rd, tr } from "@/test/tmdb-fixtures";
 import { pickTrailer, toMovieDetails } from "./movie-details";
 import type { TmdbMovieDetails, TmdbVideo } from "./types";
 

@@ -1,4 +1,4 @@
-import type { TmdbMovieDetails, TmdbReleaseDate, TmdbTranslation } from "./types";
+import type { TmdbMovieDetails, TmdbReleaseDate, TmdbTranslation } from "@/lib/tmdb/types";
 
 /**
  * Test-only builder for TMDB movie details.

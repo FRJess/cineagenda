@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { details, rd, tr } from "./fixtures";
+import { details, rd, tr } from "@/test/tmdb-fixtures";
 import { toMovie } from "./to-movie";
 
 const window = { from: "2026-10-26", to: "2027-01-28" };
