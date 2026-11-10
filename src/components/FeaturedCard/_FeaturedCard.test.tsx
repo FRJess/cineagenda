@@ -17,6 +17,17 @@ describe("FeaturedCard", () => {
     expect(screen.getByRole("link")).toHaveAttribute("href", "/film/42");
   });
 
+  it("passes the range of the list to the film page, for its back link", () => {
+    renderWithIntl(
+      <FeaturedCard movie={movie({ id: 42 })} range={{ from: "2026-11-16", to: "2026-11-29" }} />,
+    );
+
+    expect(screen.getByRole("link")).toHaveAttribute(
+      "href",
+      "/film/42?from=2026-11-16&to=2026-11-29",
+    );
+  });
+
   it("prints the eyebrow, then the title, then the date line", () => {
     const { container } = renderWithIntl(<FeaturedCard movie={movie()} />);
     const text = [...(container.querySelector("[data-part='card-text']")?.children ?? [])];
