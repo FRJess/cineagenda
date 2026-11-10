@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { hasLocale } from "next-intl";
@@ -15,6 +16,30 @@ import type { UiLocale } from "@/lib/tmdb/to-movie";
 
 type SearchParams = PageProps<"/[locale]">["searchParams"];
 
+const first = (value: string | string[] | undefined): string | undefined =>
+  Array.isArray(value) ? value[0] : value;
+
+/**
+ * Title and description that name the country of the list.
+ * @param props Route props.
+ * @returns Metadata.
+ */
+export async function generateMetadata({
+  params,
+  searchParams,
+}: PageProps<"/[locale]">): Promise<Metadata> {
+  const { locale } = await params;
+  const uiLocale = hasLocale(routing.locales, locale) ? locale : routing.defaultLocale;
+  const country = parseCountry(first((await searchParams).country)) ?? DEFAULT_COUNTRY;
+  const name = new Intl.DisplayNames([uiLocale], { type: "region" }).of(country) ?? country;
+  const t = await getTranslations({ locale: uiLocale, namespace: "Metadata" });
+
+  return {
+    title: t("countryTitle", { country, name }),
+    description: t("countryDescription", { country, name }),
+  };
+}
+
 const SKELETON_SLOTS = [1, 2, 3, 4, 5, 6] as const;
 
 // Six empty poster slots while the weeks stream in.
@@ -29,9 +54,6 @@ function WeekSkeleton({ label }: { readonly label: string }) {
     </section>
   );
 }
-
-const first = (value: string | string[] | undefined): string | undefined =>
-  Array.isArray(value) ? value[0] : value;
 
 // Request-time: reads searchParams and the clock. The header and the weeks both need them.
 async function loadRange(searchParams: SearchParams) {

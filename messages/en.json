@@ -1,7 +1,9 @@
 {
   "Metadata": {
     "title": "Cineagenda",
-    "description": "Films coming to Italian cinemas, week by week."
+    "description": "Films coming to Italian cinemas, week by week.",
+    "countryTitle": "Cinema releases {country, select, GB {in the United Kingdom} US {in the United States} other {in {name}}} · Cineagenda",
+    "countryDescription": "Films coming to cinemas {country, select, GB {in the United Kingdom} US {in the United States} other {in {name}}}, week by week."
   },
   "Header": {
     "language": "Language",

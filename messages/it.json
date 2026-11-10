@@ -1,7 +1,9 @@
 {
   "Metadata": {
     "title": "Cineagenda",
-    "description": "Film in uscita nei cinema italiani, settimana per settimana."
+    "description": "Film in uscita nei cinema italiani, settimana per settimana.",
+    "countryTitle": "Uscite al cinema {country, select, GB {nel Regno Unito} US {negli Stati Uniti} other {in {name}}} · Cineagenda",
+    "countryDescription": "Film in uscita al cinema {country, select, GB {nel Regno Unito} US {negli Stati Uniti} other {in {name}}}, settimana per settimana."
   },
   "Header": {
     "language": "Lingua",

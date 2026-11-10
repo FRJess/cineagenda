@@ -74,3 +74,18 @@ for (const colorScheme of ["light", "dark"] as const) {
     expect(results.violations).toEqual([]);
   });
 }
+
+test("the page title and description name the country", async ({ page }) => {
+  await page.goto("/it?country=fr");
+  await expect(page).toHaveTitle("Uscite al cinema in Francia · Cineagenda");
+
+  await page.goto("/it?country=gb");
+  await expect(page).toHaveTitle("Uscite al cinema nel Regno Unito · Cineagenda");
+  await expect(page.locator("meta[name='description']")).toHaveAttribute(
+    "content",
+    "Film in uscita al cinema nel Regno Unito, settimana per settimana.",
+  );
+
+  await page.goto("/en?country=us");
+  await expect(page).toHaveTitle("Cinema releases in the United States · Cineagenda");
+});
