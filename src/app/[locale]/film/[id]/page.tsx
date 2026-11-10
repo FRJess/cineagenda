@@ -2,13 +2,14 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { hasLocale } from "next-intl";
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
 import { FilmDetail, FilmSkeleton } from "@/components/FilmDetail";
 import { SiteHeader } from "@/components/SiteHeader";
 import { routing } from "@/i18n/routing";
 import { parseRange, todayInRome } from "@/lib/releases/window";
 import { getMovieDetails } from "@/lib/tmdb/cached";
+import type { MovieDetails } from "@/lib/tmdb/movie-details";
 import type { UiLocale } from "@/lib/tmdb/to-movie";
 
 /**
@@ -37,31 +38,34 @@ async function loadFilm(params: Params) {
 }
 
 /**
- * Film title as the document title.
+ * Film title as the document title, or the not-found title.
  * @param props Route props.
  * @returns Metadata.
  */
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
+  const { locale } = await params;
   const loaded = await loadFilm(params);
 
-  return loaded?.film ? { title: `${loaded.film.title} | Cineagenda` } : {};
-}
-
-// Request-time: awaits params inside <Suspense> so the shell stays static.
-async function Film({
-  params,
-  searchParams,
-}: {
-  readonly params: Params;
-  readonly searchParams: SearchParams;
-}) {
-  const loaded = await loadFilm(params);
-
-  if (!loaded?.film) {
-    notFound();
+  if (loaded?.film) {
+    return { title: `${loaded.film.title} | Cineagenda` };
   }
 
-  setRequestLocale(loaded.locale as UiLocale);
+  const t = await getTranslations({
+    locale: hasLocale(routing.locales, locale) ? locale : routing.defaultLocale,
+    namespace: "NotFound",
+  });
+
+  return { title: t("filmDocumentTitle") };
+}
+
+// Request-time part: the list range and today's date. The film itself is loaded by the page.
+async function Film({
+  film,
+  searchParams,
+}: {
+  readonly film: MovieDetails;
+  readonly searchParams: SearchParams;
+}) {
   const query = await searchParams;
   // The clock is request data: without this Next flags `new Date()` as unstable at prerender.
   await connection();
@@ -70,20 +74,29 @@ async function Film({
   const from = first(query.from);
   const range = from ? parseRange(from, first(query.to), today) : undefined;
 
-  return <FilmDetail film={loaded.film} today={today} range={range} />;
+  return <FilmDetail film={film} today={today} range={range} />;
 }
 
 /**
- * Film detail page.
+ * Film detail page. The film is loaded before any Suspense boundary: once streaming starts the
+ * status is committed to 200, so `notFound()` must run first to answer a real 404.
  * @param props Route props.
  * @returns Film details, or the not-found page.
  */
-export default function FilmPage({ params, searchParams }: PageProps<"/[locale]/film/[id]">) {
+export default async function FilmPage({ params, searchParams }: PageProps<"/[locale]/film/[id]">) {
+  const loaded = await loadFilm(params);
+
+  if (!loaded?.film) {
+    notFound();
+  }
+
+  setRequestLocale(loaded.locale as UiLocale);
+
   return (
     <>
       <SiteHeader />
       <Suspense fallback={<FilmSkeleton />}>
-        <Film params={params} searchParams={searchParams} />
+        <Film film={loaded.film} searchParams={searchParams} />
       </Suspense>
     </>
   );

@@ -1,0 +1,150 @@
+/**
+ * FILE: _ServicePage.css
+ * USAGE: Styles for ServicePage: the 404, film-not-found and error pages; poster and text stacked and centered on phones, side by side from 48rem
+ * SCOPE: [data-part="not-found"], [data-part="nf-poster"], [data-part="nf-text"], [data-part="nf-eyebrow"], [data-part="nf-actions"]
+ */
+
+/* ─── Layout: main already fills the space down to the footer; the content sits centered in it ─── */
+
+[data-part="not-found"] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  padding: 1.5rem 1.5rem 2rem;
+  text-align: center;
+}
+
+/* ─── Empty poster: the card's dashed placeholder, carrying the code ─── */
+
+[data-part="nf-poster"] {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  /* Smaller on phones, so a short screen shows everything without scrolling. */
+  width: 120px;
+  aspect-ratio: 2 / 3;
+  background: var(--surface);
+  border: 1.5px dashed var(--border);
+  border-radius: 0.625rem;
+}
+
+[data-part="nf-poster"] b {
+  font-family: var(--font-display);
+  font-size: 2.75rem;
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  color: var(--foreground);
+}
+
+[data-part="nf-poster"] small {
+  font-size: 0.5625rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ─── Text: eyebrow, heading, one line, actions ─── */
+
+[data-part="nf-text"] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+[data-part="nf-eyebrow"] {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-strong);
+}
+
+[data-part="nf-text"] h1 {
+  max-width: 30ch;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  text-wrap: balance;
+}
+
+[data-part="nf-text"] > p:not([data-part]) {
+  max-width: 45ch;
+  font-size: 1rem;
+  color: var(--muted);
+}
+
+[data-part="nf-actions"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem 1.25rem;
+  margin-top: 0.5rem;
+}
+
+/* Primary: the first action, a filled button or link. */
+[data-part="nf-actions"] > :first-child {
+  padding: 0.625rem 1rem;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--on-accent);
+  text-decoration: none;
+  cursor: pointer;
+  background: var(--accent-strong);
+  border: 0;
+  border-radius: 0.625rem;
+}
+
+/* Secondary: an underlined text action. */
+[data-part="nf-actions"] > :nth-child(2) {
+  padding: 0;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--foreground);
+  text-decoration: underline;
+  text-underline-offset: 0.125rem;
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+
+[data-part="nf-actions"] > :focus-visible {
+  outline: 3px solid var(--accent-strong);
+  outline-offset: 2px;
+}
+
+@media (min-width: 48rem) {
+  [data-part="not-found"] {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 2.5rem;
+    padding: 3rem 1.5rem;
+    text-align: left;
+  }
+
+  [data-part="nf-poster"] {
+    width: 180px;
+  }
+
+  [data-part="nf-text"] {
+    align-items: flex-start;
+  }
+
+  [data-part="nf-text"] h1 {
+    font-size: 2rem;
+  }
+
+  [data-part="nf-actions"] {
+    justify-content: flex-start;
+  }
+}

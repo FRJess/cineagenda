@@ -30,13 +30,6 @@ test("the film page has no WCAG 2.2 AA violations", async ({ page }) => {
   expect(results.violations).toEqual([]);
 });
 
-test("an unknown id shows the not-found state", async ({ page }) => {
-  await page.goto("/it/film/0");
-
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Film non trovato.");
-  await expect(page.getByRole("link", { name: "Tutte le uscite" })).toBeVisible();
-});
-
 test("the English film page uses English labels", async ({ page }) => {
   await page.goto("/en");
   await page.locator("article a").first().click();

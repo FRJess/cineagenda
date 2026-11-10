@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { useFormatter, useLocale, useTranslations } from "next-intl";
-import type { ReactNode } from "react";
 import { Link } from "@/i18n/navigation";
 import { daysFromToday } from "@/lib/releases/days-from-today";
 import { isoDateToUtc, WEEKDAY_DAY_MONTH } from "@/lib/releases/iso-date";
@@ -197,43 +196,6 @@ export function FilmDetail({
           </p>
         </div>
       </div>
-    </main>
-  );
-}
-
-/**
- * Page shell for the not-found and error states: an empty hero with the back link and a title,
- * and a sheet holding an optional action.
- * @param props Title of the state and an optional action, such as a retry button.
- * @returns Main landmark.
- */
-export function FilmState({
-  title,
-  children,
-}: {
-  readonly title: string;
-  readonly children?: ReactNode;
-}) {
-  const t = useTranslations("Film");
-
-  return (
-    <main data-part="film">
-      <header data-part="film-hero">
-        <nav aria-label={t("backLabel")}>
-          <Link href="/">
-            <span data-part="back-icon" aria-hidden="true" />
-            {t("back")}
-          </Link>
-        </nav>
-        <div data-part="film-hero-text">
-          <h1>{title}</h1>
-        </div>
-      </header>
-      {children && (
-        <div data-part="film-columns">
-          <div data-part="film-body">{children}</div>
-        </div>
-      )}
     </main>
   );
 }
