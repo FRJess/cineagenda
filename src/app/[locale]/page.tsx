@@ -3,6 +3,7 @@ import { connection } from "next/server";
 import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
+import { CountryPicker } from "@/components/CountryPicker";
 import { SiteHeader } from "@/components/SiteHeader";
 import { WeekSection } from "@/components/WeekSection";
 import { WeekTabs } from "@/components/WeekTabs";
@@ -55,6 +56,13 @@ async function HeaderTabs({ searchParams }: { readonly searchParams: SearchParam
   return <WeekTabs range={range} todayMonday={todayMonday} today={today} country={country} />;
 }
 
+// Streams into the country slot of the header; switching keeps the range on screen.
+async function HeaderCountry({ searchParams }: { readonly searchParams: SearchParams }) {
+  const { range, country } = await loadRange(searchParams);
+
+  return <CountryPicker country={country} pathname="/" range={range} />;
+}
+
 // Streams into the page: one section per week. Paging happens in the navbar.
 async function Weeks({ locale, searchParams }: { locale: UiLocale; searchParams: SearchParams }) {
   const { todayMonday, range, country } = await loadRange(searchParams);
@@ -96,7 +104,14 @@ export default async function ReleasesPage({ params, searchParams }: PageProps<"
 
   return (
     <>
-      <SiteHeader home>
+      <SiteHeader
+        home
+        country={
+          <Suspense fallback={null}>
+            <HeaderCountry searchParams={searchParams} />
+          </Suspense>
+        }
+      >
         <Suspense fallback={null}>
           <HeaderTabs searchParams={searchParams} />
         </Suspense>

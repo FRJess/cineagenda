@@ -1,20 +1,23 @@
 import type { ReactNode } from "react";
-import { LocaleSwitch } from "@/components/LocaleSwitch";
 import { Link } from "@/i18n/navigation";
 import "./_SiteHeader.css";
 
 /**
- * Site header: film-reel mark and wordmark, the locale switch, and a slot after them for the
- * week tabs. On the home page the brand link is the page's only h1.
- * @param props `home` makes the brand the page heading; `children` fill the slot.
+ * Site header: film-reel mark and wordmark, a slot for the week tabs and, at the end, a slot for
+ * the country of the releases. The language lives in the footer. On the home page the brand
+ * link is the page's only h1.
+ * @param props `home` makes the brand the page heading; `children` fill the tabs slot and
+ * `country` the country slot.
  * @returns Header landmark.
  */
 export function SiteHeader({
   home = false,
   children,
+  country,
 }: {
   readonly home?: boolean;
   readonly children?: ReactNode;
+  readonly country?: ReactNode;
 }) {
   const brand = (
     <Link href="/" data-part="brand">
@@ -30,8 +33,8 @@ export function SiteHeader({
   return (
     <header data-part="site-header">
       {home ? <h1>{brand}</h1> : brand}
-      <LocaleSwitch />
       {children}
+      {country}
     </header>
   );
 }

@@ -25,6 +25,10 @@
     "maxReached": "massimo raggiunto",
     "showWeeks": "Mostra {count, plural, one {# settimana} other {# settimane}}"
   },
+  "Country": {
+    "label": "Paese delle uscite: {country}",
+    "menuTitle": "Uscite al cinema in"
+  },
   "Releases": {
     "week": "Settimana",
     "thisWeek": "Questa settimana",
@@ -89,6 +93,8 @@
   },
   "Footer": {
     "attribution": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
-    "theme": "Tema scuro"
+    "theme": "Tema scuro",
+    "languageLabel": "Lingua",
+    "themeLabel": "Tema"
   }
 }

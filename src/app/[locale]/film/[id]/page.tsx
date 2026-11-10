@@ -5,6 +5,7 @@ import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
 import { FilmDetail, FilmSkeleton } from "@/components/FilmDetail";
+import { CountryPicker } from "@/components/CountryPicker";
 import { SiteHeader } from "@/components/SiteHeader";
 import { routing } from "@/i18n/routing";
 import { type Country, DEFAULT_COUNTRY, parseCountry } from "@/lib/country";
@@ -101,10 +102,21 @@ export default async function FilmPage({ params, searchParams }: PageProps<"/[lo
   }
 
   setRequestLocale(loaded.locale as UiLocale);
+  const query = await searchParams;
+  const from = first(query.from);
+  const to = first(query.to);
 
   return (
     <>
-      <SiteHeader />
+      <SiteHeader
+        country={
+          <CountryPicker
+            country={loaded.country}
+            pathname={`/film/${loaded.film.id}`}
+            range={from && to ? { from, to } : undefined}
+          />
+        }
+      />
       <Suspense fallback={<FilmSkeleton />}>
         <Film film={loaded.film} country={loaded.country} searchParams={searchParams} />
       </Suspense>

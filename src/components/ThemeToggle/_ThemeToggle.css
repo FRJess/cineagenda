@@ -1,17 +1,16 @@
 /**
  * FILE: _ThemeToggle.css
- * USAGE: Styles for ThemeToggle, an icon-only switch pushed to the right end of the site footer
+ * USAGE: Styles for ThemeToggle, an icon-only switch in the footer controls, after the language
  * SCOPE: [data-part="theme-toggle"], [data-part="theme-thumb"]
  */
 
-/* Track: the global button rule (accent fill, flex-start) is reset here. margin-left pushes it right in the footer. */
+/* Track: the global button rule (accent fill, flex-start) is reset here. */
 [data-part="theme-toggle"] {
   position: relative;
   flex: 0 0 auto;
   align-self: center;
   width: 2.75rem;
   height: 1.5rem;
-  margin-left: auto;
   padding: 0;
   background: var(--surface);
   border: 1px solid var(--border);

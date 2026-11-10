@@ -1,10 +1,10 @@
 /**
  * FILE: _SiteHeader.css
- * USAGE: Styles for SiteHeader: brand and locale switch on one row; on the home page the week tabs take the second row on phones and the middle of the first row from 48rem, and the header sticks
+ * USAGE: Styles for SiteHeader: brand and country on one row; on the home page the week tabs take the second row on phones and the middle of the first row from 48rem, and the header sticks
  * SCOPE: [data-part="site-header"], [data-part="brand"]
  */
 
-/* ─── Row: brand, locale switch, and on home the week tabs ─── */
+/* ─── Row: brand and country; on home the week tabs wrap to a second row ─── */
 
 [data-part="site-header"] {
   display: flex;
@@ -23,11 +23,13 @@
   z-index: 4;
 }
 
-[data-part="site-header"] > [data-part="locale-switch"] {
+[data-part="site-header"] > [data-part="country-picker"] {
   margin-left: auto;
 }
 
+/* On phones the tabs follow the country in source order but must wrap below it. */
 [data-part="site-header"] > [data-part="week-tabs"] {
+  order: 1;
   flex: 1 0 100%;
 }
 
@@ -69,7 +71,7 @@
   height: 100%;
 }
 
-/* ─── From 48rem: one row, brand | week tabs | language ─── */
+/* ─── From 48rem: one row, brand | week tabs | country ─── */
 
 @media (min-width: 48rem) {
   [data-part="site-header"] {
@@ -86,7 +88,7 @@
     flex: 1 1 0;
   }
 
-  [data-part="site-header"] > [data-part="locale-switch"] {
+  [data-part="site-header"] > [data-part="country-picker"] {
     order: 2;
   }
 }

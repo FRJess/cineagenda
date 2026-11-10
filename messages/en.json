@@ -25,6 +25,10 @@
     "maxReached": "maximum reached",
     "showWeeks": "Show {count, plural, one {# week} other {# weeks}}"
   },
+  "Country": {
+    "label": "Release country: {country}",
+    "menuTitle": "Cinema releases in"
+  },
   "Releases": {
     "week": "Week",
     "thisWeek": "This week",
@@ -89,6 +93,8 @@
   },
   "Footer": {
     "attribution": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
-    "theme": "Dark theme"
+    "theme": "Dark theme",
+    "languageLabel": "Language",
+    "themeLabel": "Theme"
   }
 }

@@ -33,6 +33,16 @@ describe("DatePicker", () => {
     expect(screen.getByText("Date")).toBeInTheDocument();
   });
 
+  it("takes the data-part it is given, for the country menu", () => {
+    render(
+      <DatePicker part="country-picker" summary={<b>Italia</b>}>
+        <ul />
+      </DatePicker>,
+    );
+
+    expect(document.querySelector("details")).toHaveAttribute("data-part", "country-picker");
+  });
+
   it("closes when the pointer is pressed outside it", () => {
     renderPicker();
     const details = openPicker();
