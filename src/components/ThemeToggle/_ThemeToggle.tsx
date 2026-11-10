@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
 import "./_ThemeToggle.css";
 
@@ -57,6 +57,25 @@ function readTheme(): Theme {
 export function ThemeToggle() {
   const t = useTranslations("Footer");
   const theme = useSyncExternalStore(subscribe, readTheme, () => "light");
+
+  // On a 404 response React re-creates the document on the client, so the boot script in the
+  // layout never runs and a stored theme would be lost. Put it back from here.
+  useEffect(() => {
+    if (document.documentElement.dataset.theme) {
+      return;
+    }
+
+    try {
+      const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
+
+      if (stored === "light" || stored === "dark") {
+        document.documentElement.dataset.theme = stored;
+        listeners.forEach((listener) => listener());
+      }
+    } catch {
+      // Storage blocked: the OS preference applies.
+    }
+  }, []);
 
   /** Flips the theme on the document, stores it and tells the other toggles; storage errors are ignored. */
   function toggle() {
