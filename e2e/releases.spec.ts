@@ -36,10 +36,10 @@ test("footer shows TMDB attribution and logo", async ({ page }) => {
   await expect(footer.getByRole("img", { name: "TMDB" })).toBeVisible();
 });
 
-test("default view shows the current week and the next one", async ({ page }) => {
+test("default view shows only the current week", async ({ page }) => {
   await page.goto("/it");
 
-  await expect(page.getByRole("region")).toHaveCount(2);
+  await expect(page.getByRole("region")).toHaveCount(1);
   await expect(page.getByRole("region").first().getByRole("heading", { level: 2 })).toHaveText(
     /^Questa settimana /,
   );

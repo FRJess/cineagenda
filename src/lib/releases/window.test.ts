@@ -52,8 +52,8 @@ describe("sundayOf", () => {
 });
 
 describe("defaultRange", () => {
-  it("covers the current week and the next one", () => {
-    expect(defaultRange("2026-10-30")).toEqual({ from: "2026-10-26", to: "2026-11-08" });
+  it("covers the current week only", () => {
+    expect(defaultRange("2026-10-30")).toEqual({ from: "2026-10-26", to: "2026-11-01" });
   });
 });
 
@@ -86,7 +86,7 @@ describe("parseRange", () => {
   it("uses the default end when only the start is valid", () => {
     expect(parseRange("2026-01-05", undefined, today)).toEqual({
       from: "2026-01-05",
-      to: "2026-01-18",
+      to: "2026-01-11",
     });
   });
 
