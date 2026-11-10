@@ -50,9 +50,9 @@ async function loadRange(searchParams: SearchParams) {
 
 // Streams into the header slot: the week tabs and their date disclosure.
 async function HeaderTabs({ searchParams }: { readonly searchParams: SearchParams }) {
-  const { today, todayMonday, range } = await loadRange(searchParams);
+  const { today, todayMonday, range, country } = await loadRange(searchParams);
 
-  return <WeekTabs range={range} todayMonday={todayMonday} today={today} />;
+  return <WeekTabs range={range} todayMonday={todayMonday} today={today} country={country} />;
 }
 
 // Streams into the page: one section per week. Paging happens in the navbar.
@@ -72,6 +72,7 @@ async function Weeks({ locale, searchParams }: { locale: UiLocale; searchParams:
           todayMonday={todayMonday}
           eager={index === 0}
           range={range}
+          country={country}
         />
       ))}
     </div>

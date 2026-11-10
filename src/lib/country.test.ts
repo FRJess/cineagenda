@@ -5,6 +5,7 @@ import {
   DEFAULT_COUNTRY,
   parseCountry,
   releaseWeekday,
+  resolveCountryRequest,
   titleLanguage,
 } from "./country";
 
@@ -51,8 +52,26 @@ describe("titleLanguage", () => {
 });
 
 describe("countryQuery", () => {
-  it("keeps Italy out of the URL and writes the others in lower case", () => {
-    expect(countryQuery("IT")).toEqual({});
+  it("always writes the country, in lower case, so a shared link keeps it", () => {
+    expect(countryQuery("IT")).toEqual({ country: "it" });
     expect(countryQuery("FR")).toEqual({ country: "fr" });
+  });
+});
+
+describe("resolveCountryRequest", () => {
+  it("remembers a valid country from the URL", () => {
+    expect(resolveCountryRequest("fr", undefined)).toEqual({ redirect: null, remember: "FR" });
+  });
+
+  it("sends a URL without a country to the remembered one", () => {
+    expect(resolveCountryRequest(null, "FR")).toEqual({ redirect: "FR", remember: null });
+  });
+
+  it("does not redirect when the remembered country is the default", () => {
+    expect(resolveCountryRequest(null, "IT")).toEqual({ redirect: null, remember: null });
+  });
+
+  it("ignores invalid values in the URL and in the cookie", () => {
+    expect(resolveCountryRequest("xx", "zz")).toEqual({ redirect: null, remember: null });
   });
 });

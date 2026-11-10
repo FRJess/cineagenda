@@ -24,30 +24,47 @@ const range = { from: "2026-11-02", to: "2026-11-15" };
 const today = "2026-11-06";
 
 describe("WeekTabs", () => {
+  it("keeps the country in every week link", () => {
+    renderWithIntl(
+      <WeekTabs
+        country="FR"
+        range={{ from: "2026-11-02", to: "2026-11-08" }}
+        todayMonday="2026-11-02"
+        today="2026-11-06"
+      />,
+    );
+    const nav = screen.getByRole("navigation", { name: "Settimane" });
+    const hrefs = [...nav.querySelectorAll(":scope > ul > li > a")].map((a) =>
+      a.getAttribute("href"),
+    );
+
+    expect(hrefs.every((href) => href?.startsWith("/?country=fr&"))).toBe(true);
+  });
+
   it("links five weeks around the range, each to a one-week page", () => {
-    renderWithIntl(<WeekTabs range={range} todayMonday="2026-11-02" today={today} />);
+    renderWithIntl(<WeekTabs country="IT" range={range} todayMonday="2026-11-02" today={today} />);
     const nav = screen.getByRole("navigation", { name: "Settimane" });
     const links = [...nav.querySelectorAll(":scope > ul > li > a")].map((a) =>
       a.getAttribute("href"),
     );
 
     expect(links).toEqual([
-      "/?from=2026-10-19&to=2026-10-25",
-      "/?from=2026-10-26&to=2026-11-01",
-      "/?from=2026-11-02&to=2026-11-08",
-      "/?from=2026-11-09&to=2026-11-15",
-      "/?from=2026-11-16&to=2026-11-22",
+      "/?country=it&from=2026-10-19&to=2026-10-25",
+      "/?country=it&from=2026-10-26&to=2026-11-01",
+      "/?country=it&from=2026-11-02&to=2026-11-08",
+      "/?country=it&from=2026-11-09&to=2026-11-15",
+      "/?country=it&from=2026-11-16&to=2026-11-22",
     ]);
   });
 
   it("marks the week the range starts on as current", () => {
-    renderWithIntl(<WeekTabs range={range} todayMonday="2026-10-26" today={today} />);
+    renderWithIntl(<WeekTabs country="IT" range={range} todayMonday="2026-10-26" today={today} />);
 
     expect(screen.getByRole("link", { current: "page" })).toHaveTextContent("2 nov");
   });
 
   it("labels today's week and shows the Sunday on the others", () => {
-    renderWithIntl(<WeekTabs range={range} todayMonday="2026-11-02" today={today} />);
+    renderWithIntl(<WeekTabs country="IT" range={range} todayMonday="2026-11-02" today={today} />);
     const current = screen.getByRole("link", { current: "page" });
 
     expect(current).toHaveTextContent("2 nov");
@@ -57,7 +74,7 @@ describe("WeekTabs", () => {
 
   it("keeps the date form in a closed disclosure beside the list, not inside it", () => {
     const { container } = renderWithIntl(
-      <WeekTabs range={range} todayMonday="2026-11-02" today={today} />,
+      <WeekTabs country="IT" range={range} todayMonday="2026-11-02" today={today} />,
     );
     const details = container.querySelector("details");
 

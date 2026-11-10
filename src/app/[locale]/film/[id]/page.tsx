@@ -7,7 +7,7 @@ import { Suspense } from "react";
 import { FilmDetail, FilmSkeleton } from "@/components/FilmDetail";
 import { SiteHeader } from "@/components/SiteHeader";
 import { routing } from "@/i18n/routing";
-import { DEFAULT_COUNTRY, parseCountry } from "@/lib/country";
+import { type Country, DEFAULT_COUNTRY, parseCountry } from "@/lib/country";
 import { parseRange, todayInRome } from "@/lib/releases/window";
 import { getMovieDetails } from "@/lib/tmdb/cached";
 import type { MovieDetails } from "@/lib/tmdb/movie-details";
@@ -69,9 +69,11 @@ export async function generateMetadata({
 // Request-time part: the list range and today's date. The film itself is loaded by the page.
 async function Film({
   film,
+  country,
   searchParams,
 }: {
   readonly film: MovieDetails;
+  readonly country: Country;
   readonly searchParams: SearchParams;
 }) {
   const query = await searchParams;
@@ -82,7 +84,7 @@ async function Film({
   const from = first(query.from);
   const range = from ? parseRange(from, first(query.to), today) : undefined;
 
-  return <FilmDetail film={film} today={today} range={range} />;
+  return <FilmDetail film={film} today={today} range={range} country={country} />;
 }
 
 /**
@@ -104,7 +106,7 @@ export default async function FilmPage({ params, searchParams }: PageProps<"/[lo
     <>
       <SiteHeader />
       <Suspense fallback={<FilmSkeleton />}>
-        <Film film={loaded.film} searchParams={searchParams} />
+        <Film film={loaded.film} country={loaded.country} searchParams={searchParams} />
       </Suspense>
     </>
   );

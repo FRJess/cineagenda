@@ -51,13 +51,14 @@ const TODAY = "2026-11-09";
 
 const renderFilm = (
   overrides: Partial<MovieDetails> = {},
-  extra: { today?: string; range?: { from: string; to: string } } = {},
+  extra: { today?: string; range?: { from: string; to: string }; country?: "IT" | "FR" } = {},
 ) =>
   renderWithIntl(
     <FilmDetail
       film={{ ...film, ...overrides }}
       today={extra.today ?? TODAY}
       range={extra.range}
+      country={extra.country ?? "IT"}
     />,
   );
 
@@ -106,12 +107,24 @@ describe("FilmDetail", () => {
     const withRange = renderFilm({}, { range: { from: "2026-11-16", to: "2026-11-29" } });
     expect(screen.getByRole("link", { name: "Tutte le uscite" })).toHaveAttribute(
       "href",
-      "/?from=2026-11-16&to=2026-11-29",
+      "/?country=it&from=2026-11-16&to=2026-11-29",
     );
     withRange.unmount();
 
     renderFilm();
-    expect(screen.getByRole("link", { name: "Tutte le uscite" })).toHaveAttribute("href", "/");
+    expect(screen.getByRole("link", { name: "Tutte le uscite" })).toHaveAttribute(
+      "href",
+      "/?country=it",
+    );
+  });
+
+  it("keeps the country of the list on the back link", () => {
+    renderFilm({}, { country: "FR" });
+
+    expect(screen.getByRole("link", { name: "Tutte le uscite" })).toHaveAttribute(
+      "href",
+      "/?country=fr",
+    );
   });
 
   it("puts the back link in a 'Torna alle uscite' nav, with a decorative icon", () => {

@@ -1,7 +1,9 @@
 import Image from "next/image";
 import { useFormatter, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import type { Country } from "@/lib/country";
 import { formatCardDate } from "@/lib/releases/card-date";
+import { filmHref } from "@/lib/releases/film-href";
 import type { Movie } from "@/lib/releases/movie";
 import type { ReleaseWindow } from "@/lib/releases/window";
 import "./_MovieCard.css";
@@ -19,19 +21,20 @@ export function MovieCard({
   movie,
   eager = false,
   range,
+  country,
 }: {
   readonly movie: Movie;
   readonly eager?: boolean;
   readonly range?: ReleaseWindow;
+  readonly country: Country;
 }) {
   const t = useTranslations("Releases");
   const format = useFormatter();
   const poster = movie.posterPath ? POSTER_BASE + movie.posterPath : null;
-  const query = range ? `?from=${range.from}&to=${range.to}` : "";
 
   return (
     <article data-part="movie-card">
-      <Link href={`/film/${movie.id}${query}`}>
+      <Link href={filmHref(movie.id, country, range)}>
         {poster ? (
           <Image src={poster} alt="" width={342} height={513} loading={eager ? "eager" : "lazy"} />
         ) : (

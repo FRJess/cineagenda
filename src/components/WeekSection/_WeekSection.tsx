@@ -1,6 +1,7 @@
 import { useFormatter, useTranslations } from "next-intl";
 import { FeaturedCard } from "@/components/FeaturedCard";
 import { MovieCard } from "@/components/MovieCard";
+import type { Country } from "@/lib/country";
 import { pickFeatured } from "@/lib/releases/featured";
 import type { WeekGroup } from "@/lib/releases/group-by-week";
 import { DAY_MONTH, isoDateToUtc } from "@/lib/releases/iso-date";
@@ -14,7 +15,7 @@ const EAGER_POSTERS = 2;
  * One release week: labeled heading with the date range ("Nessuna uscita" beside it when the
  * week is empty), then a grid that opens with the week's featured film and holds the others.
  * @param props Week group, the Monday of the current week, `eager` for the week shown above
- * the fold, and the list range the cards pass to the film page.
+ * the fold, and the list range and country the cards pass to the film page.
  * @returns Section labeled by its heading.
  */
 export function WeekSection({
@@ -22,11 +23,13 @@ export function WeekSection({
   todayMonday,
   eager = false,
   range,
+  country,
 }: {
   readonly group: WeekGroup;
   readonly todayMonday: string;
   readonly eager?: boolean;
   readonly range?: ReleaseWindow;
+  readonly country: Country;
 }) {
   const t = useTranslations("Releases");
   const format = useFormatter();
@@ -58,12 +61,17 @@ export function WeekSection({
         <ol>
           {featured && (
             <li key={featured.id} data-featured="">
-              <FeaturedCard movie={featured} range={range} />
+              <FeaturedCard movie={featured} range={range} country={country} />
             </li>
           )}
           {others.map((movie, index) => (
             <li key={movie.id}>
-              <MovieCard movie={movie} eager={eager && index < EAGER_POSTERS} range={range} />
+              <MovieCard
+                movie={movie}
+                eager={eager && index < EAGER_POSTERS}
+                range={range}
+                country={country}
+              />
             </li>
           ))}
         </ol>

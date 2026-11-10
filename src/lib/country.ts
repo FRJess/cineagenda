@@ -56,10 +56,42 @@ export function titleLanguage(country: Country): string {
 }
 
 /**
- * Query part that keeps the country in a link; the default country stays out of the URL.
+ * Query part that keeps the country in a link. Always written, Italy included, so a shared
+ * link opens the same country whatever the reader chose last.
  * @param country Supported country.
- * @returns `{}` for the default, else `{ country: "fr" }`.
+ * @returns `{ country: "fr" }`.
  */
-export function countryQuery(country: Country): { readonly country?: string } {
-  return country === DEFAULT_COUNTRY ? {} : { country: country.toLowerCase() };
+export function countryQuery(country: Country): { readonly country: string } {
+  return { country: country.toLowerCase() };
+}
+
+/** What the proxy does with the country of a request. */
+export type CountryRequest = {
+  /** Country to add to a URL that names none, or null to leave the URL alone. */
+  readonly redirect: Country | null;
+  /** Country to store in the cookie, or null to keep the cookie as it is. */
+  readonly remember: Country | null;
+};
+
+/**
+ * Decides how a request picks its country: a valid `country` param is remembered; a URL without
+ * one goes to the remembered country, unless that is the default, which needs no redirect.
+ * @param param `country` search param, null when absent.
+ * @param cookie Value of {@link COUNTRY_COOKIE}, undefined when absent.
+ * @returns Redirect target and country to remember.
+ */
+export function resolveCountryRequest(
+  param: string | null,
+  cookie: string | undefined,
+): CountryRequest {
+  if (param !== null) {
+    return { redirect: null, remember: parseCountry(param) };
+  }
+
+  const remembered = parseCountry(cookie);
+
+  return {
+    redirect: remembered && remembered !== DEFAULT_COUNTRY ? remembered : null,
+    remember: null,
+  };
 }
