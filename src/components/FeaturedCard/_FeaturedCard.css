@@ -38,8 +38,8 @@
   inset: 0;
   content: "";
   background:
-    linear-gradient(90deg, rgb(0 0 0 / 0.6), transparent 75%),
-    linear-gradient(transparent 30%, rgb(0 0 0 / 0.7) 60%, rgb(0 0 0 / 0.9));
+    linear-gradient(90deg, rgb(0 0 0 / 0.85), rgb(0 0 0 / 0.2) 70%),
+    linear-gradient(transparent 40%, rgb(0 0 0 / 0.8));
 }
 
 /* ─── Text: eyebrow, title, date line ─── */
