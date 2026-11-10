@@ -12,7 +12,7 @@ export type Movie = {
   readonly originalTitle: string;
   readonly posterPath: string | null;
   readonly backdropPath: string | null;
-  /** TMDB trending score, global; higher wins the featured slot of the current week. */
+  /** TMDB popularity, global (not per country); higher wins the featured slot of the current week. */
   readonly popularity: number;
   readonly genres: readonly string[];
   /** ISO date of the Italian release. */
