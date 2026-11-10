@@ -248,8 +248,15 @@
   display: none;
 }
 
+/* Room for the pill and the hint, also on a short plot. The revealed text gets the same
+   minimum, so opening the veil does not change the height. */
 [data-part="spoiler"]:not([open]) > summary {
   position: relative;
+  min-height: 7rem;
+}
+
+[data-part="spoiler"] > p {
+  min-height: 7rem;
 }
 
 [data-part="spoiler-cta"] {
@@ -259,7 +266,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 1rem;
   background: color-mix(in srgb, var(--surface) 35%, transparent);
   border-radius: 0.75rem;
 }
