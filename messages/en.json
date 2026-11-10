@@ -95,8 +95,6 @@
   },
   "Footer": {
     "attribution": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
-    "theme": "Dark theme",
-    "languageLabel": "Language",
-    "themeLabel": "Theme"
+    "theme": "Dark theme"
   }
 }

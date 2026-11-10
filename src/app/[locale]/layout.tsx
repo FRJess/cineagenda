@@ -78,10 +78,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
             <Image src="/tmdb-logo.svg" alt="TMDB" width={273} height={36} />
             <p>{t("attribution")}</p>
             <div data-part="footer-controls">
-              {/* The visible labels repeat the controls' names: hidden from screen readers. */}
-              <span aria-hidden="true">{t("languageLabel")}</span>
               <LocaleSwitch />
-              <span aria-hidden="true">{t("themeLabel")}</span>
               <ThemeToggle />
             </div>
           </footer>

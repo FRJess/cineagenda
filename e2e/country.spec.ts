@@ -49,12 +49,14 @@ test("picking a country from the menu keeps the weeks on screen", async ({ page 
   );
 });
 
-test("the footer holds the language switch and the theme, each labelled", async ({ page }) => {
+test("the footer holds the language switch and the theme, with no labels", async ({ page }) => {
   await page.goto("/it");
   const footer = page.locator("[data-part='site-footer']");
 
   await expect(footer.getByRole("navigation", { name: "Lingua" })).toBeVisible();
   await expect(footer.getByRole("switch", { name: "Tema scuro" })).toBeVisible();
+  await expect(footer.getByText("Lingua", { exact: true })).toHaveCount(0);
+  await expect(footer.getByText("Tema", { exact: true })).toHaveCount(0);
   await expect(
     page.locator("[data-part='site-header']").getByRole("navigation", { name: "Lingua" }),
   ).toHaveCount(0);
