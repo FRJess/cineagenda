@@ -25,6 +25,18 @@ vi.mock("@/i18n/navigation", () => ({
 const range = { from: "2026-11-02", to: "2026-11-15" };
 
 describe("WeekRangeForm", () => {
+  it("tells the stylesheet the release weekday of the country", () => {
+    const { container } = renderWithIntl(
+      <WeekRangeForm
+        country="FR"
+        range={{ from: "2026-11-02", to: "2026-11-08" }}
+        today="2026-11-06"
+      />,
+    );
+
+    expect(container.querySelector("form")).toHaveAttribute("data-release-day", "3");
+  });
+
   it("sends the country with the form and keeps it in the shortcuts", () => {
     const { container } = renderWithIntl(
       <WeekRangeForm
