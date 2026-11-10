@@ -79,11 +79,11 @@ test("the page title and description name the country", async ({ page }) => {
   await page.goto("/it?country=fr");
   await expect(page).toHaveTitle("Uscite al cinema in Francia · Cineagenda");
 
-  await page.goto("/it?country=gb");
-  await expect(page).toHaveTitle("Uscite al cinema nel Regno Unito · Cineagenda");
+  await page.goto("/it?country=us");
+  await expect(page).toHaveTitle("Uscite al cinema negli Stati Uniti · Cineagenda");
   await expect(page.locator("meta[name='description']")).toHaveAttribute(
     "content",
-    "Film in uscita al cinema nel Regno Unito, settimana per settimana.",
+    "Film in uscita al cinema negli Stati Uniti, settimana per settimana.",
   );
 
   await page.goto("/en?country=us");

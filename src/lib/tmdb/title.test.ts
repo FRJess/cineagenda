@@ -30,19 +30,19 @@ describe("buildDisplayTitles for another country", () => {
     expect(buildDisplayTitles(film, "FR")).toEqual({ title: "La Haine", subtitle: "" });
   });
 
-  it("prefers the British English title in the UK", () => {
+  it("prefers the American English title in the US", () => {
     const film = details({
       original_title: "Ratatouille",
       original_language: "fr",
       translations: {
         translations: [
-          tr("en", "US", { title: "Ratatouille US" }),
           tr("en", "GB", { title: "Ratatouille UK" }),
+          tr("en", "US", { title: "Ratatouille US" }),
         ],
       },
     });
 
-    expect(buildDisplayTitles(film, "GB").title).toBe("Ratatouille UK");
+    expect(buildDisplayTitles(film, "US").title).toBe("Ratatouille US");
   });
 
   it("shows the original alone in an English-speaking country without an English title", () => {

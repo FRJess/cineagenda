@@ -12,13 +12,7 @@ type RangeQuery = { readonly from: string; readonly to: string };
 function Flag({ country }: { readonly country: Country }) {
   // SVGs need no resizing, so the optimizer is skipped.
   return (
-    <Image
-      src={`/flags/${country.toLowerCase()}.svg`}
-      alt=""
-      width={20}
-      height={14}
-      unoptimized
-    />
+    <Image src={`/flags/${country.toLowerCase()}.svg`} alt="" width={20} height={14} unoptimized />
   );
 }
 

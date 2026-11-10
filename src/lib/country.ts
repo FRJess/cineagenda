@@ -1,5 +1,13 @@
 /** Countries whose cinema releases can be listed, in menu order. Easy to extend. */
-export const COUNTRIES = ["IT", "FR", "DE", "ES", "GB", "US"] as const;
+export const COUNTRIES = [
+  "IT",
+  "FR",
+  // Switched off for now (2026-11-10); data, titles and flags are ready.
+  // "DE",
+  // "ES",
+  // "GB",
+  "US",
+] as const;
 
 /** ISO 3166-1 code of a supported country. */
 export type Country = (typeof COUNTRIES)[number];
@@ -20,9 +28,9 @@ type CountryInfo = {
 const INFO = {
   IT: { releaseWeekday: 4, titleLanguage: "it" },
   FR: { releaseWeekday: 3, titleLanguage: "fr" },
-  DE: { releaseWeekday: 4, titleLanguage: "de" },
-  ES: { releaseWeekday: 5, titleLanguage: "es" },
-  GB: { releaseWeekday: 5, titleLanguage: "en" },
+  // DE: { releaseWeekday: 4, titleLanguage: "de" },
+  // ES: { releaseWeekday: 5, titleLanguage: "es" },
+  // GB: { releaseWeekday: 5, titleLanguage: "en" },
   US: { releaseWeekday: 5, titleLanguage: "en" },
 } as const satisfies Record<Country, CountryInfo>;
 
