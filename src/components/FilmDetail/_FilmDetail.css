@@ -39,7 +39,7 @@
   inset: 0;
   content: "";
   /* Darker from mid-height, where the date line sits, so it reads on bright backdrops too. */
-  background: linear-gradient(rgb(16 16 24 / 0.2), rgb(16 16 24 / 0.6) 45%, rgb(16 16 24 / 0.94));
+  background: linear-gradient(rgb(16 16 24 / 0.3), rgb(16 16 24 / 0.75) 30%, rgb(16 16 24 / 0.94));
 }
 
 [data-part="film-hero"] nav {
@@ -178,7 +178,7 @@
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--accent-strong);
 }
 
 [data-part="limited-note"] [data-release="limited"]::before {
@@ -274,9 +274,12 @@
 }
 
 [data-part="spoiler-cta"] small {
+  padding: 0.125rem 0.5rem;
   font-size: 0.75rem;
   font-weight: 500;
   color: var(--muted);
+  background: var(--surface);
+  border-radius: 999px;
 }
 
 /* Open, the summary shrinks to a "hide" pill above the plot; display: none also drops the
