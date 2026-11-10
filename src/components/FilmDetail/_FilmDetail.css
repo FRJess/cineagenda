@@ -201,12 +201,14 @@
   list-style: none;
 }
 
+/* Labels, not buttons: bold text in a fully rounded pill, tinted with the date colour. */
 [data-part="genres"] li {
   padding: 0.375rem 0.75rem;
   font-size: 0.875rem;
-  font-weight: 600;
-  background: var(--background);
-  border-radius: 0.5rem;
+  font-weight: 700;
+  color: var(--chip-fg);
+  background: var(--chip-bg);
+  border-radius: 999px;
 }
 
 /* ─── Plot ─── */
@@ -225,6 +227,7 @@
 [data-part="spoiler"] > summary {
   position: relative;
   display: block;
+  padding: 1rem 1.25rem;
   overflow: hidden;
   list-style: none;
   cursor: pointer;
