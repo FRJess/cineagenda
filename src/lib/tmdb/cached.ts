@@ -1,4 +1,5 @@
 import { cacheLife } from "next/cache";
+import type { Country } from "@/lib/country";
 import { byDateThenTitle } from "@/lib/releases/group-by-week";
 import type { Movie } from "@/lib/releases/movie";
 import { MIN_DATE, mondayOf, sundayOf } from "@/lib/releases/window";
@@ -8,20 +9,26 @@ import { fetchGenreNames, fetchMovieDetails, fetchReleaseDetails } from "./relea
 import { toMovie, type UiLocale } from "./to-movie";
 import type { TmdbMovieDetails } from "./types";
 
-// Locale-independent, so both locales share one round of TMDB calls per week.
-async function getWeekDetails(weekStart: string): Promise<readonly TmdbMovieDetails[]> {
+// Locale-independent, so both locales share one round of TMDB calls per week and country.
+async function getWeekDetails(
+  weekStart: string,
+  country: Country,
+): Promise<readonly TmdbMovieDetails[]> {
   "use cache";
   cacheLife("days");
 
-  return fetchReleaseDetails({ from: weekStart, to: sundayOf(weekStart) });
+  return fetchReleaseDetails({ from: weekStart, to: sundayOf(weekStart) }, country);
 }
 
 // Past weeks change rarely; a separate function so the longer life is its own cache entry.
-async function getPastWeekDetails(weekStart: string): Promise<readonly TmdbMovieDetails[]> {
+async function getPastWeekDetails(
+  weekStart: string,
+  country: Country,
+): Promise<readonly TmdbMovieDetails[]> {
   "use cache";
   cacheLife("weeks");
 
-  return fetchReleaseDetails({ from: weekStart, to: sundayOf(weekStart) });
+  return fetchReleaseDetails({ from: weekStart, to: sundayOf(weekStart) }, country);
 }
 
 async function getGenreNames(locale: UiLocale) {
@@ -32,38 +39,45 @@ async function getGenreNames(locale: UiLocale) {
 }
 
 /**
- * Italian releases of one week, sorted by date then title.
+ * Cinema releases of one week in one country, sorted by date then title.
  * @param weekStart Monday, ISO date.
  * @param locale UI locale for genres and overviews.
  * @param past Whether the week is before the current one; past weeks are cached longer.
- * @returns Movies released in Italian cinemas that week.
+ * @param country Country of the releases.
+ * @returns Movies released in that country's cinemas that week.
  */
 export async function getWeekReleases(
   weekStart: string,
   locale: UiLocale,
   past: boolean,
+  country: Country,
 ): Promise<readonly Movie[]> {
   const window = { from: weekStart, to: sundayOf(weekStart) };
   const [details, genreNames] = await Promise.all([
-    past ? getPastWeekDetails(weekStart) : getWeekDetails(weekStart),
+    past ? getPastWeekDetails(weekStart, country) : getWeekDetails(weekStart, country),
     getGenreNames(locale),
   ]);
 
   return details
-    .flatMap((film) => toMovie(film, window, locale, genreNames) ?? [])
+    .flatMap((film) => toMovie(film, window, locale, genreNames, country) ?? [])
     .sort(byDateThenTitle);
 }
 
-// Any Italian cinema release from the app's first week onward counts on the film page.
+// Any cinema release from the app's first week onward counts on the film page.
 const FILM_WINDOW = { from: mondayOf(MIN_DATE), to: "2099-12-31" };
 
 /**
  * Film page data, refreshed daily.
  * @param id TMDB movie id.
  * @param locale UI locale.
- * @returns Details, or null when the id is unknown or the film has no Italian cinema release.
+ * @param country Country whose release date and title are shown.
+ * @returns Details, or null when the id is unknown or the film has no cinema release there.
  */
-export async function getMovieDetails(id: number, locale: UiLocale): Promise<MovieDetails | null> {
+export async function getMovieDetails(
+  id: number,
+  locale: UiLocale,
+  country: Country,
+): Promise<MovieDetails | null> {
   "use cache";
   cacheLife("days");
 
@@ -80,5 +94,5 @@ export async function getMovieDetails(id: number, locale: UiLocale): Promise<Mov
     return null;
   }
 
-  return toMovieDetails(details, FILM_WINDOW, locale, await getGenreNames(locale));
+  return toMovieDetails(details, FILM_WINDOW, locale, await getGenreNames(locale), country);
 }

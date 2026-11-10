@@ -1,7 +1,7 @@
 /**
  * FILE: globals.css
  * USAGE: Fonts, tokens, reset and page shell, imported once in the root layout
- * SCOPE: :root, body, main, a, button, [data-part="home"], [data-part="weeks"], [data-part="site-footer"], [data-part="week-skeleton"], [data-part="sr-only"]
+ * SCOPE: :root, body, main, a, button, [data-part="home"], [data-part="weeks"], [data-part="site-footer"], [data-part="footer-controls"], [data-part="week-skeleton"], [data-part="sr-only"]
  */
 
 /* ─── Fonts: self-hosted latin subsets, SIL OFL 1.1 (public/fonts/README.md) ─── */
@@ -190,6 +190,15 @@ a {
 [data-part="site-footer"] > img {
   width: auto;
   height: 0.875rem;
+}
+
+/* Language and theme at the right end. */
+[data-part="footer-controls"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin-left: auto;
 }
 
 /* ─── Loading skeleton: six empty poster slots while the weeks stream in ─── */

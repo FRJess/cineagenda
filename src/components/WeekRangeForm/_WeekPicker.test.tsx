@@ -6,10 +6,15 @@ import { renderWithIntl } from "@/test/intl";
 import it_ from "../../../messages/it.json";
 import { WeekPicker } from "./_WeekPicker";
 
-const renderPicker = (from = "2026-11-02", to = "2026-11-15", locale: "it" | "en" = "it") =>
+const renderPicker = (
+  from = "2026-11-02",
+  to = "2026-11-15",
+  locale: "it" | "en" | "fr" = "it",
+  releaseDay = 4,
+) =>
   renderWithIntl(
     <form>
-      <WeekPicker from={from} to={to} />
+      <WeekPicker from={from} to={to} releaseDay={releaseDay} />
     </form>,
     locale,
   );
@@ -27,7 +32,7 @@ describe("WeekPicker", () => {
   it("renders no calendar before hydration, but keeps the range in hidden fields", () => {
     const html = renderToString(
       <NextIntlClientProvider locale="it" messages={it_} timeZone="Europe/Rome">
-        <WeekPicker from="2026-11-02" to="2026-11-15" />
+        <WeekPicker from="2026-11-02" to="2026-11-15" releaseDay={4} />
       </NextIntlClientProvider>,
     );
     const doc = document.createElement("div");
@@ -49,6 +54,12 @@ describe("WeekPicker", () => {
     renderPicker("2026-11-02", "2026-11-15", "en");
 
     expect(screen.getByText("November 2026")).toBeInTheDocument();
+  });
+
+  it("names the weekdays in French", () => {
+    const { container } = renderPicker("2026-11-02", "2026-11-15", "fr");
+
+    expect(container.querySelectorAll(".rdp-weekday")[3]).toHaveTextContent("jeu.");
   });
 
   it("shows no days of the neighboring months", () => {
@@ -116,7 +127,7 @@ describe("WeekPicker", () => {
     const { container } = renderWithIntl(
       <details open>
         <form>
-          <WeekPicker from="2026-11-09" to="2026-11-22" />
+          <WeekPicker from="2026-11-09" to="2026-11-22" releaseDay={4} />
         </form>
       </details>,
     );
@@ -147,11 +158,18 @@ describe("WeekPicker", () => {
     );
   });
 
-  it("names the Thursday weekday header 'gio' and marks Thursdays as release days", () => {
+  it("names the Thursday weekday header 'gio' and marks Thursdays as Italian release days", () => {
     const { container } = renderPicker();
 
     expect(container.querySelectorAll(".rdp-weekday")[3]).toHaveTextContent("gio");
-    expect(cell(container, "2026-11-05")).toHaveClass("rdp-day_thursday");
-    expect(cell(container, "2026-11-06")).not.toHaveClass("rdp-day_thursday");
+    expect(cell(container, "2026-11-05")).toHaveClass("rdp-day_release");
+    expect(cell(container, "2026-11-06")).not.toHaveClass("rdp-day_release");
+  });
+
+  it("marks the release day of the country it is given", () => {
+    const { container } = renderPicker("2026-11-02", "2026-11-15", "it", 3);
+
+    expect(cell(container, "2026-11-04")).toHaveClass("rdp-day_release");
+    expect(cell(container, "2026-11-05")).not.toHaveClass("rdp-day_release");
   });
 });

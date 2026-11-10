@@ -1,0 +1,106 @@
+{
+  "Metadata": {
+    "title": "Cineagenda",
+    "description": "Les films qui sortent dans les cinémas italiens, semaine après semaine.",
+    "countryTitle": "Sorties au cinéma {country, select, GB {au Royaume-Uni} US {aux États-Unis} other {en {name}}} · Cineagenda",
+    "countryDescription": "Les films qui sortent au cinéma {country, select, GB {au Royaume-Uni} US {aux États-Unis} other {en {name}}}, semaine après semaine."
+  },
+  "Header": {
+    "language": "Langue",
+    "it": "Italiano",
+    "en": "English",
+    "fr": "Français",
+    "itCode": "IT",
+    "enCode": "EN",
+    "frCode": "FR"
+  },
+  "Nav": {
+    "thisWeekShort": "cette sem.",
+    "pickDates": "Dates",
+    "pickHint": "personnaliser",
+    "thisWeek": "Cette semaine",
+    "nextWeek": "Semaine prochaine",
+    "thisMonth": "Ce mois-ci",
+    "shortcuts": "Raccourcis",
+    "weekTabs": "Semaines",
+    "calendar": "Calendrier",
+    "weeksCount": "{count, plural, one {# semaine} other {# semaines}}",
+    "maxWeeks": "max {max}",
+    "maxReached": "maximum atteint",
+    "showWeeks": "Afficher {count, plural, one {# semaine} other {# semaines}}",
+    "previousPeriod": "Période précédente",
+    "nextPeriod": "Période suivante",
+    "periodThisWeek": "cette semaine",
+    "periodFromThisWeek": "à partir de cette semaine"
+  },
+  "Country": {
+    "label": "Pays des sorties : {country}",
+    "menuTitle": "Pays des sorties"
+  },
+  "Releases": {
+    "week": "Semaine",
+    "thisWeek": "Cette semaine",
+    "nextWeek": "Semaine prochaine",
+    "featured": "Très attendu",
+    "noPoster": "Affiche non disponible",
+    "limited": "Sortie limitée",
+    "limitedShort": "Limitée",
+    "noReleases": "Aucune sortie",
+    "loading": "Chargement des sorties..."
+  },
+  "Film": {
+    "director": "Réalisation",
+    "cast": "Distribution",
+    "country": "{count, plural, one {Pays d'origine} other {Pays d'origine}}",
+    "production": "Production",
+    "runtime": "{minutes} min",
+    "trailer": "Bande-annonce",
+    "back": "Toutes les sorties",
+    "backLabel": "Retour aux sorties",
+    "releaseDate": "Au cinéma dès le <time>{date}</time>",
+    "genres": "Genres",
+    "overview": "Synopsis",
+    "noOverview": "Synopsis non disponible.",
+    "showPlot": "Afficher le synopsis",
+    "hidePlot": "Masquer",
+    "details": "Détails",
+    "runtimeLabel": "Durée",
+    "watchTrailer": "Voir la bande-annonce",
+    "screenplay": "Scénario",
+    "originalLanguage": "Langue originale",
+    "fromToday": "dès aujourd'hui",
+    "fromYesterday": "depuis hier",
+    "source": "Données et images : TMDB",
+    "openTmdb": "Ouvrir sur TMDB ↗",
+    "spoilerLines": [
+      "Pas de spoiler avant le pop-corn",
+      "La réalisation préférerait que non",
+      "Mieux vaut le découvrir dans le noir, en salle",
+      "À lire à vos risques et périls",
+      "Dernier avertissement avant le générique"
+    ]
+  },
+  "NotFound": {
+    "eyebrow": "Hors programme",
+    "title": "Cette page n'est pas à l'affiche.",
+    "text": "L'adresse est erronée ou la page n'existe plus.",
+    "documentTitle": "Page introuvable · Cineagenda",
+    "filmEyebrow": "Film introuvable",
+    "filmTitle": "Ce film n'est pas à l'affiche.",
+    "filmText": "Aucun film ne correspond à cet identifiant, ou le lien est erroné.",
+    "filmDocumentTitle": "Film introuvable · Cineagenda",
+    "home": "Voir les sorties",
+    "searchTmdb": "Rechercher sur TMDB ↗"
+  },
+  "Error": {
+    "eyebrow": "Projection interrompue",
+    "title": "Impossible de charger les sorties.",
+    "filmTitle": "Impossible de charger le film.",
+    "text": "TMDB ne répond pas. Réessayez dans quelques secondes.",
+    "retry": "Réessayer"
+  },
+  "Footer": {
+    "attribution": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
+    "theme": "Thème sombre"
+  }
+}

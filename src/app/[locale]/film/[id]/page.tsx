@@ -5,8 +5,10 @@ import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
 import { FilmDetail, FilmSkeleton } from "@/components/FilmDetail";
+import { CountryPicker } from "@/components/CountryPicker";
 import { SiteHeader } from "@/components/SiteHeader";
 import { routing } from "@/i18n/routing";
+import { type Country, DEFAULT_COUNTRY, parseCountry } from "@/lib/country";
 import { parseRange, todayInRome } from "@/lib/releases/window";
 import { getMovieDetails } from "@/lib/tmdb/cached";
 import type { MovieDetails } from "@/lib/tmdb/movie-details";
@@ -26,15 +28,16 @@ const parseId = (value: string): number | null => (/^\d{1,9}$/.test(value) ? Num
 const first = (value: string | string[] | undefined): string | undefined =>
   Array.isArray(value) ? value[0] : value;
 
-async function loadFilm(params: Params) {
+async function loadFilm(params: Params, searchParams: SearchParams) {
   const { locale, id } = await params;
+  const country = parseCountry(first((await searchParams).country)) ?? DEFAULT_COUNTRY;
   const movieId = parseId(id);
 
   if (!hasLocale(routing.locales, locale) || movieId === null) {
     return null;
   }
 
-  return { locale, film: await getMovieDetails(movieId, locale) };
+  return { locale, country, film: await getMovieDetails(movieId, locale, country) };
 }
 
 /**
@@ -42,9 +45,15 @@ async function loadFilm(params: Params) {
  * @param props Route props.
  * @returns Metadata.
  */
-export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+  searchParams,
+}: {
+  params: Params;
+  searchParams: SearchParams;
+}): Promise<Metadata> {
   const { locale } = await params;
-  const loaded = await loadFilm(params);
+  const loaded = await loadFilm(params, searchParams);
 
   if (loaded?.film) {
     return { title: `${loaded.film.title} | Cineagenda` };
@@ -61,9 +70,11 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 // Request-time part: the list range and today's date. The film itself is loaded by the page.
 async function Film({
   film,
+  country,
   searchParams,
 }: {
   readonly film: MovieDetails;
+  readonly country: Country;
   readonly searchParams: SearchParams;
 }) {
   const query = await searchParams;
@@ -74,7 +85,7 @@ async function Film({
   const from = first(query.from);
   const range = from ? parseRange(from, first(query.to), today) : undefined;
 
-  return <FilmDetail film={film} today={today} range={range} />;
+  return <FilmDetail film={film} today={today} range={range} country={country} />;
 }
 
 /**
@@ -84,19 +95,30 @@ async function Film({
  * @returns Film details, or the not-found page.
  */
 export default async function FilmPage({ params, searchParams }: PageProps<"/[locale]/film/[id]">) {
-  const loaded = await loadFilm(params);
+  const loaded = await loadFilm(params, searchParams);
 
   if (!loaded?.film) {
     notFound();
   }
 
   setRequestLocale(loaded.locale as UiLocale);
+  const query = await searchParams;
+  const from = first(query.from);
+  const to = first(query.to);
 
   return (
     <>
-      <SiteHeader />
+      <SiteHeader
+        country={
+          <CountryPicker
+            country={loaded.country}
+            pathname={`/film/${loaded.film.id}`}
+            range={from && to ? { from, to } : undefined}
+          />
+        }
+      />
       <Suspense fallback={<FilmSkeleton />}>
-        <Film film={loaded.film} searchParams={searchParams} />
+        <Film film={loaded.film} country={loaded.country} searchParams={searchParams} />
       </Suspense>
     </>
   );

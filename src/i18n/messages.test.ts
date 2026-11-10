@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import en from "../../messages/en.json";
+import fr from "../../messages/fr.json";
 import it_ from "../../messages/it.json";
 
 const ATTRIBUTION = "This product uses the TMDB API but is not endorsed or certified by TMDB.";
@@ -10,12 +11,14 @@ const keyPaths = (node: unknown, prefix = ""): string[] =>
     : [prefix.slice(0, -1)];
 
 describe("messages", () => {
-  it("have the same keys in Italian and English", () => {
+  it("have the same keys in Italian, English and French", () => {
     expect(keyPaths(it_).sort()).toEqual(keyPaths(en).sort());
+    expect(keyPaths(it_).sort()).toEqual(keyPaths(fr).sort());
   });
 
   it("carry the TMDB attribution verbatim in both locales", () => {
     expect(it_.Footer.attribution).toBe(ATTRIBUTION);
     expect(en.Footer.attribution).toBe(ATTRIBUTION);
+    expect(fr.Footer.attribution).toBe(ATTRIBUTION);
   });
 });

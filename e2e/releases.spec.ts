@@ -215,12 +215,39 @@ test("a shortcut chip navigates and closes the date popover", async ({ page }) =
   await expect(page.locator("details[data-part='date-picker']")).not.toHaveAttribute("open");
 });
 
-test("the date popover shows one month on phones", async ({ page }) => {
+test("the period button opens the date popover with one month on phones", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/it?from=2026-11-02&to=2026-11-15");
-  await page.getByText("Date", { exact: true }).click();
+  await page.locator("[data-part='period']").click();
 
   await expect(page.getByLabel("Calendario", { exact: true }).getByRole("grid")).toHaveCount(1);
+});
+
+test("on a 360px phone the period bar replaces the week tabs", async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 760 });
+  await page.goto("/it?country=it&from=2026-11-16&to=2026-11-22");
+  const nav = page.getByRole("navigation", { name: "Settimane", exact: true });
+
+  await expect(nav.locator(":scope > ul")).toBeHidden();
+  await expect(page.getByText("Date", { exact: true })).toBeHidden();
+  await expect(nav.locator("[data-part='period']")).toBeVisible();
+  await expect(nav.getByRole("link", { name: "Periodo successivo" })).toHaveAttribute(
+    "href",
+    /country=it&from=2026-11-23&to=2026-11-29$/,
+  );
+  await expect(page.locator("[data-part='country-picker'] > summary")).toHaveAccessibleName(
+    "Paese delle uscite: Italia",
+  );
+});
+
+test("from 48rem the week tabs show and the period bar does not", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/it");
+  const nav = page.getByRole("navigation", { name: "Settimane", exact: true });
+
+  await expect(nav.locator(":scope > ul")).toBeVisible();
+  await expect(nav.locator("[data-part='period']")).toBeHidden();
+  await expect(nav.getByRole("link", { name: "Periodo successivo" })).toBeHidden();
 });
 
 for (const colorScheme of ["light", "dark"] as const) {

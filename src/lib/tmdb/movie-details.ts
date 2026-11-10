@@ -1,3 +1,4 @@
+import { type Country, DEFAULT_COUNTRY } from "@/lib/country";
 import type { Movie } from "@/lib/releases/movie";
 import type { ReleaseWindow } from "@/lib/releases/window";
 import { toMovie, type UiLocale } from "./to-movie";
@@ -53,18 +54,20 @@ export function pickTrailer(videos: readonly TmdbVideo[], locale: UiLocale): str
 /**
  * Maps a full TMDB details response to the film page model.
  * @param details Details with credits, videos, release dates and translations.
- * @param window Window the Italian release must fall in.
+ * @param window Window the release must fall in.
  * @param locale UI locale.
  * @param genreNames Localized genre names.
- * @returns Details, or null when the film has no Italian cinema release in the window.
+ * @param country Country whose release date and title are shown; Italy by default.
+ * @returns Details, or null when the film has no cinema release in that country in the window.
  */
 export function toMovieDetails(
   details: TmdbMovieDetails,
   window: ReleaseWindow,
   locale: UiLocale,
   genreNames: GenreNames,
+  country: Country = DEFAULT_COUNTRY,
 ): MovieDetails | null {
-  const movie = toMovie(details, window, locale, genreNames);
+  const movie = toMovie(details, window, locale, genreNames, country);
 
   if (!movie) {
     return null;

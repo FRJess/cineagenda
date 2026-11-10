@@ -43,10 +43,18 @@ describe("SiteHeader", () => {
     expect(container.querySelector("picture img")).toHaveAttribute("alt", "");
   });
 
-  it("offers both locales", () => {
+  it("leaves the language to the footer", () => {
     renderWithIntl(<SiteHeader />);
 
-    expect(screen.getByRole("navigation", { name: "Lingua" })).toBeInTheDocument();
+    expect(screen.queryByRole("navigation", { name: "Lingua" })).not.toBeInTheDocument();
+  });
+
+  it("puts the country slot in the header, after the brand", () => {
+    const { container } = renderWithIntl(<SiteHeader country={<p>Italia</p>} />);
+    const header = container.querySelector("header");
+
+    expect(header).toContainElement(screen.getByText("Italia"));
+    expect(header?.lastElementChild).toHaveTextContent("Italia");
   });
 
   it("renders its children inside the header", () => {

@@ -1,7 +1,9 @@
 import Image from "next/image";
 import { useFormatter, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import type { Country } from "@/lib/country";
 import { formatCardDate } from "@/lib/releases/card-date";
+import { filmHref } from "@/lib/releases/film-href";
 import type { Movie } from "@/lib/releases/movie";
 import type { ReleaseWindow } from "@/lib/releases/window";
 import "./_FeaturedCard.css";
@@ -19,18 +21,19 @@ const MAX_GENRES = 2;
 export function FeaturedCard({
   movie,
   range,
+  country,
 }: {
   readonly movie: Movie;
   readonly range?: ReleaseWindow;
+  readonly country: Country;
 }) {
   const t = useTranslations("Releases");
   const format = useFormatter();
   const genres = movie.genres.slice(0, MAX_GENRES).join(", ");
-  const query = range ? `?from=${range.from}&to=${range.to}` : "";
 
   return (
     <article data-part="featured-card">
-      <Link href={`/film/${movie.id}${query}`}>
+      <Link href={filmHref(movie.id, country, range)}>
         {movie.backdropPath && (
           <Image
             src={BACKDROP_BASE + movie.backdropPath}
@@ -45,9 +48,7 @@ export function FeaturedCard({
           <p data-part="card-eyebrow">{t("featured")}</p>
           <h3>{movie.title}</h3>
           <p data-part="card-meta">
-            <time dateTime={movie.releaseDateIt}>
-              {formatCardDate(format, movie.releaseDateIt)}
-            </time>
+            <time dateTime={movie.releaseDate}>{formatCardDate(format, movie.releaseDate)}</time>
             {genres && ` · ${genres}`}
           </p>
         </div>

@@ -25,9 +25,61 @@ describe("toMovie", () => {
       title: "2001: Odissea nello spazio",
       subtitle: "2001: A Space Odyssey",
       originalTitle: "2001: A Space Odyssey",
-      releaseDateIt: "2026-11-16",
+      releaseDate: "2026-11-16",
       posterPath: "/poster.jpg",
     });
+  });
+
+  it("uses the date and title of the chosen country", () => {
+    const film = details({
+      original_title: "2001: A Space Odyssey",
+      release_dates: {
+        results: [
+          { iso_3166_1: "IT", release_dates: [rd(3, "2026-11-12")] },
+          { iso_3166_1: "FR", release_dates: [rd(3, "2026-11-11")] },
+        ],
+      },
+      translations: {
+        translations: [
+          tr("it", "IT", { title: "2001: Odissea nello spazio" }),
+          tr("fr", "FR", { title: "2001, l'Odyssée de l'espace" }),
+        ],
+      },
+    });
+
+    expect(toMovie(film, window, "it", genreNames, "FR")).toMatchObject({
+      title: "2001, l'Odyssée de l'espace",
+      releaseDate: "2026-11-11",
+    });
+  });
+
+  it("uses the French overview, then the English one, for the French UI", () => {
+    const withFrench = details(
+      {
+        translations: {
+          translations: [
+            tr("it", "IT", { overview: "Trama" }),
+            tr("en", "US", { overview: "Plot" }),
+            tr("fr", "FR", { overview: "Synopsis" }),
+          ],
+        },
+      },
+      [rd(3, "2026-11-05")],
+    );
+    const withoutFrench = details(
+      {
+        translations: {
+          translations: [
+            tr("it", "IT", { overview: "Trama" }),
+            tr("en", "US", { overview: "Plot" }),
+          ],
+        },
+      },
+      [rd(3, "2026-11-05")],
+    );
+
+    expect(toMovie(withFrench, window, "fr", genreNames)?.overview).toBe("Synopsis");
+    expect(toMovie(withoutFrench, window, "fr", genreNames)?.overview).toBe("Plot");
   });
 
   it("maps genres in API order and skips unknown ids", () => {

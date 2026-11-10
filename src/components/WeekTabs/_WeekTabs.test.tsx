@@ -24,30 +24,47 @@ const range = { from: "2026-11-02", to: "2026-11-15" };
 const today = "2026-11-06";
 
 describe("WeekTabs", () => {
+  it("keeps the country in every week link", () => {
+    renderWithIntl(
+      <WeekTabs
+        country="FR"
+        range={{ from: "2026-11-02", to: "2026-11-08" }}
+        todayMonday="2026-11-02"
+        today="2026-11-06"
+      />,
+    );
+    const nav = screen.getByRole("navigation", { name: "Settimane" });
+    const hrefs = [...nav.querySelectorAll(":scope > ul > li > a")].map((a) =>
+      a.getAttribute("href"),
+    );
+
+    expect(hrefs.every((href) => href?.startsWith("/?country=fr&"))).toBe(true);
+  });
+
   it("links five weeks around the range, each to a one-week page", () => {
-    renderWithIntl(<WeekTabs range={range} todayMonday="2026-11-02" today={today} />);
+    renderWithIntl(<WeekTabs country="IT" range={range} todayMonday="2026-11-02" today={today} />);
     const nav = screen.getByRole("navigation", { name: "Settimane" });
     const links = [...nav.querySelectorAll(":scope > ul > li > a")].map((a) =>
       a.getAttribute("href"),
     );
 
     expect(links).toEqual([
-      "/?from=2026-10-19&to=2026-10-25",
-      "/?from=2026-10-26&to=2026-11-01",
-      "/?from=2026-11-02&to=2026-11-08",
-      "/?from=2026-11-09&to=2026-11-15",
-      "/?from=2026-11-16&to=2026-11-22",
+      "/?country=it&from=2026-10-19&to=2026-10-25",
+      "/?country=it&from=2026-10-26&to=2026-11-01",
+      "/?country=it&from=2026-11-02&to=2026-11-08",
+      "/?country=it&from=2026-11-09&to=2026-11-15",
+      "/?country=it&from=2026-11-16&to=2026-11-22",
     ]);
   });
 
   it("marks the week the range starts on as current", () => {
-    renderWithIntl(<WeekTabs range={range} todayMonday="2026-10-26" today={today} />);
+    renderWithIntl(<WeekTabs country="IT" range={range} todayMonday="2026-10-26" today={today} />);
 
     expect(screen.getByRole("link", { current: "page" })).toHaveTextContent("2 nov");
   });
 
   it("labels today's week and shows the Sunday on the others", () => {
-    renderWithIntl(<WeekTabs range={range} todayMonday="2026-11-02" today={today} />);
+    renderWithIntl(<WeekTabs country="IT" range={range} todayMonday="2026-11-02" today={today} />);
     const current = screen.getByRole("link", { current: "page" });
 
     expect(current).toHaveTextContent("2 nov");
@@ -55,9 +72,72 @@ describe("WeekTabs", () => {
     expect(screen.getByRole("link", { name: /9 nov/ })).toHaveTextContent("15 nov");
   });
 
+  it("has arrows that move the period by its own length, keeping the country", () => {
+    renderWithIntl(
+      <WeekTabs
+        country="FR"
+        range={{ from: "2026-11-09", to: "2026-11-15" }}
+        todayMonday="2026-11-09"
+        today="2026-11-10"
+      />,
+    );
+
+    expect(screen.getByRole("link", { name: "Periodo precedente" })).toHaveAttribute(
+      "href",
+      "/?country=fr&from=2026-11-02&to=2026-11-08",
+    );
+    expect(screen.getByRole("link", { name: "Periodo successivo" })).toHaveAttribute(
+      "href",
+      "/?country=fr&from=2026-11-16&to=2026-11-22",
+    );
+  });
+
+  it("drops the previous arrow at the first available week", () => {
+    renderWithIntl(
+      <WeekTabs
+        country="IT"
+        range={{ from: "2025-12-29", to: "2026-01-04" }}
+        todayMonday="2026-11-09"
+        today="2026-11-10"
+      />,
+    );
+
+    expect(screen.queryByRole("link", { name: "Periodo precedente" })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Periodo successivo" })).toBeInTheDocument();
+  });
+
+  it("names the period in the phone summary: this week, from this week, or its length", () => {
+    const period = (from: string, to: string) => {
+      const view = renderWithIntl(
+        <WeekTabs country="IT" range={{ from, to }} todayMonday="2026-11-09" today="2026-11-10" />,
+      );
+      const text = view.container.querySelector("[data-part='period']")?.textContent;
+      view.unmount();
+
+      return text;
+    };
+
+    expect(period("2026-11-09", "2026-11-15")).toMatch(/9.+15 nov.*questa settimana$/);
+    expect(period("2026-11-09", "2026-11-22")).toMatch(/da questa settimana$/);
+    expect(period("2026-11-16", "2026-12-06")).toMatch(/3 settimane$/);
+  });
+
+  it("adds the year to the period only when it is not the current one", () => {
+    const { container } = renderWithIntl(
+      <WeekTabs
+        country="IT"
+        range={{ from: "2026-12-28", to: "2027-01-10" }}
+        todayMonday="2026-11-09"
+        today="2026-11-10"
+      />,
+    );
+
+    expect(container.querySelector("[data-part='period'] b")).toHaveTextContent(/2027/);
+  });
+
   it("keeps the date form in a closed disclosure beside the list, not inside it", () => {
     const { container } = renderWithIntl(
-      <WeekTabs range={range} todayMonday="2026-11-02" today={today} />,
+      <WeekTabs country="IT" range={range} todayMonday="2026-11-02" today={today} />,
     );
     const details = container.querySelector("details");
 

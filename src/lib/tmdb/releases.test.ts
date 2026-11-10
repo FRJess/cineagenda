@@ -63,6 +63,18 @@ describe("fetchReleaseDetails", () => {
     expect(result.map((d) => d.id)).toEqual([1, 2]);
   });
 
+  it("queries discover in the region of the chosen country", async () => {
+    const tmdb = stubTmdb((url) =>
+      url.pathname === "/3/discover/movie"
+        ? { page: 1, total_pages: 1, results: [] }
+        : detailsOf(Number(url.pathname.split("/").pop())),
+    );
+
+    await fetchReleaseDetails(window, "FR");
+
+    expect(tmdb.urls[0].searchParams.get("region")).toBe("FR");
+  });
+
   it("requests details with release dates and translations once per id", async () => {
     const tmdb = stubTmdb((url) =>
       url.pathname === "/3/discover/movie"

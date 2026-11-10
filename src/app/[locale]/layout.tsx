@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
+import { LocaleSwitch } from "@/components/LocaleSwitch";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import "@daypicker/react/style.css";
 import "../globals.css";
@@ -35,8 +36,8 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
 }
 
 /**
- * Root layout per locale: page and TMDB footer. Each page renders its own SiteHeader, so the
- * home page can place the week tabs in it.
+ * Root layout per locale: page and footer with the TMDB attribution, the language and the theme.
+ * Each page renders its own SiteHeader, so the home page can place the week tabs in it.
  * @param props Route props.
  * @returns Document shell.
  */
@@ -76,7 +77,10 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
           <footer data-part="site-footer">
             <Image src="/tmdb-logo.svg" alt="TMDB" width={273} height={36} />
             <p>{t("attribution")}</p>
-            <ThemeToggle />
+            <div data-part="footer-controls">
+              <LocaleSwitch />
+              <ThemeToggle />
+            </div>
           </footer>
         </NextIntlClientProvider>
       </body>

@@ -1,17 +1,44 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
+import { CountryPicker } from "@/components/CountryPicker";
 import { SiteHeader } from "@/components/SiteHeader";
 import { WeekSection } from "@/components/WeekSection";
 import { WeekTabs } from "@/components/WeekTabs";
 import { routing } from "@/i18n/routing";
+import { DEFAULT_COUNTRY, parseCountry } from "@/lib/country";
 import { mondayOf, parseRange, sundayOf, todayInRome, weeksBetween } from "@/lib/releases/window";
 import { getWeekReleases } from "@/lib/tmdb/cached";
 import type { UiLocale } from "@/lib/tmdb/to-movie";
 
 type SearchParams = PageProps<"/[locale]">["searchParams"];
+
+const first = (value: string | string[] | undefined): string | undefined =>
+  Array.isArray(value) ? value[0] : value;
+
+/**
+ * Title and description that name the country of the list.
+ * @param props Route props.
+ * @returns Metadata.
+ */
+export async function generateMetadata({
+  params,
+  searchParams,
+}: PageProps<"/[locale]">): Promise<Metadata> {
+  const { locale } = await params;
+  const uiLocale = hasLocale(routing.locales, locale) ? locale : routing.defaultLocale;
+  const country = parseCountry(first((await searchParams).country)) ?? DEFAULT_COUNTRY;
+  const name = new Intl.DisplayNames([uiLocale], { type: "region" }).of(country) ?? country;
+  const t = await getTranslations({ locale: uiLocale, namespace: "Metadata" });
+
+  return {
+    title: t("countryTitle", { country, name }),
+    description: t("countryDescription", { country, name }),
+  };
+}
 
 const SKELETON_SLOTS = [1, 2, 3, 4, 5, 6] as const;
 
@@ -28,10 +55,7 @@ function WeekSkeleton({ label }: { readonly label: string }) {
   );
 }
 
-const first = (value: string | string[] | undefined): string | undefined =>
-  Array.isArray(value) ? value[0] : value;
-
-// Request-time: reads searchParams and the clock. The header and the weeks both need it.
+// Request-time: reads searchParams and the clock. The header and the weeks both need them.
 async function loadRange(searchParams: SearchParams) {
   const params = await searchParams;
 
@@ -43,22 +67,30 @@ async function loadRange(searchParams: SearchParams) {
     today,
     todayMonday: mondayOf(today),
     range: parseRange(first(params.from), first(params.to), today),
+    country: parseCountry(first(params.country)) ?? DEFAULT_COUNTRY,
   };
 }
 
 // Streams into the header slot: the week tabs and their date disclosure.
 async function HeaderTabs({ searchParams }: { readonly searchParams: SearchParams }) {
-  const { today, todayMonday, range } = await loadRange(searchParams);
+  const { today, todayMonday, range, country } = await loadRange(searchParams);
 
-  return <WeekTabs range={range} todayMonday={todayMonday} today={today} />;
+  return <WeekTabs range={range} todayMonday={todayMonday} today={today} country={country} />;
+}
+
+// Streams into the country slot of the header; switching keeps the range on screen.
+async function HeaderCountry({ searchParams }: { readonly searchParams: SearchParams }) {
+  const { range, country } = await loadRange(searchParams);
+
+  return <CountryPicker country={country} pathname="/" range={range} />;
 }
 
 // Streams into the page: one section per week. Paging happens in the navbar.
 async function Weeks({ locale, searchParams }: { locale: UiLocale; searchParams: SearchParams }) {
-  const { todayMonday, range } = await loadRange(searchParams);
+  const { todayMonday, range, country } = await loadRange(searchParams);
   const weeks = weeksBetween(range);
   const releases = await Promise.all(
-    weeks.map((weekStart) => getWeekReleases(weekStart, locale, weekStart < todayMonday)),
+    weeks.map((weekStart) => getWeekReleases(weekStart, locale, weekStart < todayMonday, country)),
   );
 
   return (
@@ -70,6 +102,7 @@ async function Weeks({ locale, searchParams }: { locale: UiLocale; searchParams:
           todayMonday={todayMonday}
           eager={index === 0}
           range={range}
+          country={country}
         />
       ))}
     </div>
@@ -93,7 +126,14 @@ export default async function ReleasesPage({ params, searchParams }: PageProps<"
 
   return (
     <>
-      <SiteHeader home>
+      <SiteHeader
+        home
+        country={
+          <Suspense fallback={null}>
+            <HeaderCountry searchParams={searchParams} />
+          </Suspense>
+        }
+      >
         <Suspense fallback={null}>
           <HeaderTabs searchParams={searchParams} />
         </Suspense>

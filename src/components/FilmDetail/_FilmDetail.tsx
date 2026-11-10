@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { useFormatter, useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { type Country, countryQuery } from "@/lib/country";
 import { daysFromToday } from "@/lib/releases/days-from-today";
 import { isoDateToUtc, WEEKDAY_DAY_MONTH } from "@/lib/releases/iso-date";
 import type { ReleaseWindow } from "@/lib/releases/window";
@@ -48,31 +49,33 @@ function CastItem({ member }: { readonly member: CastMember }) {
  * limited release note, genres, plot behind a spoiler, details, cast, trailer and the TMDB
  * attribution; from 48rem
  * the poster sits beside the sheet.
- * @param props Film details, today's ISO date in Europe/Rome, and the list range the film was
- * opened from, kept on the back link.
+ * @param props Film details, today's ISO date in Europe/Rome, and the list range and country the
+ * film was opened from, kept on the back link.
  * @returns Main landmark.
  */
 export function FilmDetail({
   film,
   today,
   range,
+  country,
 }: {
   readonly film: MovieDetails;
   readonly today: string;
   readonly range?: ReleaseWindow;
+  readonly country: Country;
 }) {
   const t = useTranslations("Film");
   const tReleases = useTranslations("Releases");
   const format = useFormatter();
   const locale = useLocale();
-  const days = daysFromToday(film.releaseDateIt, today);
+  const days = daysFromToday(film.releaseDate, today);
   const relative =
     days === 0
       ? t("fromToday")
       : days === -1
         ? t("fromYesterday")
         : Math.abs(days) <= RELATIVE_MAX_DAYS
-          ? format.relativeTime(isoDateToUtc(film.releaseDateIt), {
+          ? format.relativeTime(isoDateToUtc(film.releaseDate), {
               now: isoDateToUtc(today),
               unit: "day",
             })
@@ -91,7 +94,7 @@ export function FilmDetail({
     [t("production"), film.companies.join(", ")],
     [t("runtimeLabel"), film.runtime ? t("runtime", { minutes: film.runtime }) : ""],
   ].filter(([, value]) => value);
-  const backHref = range ? { pathname: "/", query: { from: range.from, to: range.to } } : "/";
+  const backHref = { pathname: "/", query: { ...countryQuery(country), ...range } };
 
   return (
     <main data-part="film" data-backdrop={film.backdropPath ? "" : undefined}>
@@ -114,8 +117,8 @@ export function FilmDetail({
         <div data-part="film-hero-text">
           <p data-part="film-date">
             {t.rich("releaseDate", {
-              date: format.dateTime(isoDateToUtc(film.releaseDateIt), WEEKDAY_DAY_MONTH),
-              time: (chunks) => <time dateTime={film.releaseDateIt}>{chunks}</time>,
+              date: format.dateTime(isoDateToUtc(film.releaseDate), WEEKDAY_DAY_MONTH),
+              time: (chunks) => <time dateTime={film.releaseDate}>{chunks}</time>,
             })}
             {relative && <span> · {relative}</span>}
           </p>

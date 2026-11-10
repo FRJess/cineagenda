@@ -9,14 +9,16 @@ test("a card opens the film page with its facts", async ({ page }) => {
   const title = await card.locator("h3").textContent();
   await card.click();
 
-  await expect(page).toHaveURL(/\/it\/film\/\d+\?from=\d{4}-\d{2}-\d{2}&to=\d{4}-\d{2}-\d{2}$/);
+  await expect(page).toHaveURL(
+    /\/it\/film\/\d+\?country=it&from=\d{4}-\d{2}-\d{2}&to=\d{4}-\d{2}-\d{2}$/,
+  );
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(title ?? "");
   await expect(page.locator("dl")).toBeVisible();
   await expect(page.getByRole("heading", { level: 2, name: "Trama" })).toBeVisible();
   // The back link returns to the range the card was opened from.
   await expect(page.getByRole("link", { name: "Tutte le uscite" })).toHaveAttribute(
     "href",
-    /^\/it\?from=\d{4}-\d{2}-\d{2}&to=\d{4}-\d{2}-\d{2}$/,
+    /^\/it\?country=it&from=\d{4}-\d{2}-\d{2}&to=\d{4}-\d{2}-\d{2}$/,
   );
 });
 
@@ -37,7 +39,7 @@ test("the English film page uses English labels", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 2, name: "Plot" })).toBeVisible();
   await expect(page.getByRole("link", { name: "All releases" })).toHaveAttribute(
     "href",
-    /^\/en\?from=/,
+    /^\/en\?country=it&from=/,
   );
 });
 

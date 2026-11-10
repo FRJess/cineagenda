@@ -1,0 +1,186 @@
+/**
+ * FILE: _CountryPicker.css
+ * USAGE: Styles for CountryPicker: at the right end of the navbar, a neutral pill with the flag alone below 48rem and a filled button with flag and name from 48rem; its menu of countries is a bottom sheet below 48rem and a dropdown from 48rem
+ * SCOPE: [data-part="country-picker"], [data-part="country-name"], [data-part="country-menu"]
+ */
+
+/* ─── Button: inverted like the active tab ─── */
+
+[data-part="country-picker"] {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+[data-part="country-picker"] > summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 2.5rem;
+  padding: 0 0.75rem 0 0.625rem;
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--tab-fg);
+  list-style: none;
+  cursor: pointer;
+  background: var(--tab-bg);
+  border-radius: 0.5rem;
+}
+
+[data-part="country-picker"] > summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Chevron: 7px, 2px stroke, the text colour at 70%. */
+[data-part="country-picker"] > summary::after {
+  width: 0.4375rem;
+  height: 0.4375rem;
+  margin: -0.1875rem 0 0 0.125rem;
+  content: "";
+  border-right: 2px solid color-mix(in srgb, currentColor 70%, transparent);
+  border-bottom: 2px solid color-mix(in srgb, currentColor 70%, transparent);
+  transform: rotate(45deg);
+}
+
+[data-part="country-picker"][open] > summary::after {
+  margin-top: 0.1875rem;
+  transform: rotate(-135deg);
+}
+
+[data-part="country-picker"] > summary:focus-visible,
+[data-part="country-menu"] a:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Flags keep an edge on any background, white-heavy ones included. */
+[data-part="country-picker"] img {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 14px;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgb(128 128 128 / 0.45);
+}
+
+/* ─── Menu: a bottom sheet on phones, a dropdown from 48rem ─── */
+
+[data-part="country-menu"] {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem 0.75rem max(var(--space-6), env(safe-area-inset-bottom));
+  background: var(--surface);
+  border-radius: 1.125rem 1.125rem 0 0;
+}
+
+[data-part="country-menu"] > p {
+  padding-inline: 0.625rem;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+[data-part="country-menu"] ul {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-part="country-menu"] a {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-height: 2.5rem;
+  padding: 0.5rem 0.625rem;
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--foreground);
+  text-decoration: none;
+  border-radius: 0.5rem;
+}
+
+@media (hover: hover) {
+  [data-part="country-menu"] a:hover {
+    background: color-mix(in srgb, var(--foreground) 9%, transparent);
+  }
+}
+
+/* The chosen country is inverted, with a check mark at the right end. */
+[data-part="country-menu"] a[aria-current="true"] {
+  color: var(--tab-fg);
+  background: var(--tab-bg);
+}
+
+[data-part="country-menu"] a[aria-current="true"]::after {
+  width: 0.3125rem;
+  height: 0.625rem;
+  margin: -0.1875rem 0.25rem 0 auto;
+  content: "";
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+}
+
+/* Below 48rem: a neutral pill with the flag alone; the name stays for screen readers. */
+@media (max-width: 47.99rem) {
+  [data-part="country-picker"] > summary {
+    gap: 0.4375rem;
+    height: 2.25rem;
+    padding: 0 0.625rem 0 0.5625rem;
+    color: var(--foreground);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+  }
+
+  [data-part="country-picker"] > summary img {
+    width: 24px;
+    height: 17px;
+  }
+
+  [data-part="country-name"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* The menu is a bottom sheet; this scrim dims the page behind it. */
+  [data-part="country-picker"][open]::before {
+    position: fixed;
+    inset: 0;
+    z-index: 4;
+    content: "";
+    background: rgb(0 0 0 / 0.45);
+  }
+}
+
+@media (min-width: 48rem) {
+  [data-part="country-menu"] {
+    position: absolute;
+    top: calc(100% + var(--space-2));
+    right: 0;
+    bottom: auto;
+    left: auto;
+    width: 15.5rem;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 0.875rem;
+    box-shadow: 0 16px 40px rgb(0 0 0 / 0.25);
+  }
+}

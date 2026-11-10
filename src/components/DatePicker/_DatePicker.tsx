@@ -3,19 +3,24 @@
 import { useEffect, useRef, type ReactNode } from "react";
 
 /**
- * Date disclosure: a native details element that also closes on Escape, on a press outside
- * its summary and form, and on a link inside it (a shortcut chip), since
- * client navigation keeps the layout and the details open. The page stays server-rendered;
- * only this disclosure needs script.
- * @param props Summary content and the panel content.
+ * Navbar disclosure, for the dates and the country: a native details element that also closes
+ * on Escape, on a press outside its summary and panel, and on a link inside it (a shortcut chip,
+ * a country), since client navigation keeps the layout and the details open. The page stays
+ * server-rendered; only this disclosure needs script.
+ * @param props Summary content, its accessible name when the visible text is not enough, the
+ * panel content and the `data-part` of the details.
  * @returns Details element.
  */
 export function DatePicker({
   summary,
+  summaryLabel,
   children,
+  part = "date-picker",
 }: {
   readonly summary: ReactNode;
+  readonly summaryLabel?: string;
   readonly children: ReactNode;
+  readonly part?: string;
 }) {
   const ref = useRef<HTMLDetailsElement>(null);
 
@@ -24,8 +29,7 @@ export function DatePicker({
     const onPointerDown = (event: Event) => {
       const details = ref.current;
       const target = event.target;
-      const inPanel =
-        target instanceof Element && (target.closest("summary") ?? target.closest("form"));
+      const inPanel = target instanceof Node && target !== details && details?.contains(target);
 
       if (details?.open && !inPanel) {
         details.open = false;
@@ -49,14 +53,14 @@ export function DatePicker({
   return (
     <details
       ref={ref}
-      data-part="date-picker"
+      data-part={part}
       onClick={(event) => {
         if (event.target instanceof Element && event.target.closest("a")) {
           event.currentTarget.open = false;
         }
       }}
     >
-      <summary>{summary}</summary>
+      <summary aria-label={summaryLabel}>{summary}</summary>
       {children}
     </details>
   );

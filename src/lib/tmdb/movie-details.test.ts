@@ -62,7 +62,7 @@ describe("toMovieDetails", () => {
       title: "Il canto della foresta",
       subtitle: "Le Chant des forêts",
       originalTitle: "Le Chant des forêts",
-      releaseDateIt: "2026-11-12",
+      releaseDate: "2026-11-12",
       releaseType: "theatrical",
       runtime: 99,
       genres: ["Documentario"],

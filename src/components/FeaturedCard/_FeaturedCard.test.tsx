@@ -12,24 +12,28 @@ vi.mock("@/i18n/navigation", () => ({
 
 describe("FeaturedCard", () => {
   it("links the whole card to the film page", () => {
-    renderWithIntl(<FeaturedCard movie={movie({ id: 42 })} />);
+    renderWithIntl(<FeaturedCard country="IT" movie={movie({ id: 42 })} />);
 
-    expect(screen.getByRole("link")).toHaveAttribute("href", "/film/42");
+    expect(screen.getByRole("link")).toHaveAttribute("href", "/film/42?country=it");
   });
 
   it("passes the range of the list to the film page, for its back link", () => {
     renderWithIntl(
-      <FeaturedCard movie={movie({ id: 42 })} range={{ from: "2026-11-16", to: "2026-11-29" }} />,
+      <FeaturedCard
+        country="IT"
+        movie={movie({ id: 42 })}
+        range={{ from: "2026-11-16", to: "2026-11-29" }}
+      />,
     );
 
     expect(screen.getByRole("link")).toHaveAttribute(
       "href",
-      "/film/42?from=2026-11-16&to=2026-11-29",
+      "/film/42?country=it&from=2026-11-16&to=2026-11-29",
     );
   });
 
   it("prints the eyebrow, then the title, then the date line", () => {
-    const { container } = renderWithIntl(<FeaturedCard movie={movie()} />);
+    const { container } = renderWithIntl(<FeaturedCard country="IT" movie={movie()} />);
     const text = [...(container.querySelector("[data-part='card-text']")?.children ?? [])];
 
     expect(text.map((el) => el.tagName)).toEqual(["P", "H3", "P"]);
@@ -41,7 +45,7 @@ describe("FeaturedCard", () => {
 
   it("follows the date with at most two genres", () => {
     const { container } = renderWithIntl(
-      <FeaturedCard movie={movie({ genres: ["Horror", "Drammatico", "Fantasy"] })} />,
+      <FeaturedCard country="IT" movie={movie({ genres: ["Horror", "Drammatico", "Fantasy"] })} />,
     );
 
     expect(container.querySelector("[data-part='card-meta']")).toHaveTextContent(
@@ -51,13 +55,15 @@ describe("FeaturedCard", () => {
   });
 
   it("prints only the date when the film has no genres", () => {
-    const { container } = renderWithIntl(<FeaturedCard movie={movie({ genres: [] })} />);
+    const { container } = renderWithIntl(
+      <FeaturedCard country="IT" movie={movie({ genres: [] })} />,
+    );
 
     expect(container.querySelector("[data-part='card-meta']")).toHaveTextContent(/^Gio 5 nov$/);
   });
 
   it("renders the TMDB backdrop at 1280px", () => {
-    const { container } = renderWithIntl(<FeaturedCard movie={movie()} />);
+    const { container } = renderWithIntl(<FeaturedCard country="IT" movie={movie()} />);
 
     expect(container.querySelector("img")?.getAttribute("src")).toContain(
       encodeURIComponent("https://image.tmdb.org/t/p/w1280/backdrop.jpg"),
@@ -65,7 +71,9 @@ describe("FeaturedCard", () => {
   });
 
   it("renders no image without a backdrop", () => {
-    const { container } = renderWithIntl(<FeaturedCard movie={movie({ backdropPath: null })} />);
+    const { container } = renderWithIntl(
+      <FeaturedCard country="IT" movie={movie({ backdropPath: null })} />,
+    );
 
     expect(container.querySelector("img")).toBeNull();
   });

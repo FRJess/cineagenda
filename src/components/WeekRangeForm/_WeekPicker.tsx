@@ -1,14 +1,14 @@
 "use client";
 
 import { DayPicker, type DateRange } from "@daypicker/react";
-import { enGB, it } from "@daypicker/react/locale";
+import { enGB, fr, it } from "@daypicker/react/locale";
 import { useFormatter, useLocale, useTranslations } from "next-intl";
 import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { DAY_MONTH_SHORT_YEAR, isoDateToUtc } from "@/lib/releases/iso-date";
 import { clampWeeks, extendWeeks, type WeekRange } from "@/lib/releases/week-range";
 import { MAX_WEEKS, MIN_DATE, todayInRome, weeksBetween } from "@/lib/releases/window";
 
-const LOCALES = { it, en: enGB } as const;
+const LOCALES = { it, en: enGB, fr } as const;
 
 const subscribeNever = () => () => undefined;
 const isClient = () => true;
@@ -17,6 +17,7 @@ const isServer = () => false;
 type Props = {
   readonly from: string; // YYYY-MM-DD, normalized range from the URL (Monday to Sunday)
   readonly to: string;
+  readonly releaseDay: number; // usual release weekday of the country, 0 = Sunday
   readonly children?: ReactNode; // shortcut links, rendered between the calendar and the footer
 };
 
@@ -24,10 +25,10 @@ type Props = {
  * Week picker: the only date control of the GET form. Every calendar row is a week; a click
  * selects or extends whole weeks. The calendar renders after hydration; the hidden from/to
  * inputs and the footer submit work without JS.
- * @param props The URL range and the shortcut list.
+ * @param props The URL range, the country's release weekday and the shortcut list.
  * @returns Hidden inputs, calendar, shortcuts and footer.
  */
-export function WeekPicker({ from, to, children }: Props) {
+export function WeekPicker({ from, to, releaseDay, children }: Props) {
   const locale = useLocale() as keyof typeof LOCALES;
   const t = useTranslations("Nav");
   const format = useFormatter();
@@ -87,8 +88,8 @@ export function WeekPicker({ from, to, children }: Props) {
             formatWeekdayName: (weekday, _options, dateLib) =>
               dateLib ? dateLib.format(weekday, "EEE") : "",
           }}
-          modifiers={{ thursday: { dayOfWeek: [4] } }}
-          modifiersClassNames={{ thursday: "rdp-day_thursday" }}
+          modifiers={{ release: { dayOfWeek: [releaseDay] } }}
+          modifiersClassNames={{ release: "rdp-day_release" }}
           aria-label={t("calendar")}
         />
       )}

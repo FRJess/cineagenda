@@ -16,7 +16,7 @@ export type Movie = {
   readonly popularity: number;
   readonly genres: readonly string[];
   /** ISO date of the Italian release. */
-  readonly releaseDateIt: string;
+  readonly releaseDate: string;
   readonly releaseType: ReleaseType;
   /** TMDB free-text note on the release, e.g. "IMAX" or a festival name; may be empty. */
   readonly releaseNote: string;

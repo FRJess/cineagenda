@@ -2,6 +2,56 @@ import { describe, expect, it } from "vitest";
 import { details, tr } from "@/test/tmdb-fixtures";
 import { buildDisplayTitles } from "./title";
 
+describe("buildDisplayTitles for another country", () => {
+  it("shows that country's title with the original as subtitle", () => {
+    const film = details({
+      original_title: "2001: A Space Odyssey",
+      translations: {
+        translations: [
+          tr("it", "IT", { title: "2001: Odissea nello spazio" }),
+          tr("fr", "FR", { title: "2001, l'Odyssée de l'espace" }),
+        ],
+      },
+    });
+
+    expect(buildDisplayTitles(film, "FR")).toEqual({
+      title: "2001, l'Odyssée de l'espace",
+      subtitle: "2001: A Space Odyssey",
+    });
+  });
+
+  it("uses the original title alone for a film in that country's language", () => {
+    const film = details({
+      original_title: "La Haine",
+      original_language: "fr",
+      translations: { translations: [tr("it", "IT", { title: "L'odio" })] },
+    });
+
+    expect(buildDisplayTitles(film, "FR")).toEqual({ title: "La Haine", subtitle: "" });
+  });
+
+  it("prefers the American English title in the US", () => {
+    const film = details({
+      original_title: "Ratatouille",
+      original_language: "fr",
+      translations: {
+        translations: [
+          tr("en", "GB", { title: "Ratatouille UK" }),
+          tr("en", "US", { title: "Ratatouille US" }),
+        ],
+      },
+    });
+
+    expect(buildDisplayTitles(film, "US").title).toBe("Ratatouille US");
+  });
+
+  it("shows the original alone in an English-speaking country without an English title", () => {
+    const film = details({ original_title: "Parasite", original_language: "ko" });
+
+    expect(buildDisplayTitles(film, "US")).toEqual({ title: "Parasite", subtitle: "" });
+  });
+});
+
 describe("buildDisplayTitles", () => {
   it("uses the original title alone for Italian films", () => {
     const film = details({
