@@ -50,8 +50,7 @@
     "overview": "Trama",
     "noOverview": "Trama non disponibile.",
     "showPlot": "Mostra la trama",
-    "spoilerHint": "Può contenere spoiler",
-    "hidePlot": "Nascondi la trama",
+    "hidePlot": "Nascondi",
     "details": "Dettagli",
     "runtimeLabel": "Durata",
     "watchTrailer": "Guarda il trailer",
@@ -60,7 +59,14 @@
     "fromToday": "da oggi",
     "fromYesterday": "da ieri",
     "source": "Dati e immagini: TMDB",
-    "openTmdb": "Apri su TMDB ↗"
+    "openTmdb": "Apri su TMDB ↗",
+    "spoilerLines": [
+      "Niente spoiler prima dei popcorn",
+      "Il regista preferirebbe di no",
+      "Meglio scoprirlo al buio, in sala",
+      "Leggi a tuo rischio e pericolo",
+      "Ultimo avviso prima dei titoli di testa"
+    ]
   },
   "NotFound": {
     "eyebrow": "Fuori programmazione",
