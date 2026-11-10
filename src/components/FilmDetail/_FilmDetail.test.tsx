@@ -2,7 +2,7 @@ import { fireEvent, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import type { MovieDetails } from "@/lib/tmdb/movie-details";
 import { renderWithIntl } from "@/test/intl";
-import { FilmDetail, FilmSkeleton, FilmState } from "./_FilmDetail";
+import { FilmDetail, FilmSkeleton } from "./_FilmDetail";
 
 vi.mock("@/i18n/navigation", () => ({
   Link: ({
@@ -321,23 +321,6 @@ describe("FilmDetail", () => {
     const { container } = renderFilm({ backdropPath: null });
     expect(container.querySelector("[data-part='film']")).not.toHaveAttribute("data-backdrop");
     expect(container.querySelector("[data-part='film-hero'] img")).toBeNull();
-  });
-});
-
-describe("FilmState", () => {
-  it("shows a title in an empty hero with the back link, and its action in the sheet", () => {
-    const { container } = renderWithIntl(
-      <FilmState title="Film non trovato.">
-        <button type="button">Riprova</button>
-      </FilmState>,
-    );
-
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Film non trovato.");
-    expect(screen.getByRole("link", { name: "Tutte le uscite" })).toHaveAttribute("href", "/");
-    expect(container.querySelector("[data-part='film-hero'] img")).toBeNull();
-    expect(container.querySelector("[data-part='film-body']")).toContainElement(
-      screen.getByRole("button", { name: "Riprova" }),
-    );
   });
 });
 

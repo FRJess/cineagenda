@@ -48,6 +48,19 @@ describe("ThemeToggle", () => {
     expect(window.localStorage.getItem(STORAGE_KEY)).toBe("light");
   });
 
+  it("puts the stored theme back on the document when the boot script did not run", () => {
+    window.localStorage.setItem(STORAGE_KEY, "dark");
+    renderToggle();
+
+    expect(document.documentElement.dataset.theme).toBe("dark");
+  });
+
+  it("leaves the document alone when nothing is stored", () => {
+    renderToggle();
+
+    expect(document.documentElement.dataset.theme).toBeUndefined();
+  });
+
   it("starts on when the stored theme is dark", () => {
     window.localStorage.setItem(STORAGE_KEY, "dark");
     renderToggle();
