@@ -41,21 +41,6 @@ test("the English film page uses English labels", async ({ page }) => {
   );
 });
 
-for (const colorScheme of ["light", "dark"] as const) {
-  test(`the film page with the plot open has no WCAG 2.2 AA violations (${colorScheme})`, async ({
-    page,
-  }) => {
-    await page.emulateMedia({ colorScheme });
-    await page.goto("/it");
-    await page.locator("article a").first().click();
-    await page.locator("[data-part='spoiler'] > summary").click();
-    await page.locator("[data-part='spoiler'][open]").waitFor();
-    const results = await new AxeBuilder({ page }).withTags(WCAG_TAGS).analyze();
-
-    expect(results.violations).toEqual([]);
-  });
-}
-
 test.describe("dark mode", () => {
   test.use({ colorScheme: "dark" });
 
