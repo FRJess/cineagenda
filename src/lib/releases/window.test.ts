@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  pageRange,
   defaultRange,
   getReleaseWindow,
   MAX_RANGE_DAYS,
@@ -48,6 +49,12 @@ describe("getReleaseWindow", () => {
 describe("sundayOf", () => {
   it("returns the Sunday of a Monday's week", () => {
     expect(sundayOf("2026-11-02")).toBe("2026-11-08");
+  });
+});
+
+describe("pageRange", () => {
+  it("covers the tab's week only", () => {
+    expect(pageRange("2026-11-16")).toEqual({ from: "2026-11-16", to: "2026-11-22" });
   });
 });
 
