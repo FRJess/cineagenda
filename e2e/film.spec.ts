@@ -9,19 +9,23 @@ test("a card opens the film page with its facts", async ({ page }) => {
   const title = await card.locator("h3").textContent();
   await card.click();
 
-  await expect(page).toHaveURL(/\/it\/film\/\d+$/);
+  await expect(page).toHaveURL(/\/it\/film\/\d+\?from=\d{4}-\d{2}-\d{2}&to=\d{4}-\d{2}-\d{2}$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(title ?? "");
   await expect(page.locator("dl")).toBeVisible();
   await expect(page.getByRole("heading", { level: 2, name: "Trama" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Uscite" })).toHaveAttribute("href", "/it");
+  // The back link returns to the range the card was opened from.
+  await expect(page.getByRole("link", { name: "Uscite" })).toHaveAttribute(
+    "href",
+    /^\/it\?from=\d{4}-\d{2}-\d{2}&to=\d{4}-\d{2}-\d{2}$/,
+  );
 });
 
 test("the film page has no WCAG 2.2 AA violations", async ({ page }) => {
   await page.goto("/it");
   await page.locator("article a").first().click();
   await page.locator("dl").waitFor();
-  // The YouTube player's own markup is outside our control.
-  const results = await new AxeBuilder({ page }).withTags(WCAG_TAGS).exclude("iframe").analyze();
+  // The trailer is closed, so its iframe is hidden and outside the scan.
+  const results = await new AxeBuilder({ page }).withTags(WCAG_TAGS).analyze();
 
   expect(results.violations).toEqual([]);
 });
@@ -38,7 +42,10 @@ test("the English film page uses English labels", async ({ page }) => {
   await page.locator("article a").first().click();
 
   await expect(page.getByRole("heading", { level: 2, name: "Plot" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Releases" })).toHaveAttribute("href", "/en");
+  await expect(page.getByRole("link", { name: "Releases" })).toHaveAttribute(
+    "href",
+    /^\/en\?from=/,
+  );
 });
 
 test.describe("dark mode", () => {
@@ -48,7 +55,7 @@ test.describe("dark mode", () => {
     await page.goto("/it");
     await page.locator("article a").first().click();
     await page.locator("dl").waitFor();
-    const results = await new AxeBuilder({ page }).withTags(WCAG_TAGS).exclude("iframe").analyze();
+    const results = await new AxeBuilder({ page }).withTags(WCAG_TAGS).analyze();
 
     expect(results.violations).toEqual([]);
   });

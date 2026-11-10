@@ -1,11 +1,16 @@
 import Image from "next/image";
-import { useFormatter, useTranslations } from "next-intl";
+import { useFormatter, useLocale, useTranslations } from "next-intl";
+import type { ReactNode } from "react";
 import { Link } from "@/i18n/navigation";
+import { daysFromToday } from "@/lib/releases/days-from-today";
 import { isoDateToUtc, WEEKDAY_DAY_MONTH } from "@/lib/releases/iso-date";
+import type { ReleaseWindow } from "@/lib/releases/window";
 import type { CastMember, MovieDetails } from "@/lib/tmdb/movie-details";
+import { FilmTrailer } from "./_FilmTrailer";
 import "./_FilmDetail.css";
 
 const IMAGE_BASE = "https://image.tmdb.org/t/p";
+const RELATIVE_MAX_DAYS = 14;
 
 function initials(name: string): string {
   const parts = name.split(/\s+/).slice(0, 2);
@@ -14,6 +19,13 @@ function initials(name: string): string {
     .map((part) => part[0] ?? "")
     .join("")
     .toUpperCase();
+}
+
+/** Capitalized name in the UI locale; empty for codes it cannot name, like TMDB's "xx". */
+function displayName(code: string, type: "language" | "region", locale: string): string {
+  const name = code ? new Intl.DisplayNames([locale], { type, fallback: "none" }).of(code) : "";
+
+  return name ? name.charAt(0).toLocaleUpperCase(locale) + name.slice(1) : "";
 }
 
 function CastItem({ member }: { readonly member: CastMember }) {
@@ -30,40 +42,57 @@ function CastItem({ member }: { readonly member: CastMember }) {
   );
 }
 
-// Blurred behind the whole page: the backdrop, or the poster when TMDB has no backdrop.
-function Ambient({ film }: { readonly film: MovieDetails }) {
-  const src = film.backdropPath
-    ? { path: `${IMAGE_BASE}/w780${film.backdropPath}`, width: 780, height: 439 }
-    : film.posterPath
-      ? { path: `${IMAGE_BASE}/w342${film.posterPath}`, width: 342, height: 513 }
-      : null;
-
-  if (!src) {
-    return null;
-  }
-
-  return (
-    <div data-part="film-ambient" aria-hidden="true">
-      <Image src={src.path} alt="" width={src.width} height={src.height} />
-    </div>
-  );
-}
-
 /**
- * Film page body: backdrop hero with title and byline, then a sheet with genres, trailer,
- * plot, facts and cast over a blurred copy of the backdrop.
- * @param props Film details.
+ * Film page body: backdrop hero with date, title and byline, then a single-column sheet with the
+ * limited release note, genres, plot, facts, cast, trailer and the TMDB attribution; from 48rem
+ * the poster sits beside the sheet.
+ * @param props Film details, today's ISO date in Europe/Rome, and the list range the film was
+ * opened from, kept on the back link.
  * @returns Main landmark.
  */
-export function FilmDetail({ film }: { readonly film: MovieDetails }) {
+export function FilmDetail({
+  film,
+  today,
+  range,
+}: {
+  readonly film: MovieDetails;
+  readonly today: string;
+  readonly range?: ReleaseWindow;
+}) {
   const t = useTranslations("Film");
   const tReleases = useTranslations("Releases");
   const format = useFormatter();
-  const hasByline = film.directors.length > 0 || film.year !== null || !!film.runtime;
+  const locale = useLocale();
+  const days = daysFromToday(film.releaseDateIt, today);
+  const relative =
+    days === 0
+      ? t("fromToday")
+      : days === -1
+        ? t("fromYesterday")
+        : Math.abs(days) <= RELATIVE_MAX_DAYS
+          ? format.relativeTime(isoDateToUtc(film.releaseDateIt), {
+              now: isoDateToUtc(today),
+              unit: "day",
+            })
+          : null;
+  const byline = [film.directors.join(", "), film.year === null ? "" : String(film.year)]
+    .filter(Boolean)
+    .join(" · ");
+  const countries = film.countries
+    .map((code) => displayName(code, "region", locale))
+    .filter(Boolean)
+    .join(", ");
+  const facts = [
+    [t("screenplay"), film.writers.join(", ")],
+    [t("country", { count: film.countries.length }), countries],
+    [t("originalLanguage"), displayName(film.originalLanguage, "language", locale)],
+    [t("production"), film.companies.join(", ")],
+    [t("runtimeLabel"), film.runtime ? t("runtime", { minutes: film.runtime }) : ""],
+  ].filter(([, value]) => value);
+  const backHref = range ? { pathname: "/", query: { from: range.from, to: range.to } } : "/";
 
   return (
     <main data-part="film" data-backdrop={film.backdropPath ? "" : undefined}>
-      <Ambient film={film} />
       <header data-part="film-hero">
         {film.backdropPath && (
           <Image
@@ -75,7 +104,7 @@ export function FilmDetail({ film }: { readonly film: MovieDetails }) {
           />
         )}
         <nav aria-label={t("back")}>
-          <Link href="/">{t("back")}</Link>
+          <Link href={backHref}>{t("back")}</Link>
         </nav>
         <div data-part="film-hero-text">
           <p data-part="film-date">
@@ -83,85 +112,51 @@ export function FilmDetail({ film }: { readonly film: MovieDetails }) {
               date: format.dateTime(isoDateToUtc(film.releaseDateIt), WEEKDAY_DAY_MONTH),
               time: (chunks) => <time dateTime={film.releaseDateIt}>{chunks}</time>,
             })}
+            {relative && <span> · {relative}</span>}
           </p>
           <h1 id="film-title">{film.title}</h1>
           {film.subtitle && <p data-part="film-subtitle">{film.subtitle}</p>}
-          {hasByline && (
-            <p data-part="film-byline">
-              {film.directors.length > 0 && <span>{film.directors.join(", ")}</span>}
-              {film.year !== null && <span>{film.year}</span>}
-              {film.runtime ? (
-                <span>
-                  {t("runtimeShort", {
-                    hours: Math.floor(film.runtime / 60),
-                    minutes: film.runtime % 60,
-                  })}
-                </span>
-              ) : null}
-            </p>
-          )}
-          {film.releaseType === "limited" && (
-            <p data-release="limited">
-              {tReleases("limited")} {film.releaseNote && <span>{film.releaseNote}</span>}
-            </p>
-          )}
+          {byline && <p data-part="film-byline">{byline}</p>}
         </div>
       </header>
-      <div data-part="film-body">
+      <div data-part="film-columns">
         {film.posterPath && (
-          <Image src={`${IMAGE_BASE}/w500${film.posterPath}`} alt="" width={500} height={750} />
+          <Image
+            data-part="film-poster"
+            src={`${IMAGE_BASE}/w500${film.posterPath}`}
+            alt=""
+            width={500}
+            height={750}
+          />
         )}
-        <div data-part="film-sheet">
+        <div data-part="film-body">
+          {film.releaseType === "limited" && (
+            <p data-part="limited-note">
+              <span data-release="limited">{tReleases("limited")}</span>
+              {film.releaseNote && <span>{film.releaseNote}</span>}
+            </p>
+          )}
           {film.genres.length > 0 && (
-            <ul aria-label={t("genres")} data-part="film-genres">
+            <ul aria-label={t("genres")} data-part="genres">
               {film.genres.map((genre) => (
                 <li key={genre}>{genre}</li>
               ))}
             </ul>
           )}
-          {film.trailerKey && (
-            <details data-part="film-trailer">
-              <summary>{t("watchTrailer")}</summary>
-              <figure>
-                <iframe
-                  src={`https://www.youtube-nocookie.com/embed/${film.trailerKey}`}
-                  title={t("trailer")}
-                  loading="lazy"
-                  allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  allowFullScreen
-                />
-              </figure>
-            </details>
-          )}
           <section aria-labelledby="film-plot" data-part="film-plot">
             <h2 id="film-plot">{t("overview")}</h2>
             <p>{film.overview || t("noOverview")}</p>
           </section>
-          <dl data-part="film-facts">
-            {film.countries.length > 0 && (
-              <div>
-                <dt>{t("country")}</dt>
-                <dd>{film.countries.join(", ")}</dd>
-              </div>
-            )}
-            {film.companies.length > 0 && (
-              <div>
-                <dt>{t("production")}</dt>
-                <dd>{film.companies.join(", ")}</dd>
-              </div>
-            )}
-            <div>
-              <dt>{t("originalTitle")}</dt>
-              <dd>{film.originalTitle}</dd>
-            </div>
-            {film.runtime ? (
-              <div>
-                <dt>{t("runtimeLabel")}</dt>
-                <dd>{t("runtime", { minutes: film.runtime })}</dd>
-              </div>
-            ) : null}
-          </dl>
+          {facts.length > 0 && (
+            <dl data-part="facts">
+              {facts.map(([term, value]) => (
+                <div key={term}>
+                  <dt>{term}</dt>
+                  <dd>{value}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
           {film.cast.length > 0 && (
             <section aria-labelledby="film-cast" data-part="film-cast">
               <h2 id="film-cast">{t("cast")}</h2>
@@ -172,6 +167,75 @@ export function FilmDetail({ film }: { readonly film: MovieDetails }) {
               </ul>
             </section>
           )}
+          {film.trailerKey && (
+            <section aria-labelledby="film-trailer" data-part="film-trailer">
+              <h2 id="film-trailer">{t("trailer")}</h2>
+              <FilmTrailer trailerKey={film.trailerKey} />
+            </section>
+          )}
+          <p data-part="film-source">
+            {t("source")} ·{" "}
+            <a
+              href={`https://www.themoviedb.org/movie/${film.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {t("openTmdb")}
+            </a>
+          </p>
+        </div>
+      </div>
+    </main>
+  );
+}
+
+/**
+ * Page shell for the not-found and error states: an empty hero with the back link and a title,
+ * and a sheet holding an optional action.
+ * @param props Title of the state and an optional action, such as a retry button.
+ * @returns Main landmark.
+ */
+export function FilmState({
+  title,
+  children,
+}: {
+  readonly title: string;
+  readonly children?: ReactNode;
+}) {
+  const t = useTranslations("Film");
+
+  return (
+    <main data-part="film">
+      <header data-part="film-hero">
+        <nav aria-label={t("back")}>
+          <Link href="/">{t("back")}</Link>
+        </nav>
+        <div data-part="film-hero-text">
+          <h1>{title}</h1>
+        </div>
+      </header>
+      {children && (
+        <div data-part="film-columns">
+          <div data-part="film-body">{children}</div>
+        </div>
+      )}
+    </main>
+  );
+}
+
+/**
+ * Loading state of the film page: the hero without text and a sheet with three grey lines.
+ * @returns Busy main landmark.
+ */
+export function FilmSkeleton() {
+  return (
+    <main data-part="film" aria-busy="true">
+      <header data-part="film-hero" />
+      <div data-part="film-columns">
+        <div data-part="film-body">
+          <span data-part="skeleton-line" />
+          <span data-part="skeleton-line" />
+          <span data-part="skeleton-line" />
         </div>
       </div>
     </main>

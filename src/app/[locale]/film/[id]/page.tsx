@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
 import { hasLocale } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
-import { FilmDetail } from "@/components/FilmDetail";
+import { FilmDetail, FilmSkeleton } from "@/components/FilmDetail";
 import { SiteHeader } from "@/components/SiteHeader";
 import { routing } from "@/i18n/routing";
+import { parseRange, todayInRome } from "@/lib/releases/window";
 import { getMovieDetails } from "@/lib/tmdb/cached";
 import type { UiLocale } from "@/lib/tmdb/to-movie";
 
@@ -16,8 +18,12 @@ import type { UiLocale } from "@/lib/tmdb/to-movie";
 export const instant = false;
 
 type Params = PageProps<"/[locale]/film/[id]">["params"];
+type SearchParams = PageProps<"/[locale]/film/[id]">["searchParams"];
 
 const parseId = (value: string): number | null => (/^\d{1,9}$/.test(value) ? Number(value) : null);
+
+const first = (value: string | string[] | undefined): string | undefined =>
+  Array.isArray(value) ? value[0] : value;
 
 async function loadFilm(params: Params) {
   const { locale, id } = await params;
@@ -42,7 +48,13 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 }
 
 // Request-time: awaits params inside <Suspense> so the shell stays static.
-async function Film({ params }: { readonly params: Params }) {
+async function Film({
+  params,
+  searchParams,
+}: {
+  readonly params: Params;
+  readonly searchParams: SearchParams;
+}) {
   const loaded = await loadFilm(params);
 
   if (!loaded?.film) {
@@ -50,8 +62,15 @@ async function Film({ params }: { readonly params: Params }) {
   }
 
   setRequestLocale(loaded.locale as UiLocale);
+  const query = await searchParams;
+  // The clock is request data: without this Next flags `new Date()` as unstable at prerender.
+  await connection();
+  const today = todayInRome(new Date());
+  // The card passes the list range; without it the back link goes to the default list.
+  const from = first(query.from);
+  const range = from ? parseRange(from, first(query.to), today) : undefined;
 
-  return <FilmDetail film={loaded.film} />;
+  return <FilmDetail film={loaded.film} today={today} range={range} />;
 }
 
 /**
@@ -59,12 +78,12 @@ async function Film({ params }: { readonly params: Params }) {
  * @param props Route props.
  * @returns Film details, or the not-found page.
  */
-export default function FilmPage({ params }: PageProps<"/[locale]/film/[id]">) {
+export default function FilmPage({ params, searchParams }: PageProps<"/[locale]/film/[id]">) {
   return (
     <>
       <SiteHeader />
-      <Suspense fallback={<main aria-busy="true" />}>
-        <Film params={params} />
+      <Suspense fallback={<FilmSkeleton />}>
+        <Film params={params} searchParams={searchParams} />
       </Suspense>
     </>
   );

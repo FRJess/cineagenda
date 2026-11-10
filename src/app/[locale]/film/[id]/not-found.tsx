@@ -1,10 +1,10 @@
 import { useTranslations } from "next-intl";
+import { FilmState } from "@/components/FilmDetail";
 import { SiteHeader } from "@/components/SiteHeader";
-import { Link } from "@/i18n/navigation";
 
 /**
  * Shown for unknown ids and films without an Italian cinema release.
- * @returns Not-found state with a link back to the list.
+ * @returns Not-found state in the film page shell, with a link back to the list.
  */
 export default function FilmNotFound() {
   const t = useTranslations("Film");
@@ -12,10 +12,7 @@ export default function FilmNotFound() {
   return (
     <>
       <SiteHeader />
-      <main>
-        <h1>{t("notFound")}</h1>
-        <Link href="/">{t("back")}</Link>
-      </main>
+      <FilmState title={t("notFound")} />
     </>
   );
 }

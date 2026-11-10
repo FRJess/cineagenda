@@ -2,11 +2,21 @@ import { screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import type { MovieDetails } from "@/lib/tmdb/movie-details";
 import { renderWithIntl } from "@/test/intl";
-import { FilmDetail } from "./_FilmDetail";
+import { FilmDetail, FilmSkeleton, FilmState } from "./_FilmDetail";
 
 vi.mock("@/i18n/navigation", () => ({
-  Link: ({ children, href }: { children: React.ReactNode; href: string }) => (
-    <a href={href}>{children}</a>
+  Link: ({
+    children,
+    href,
+  }: {
+    children: React.ReactNode;
+    href: string | { pathname: string; query: Record<string, string> };
+  }) => (
+    <a
+      href={typeof href === "string" ? href : `${href.pathname}?${new URLSearchParams(href.query)}`}
+    >
+      {children}
+    </a>
   ),
 }));
 
@@ -18,7 +28,7 @@ const film: MovieDetails = {
   posterPath: "/poster.jpg",
   backdropPath: "/back.jpg",
   popularity: 10,
-  genres: ["Documentario"],
+  genres: ["Documentario", "Natura"],
   releaseDateIt: "2026-11-12",
   releaseType: "limited",
   releaseNote: "IMAX",
@@ -26,57 +36,98 @@ const film: MovieDetails = {
   year: 2025,
   runtime: 99,
   directors: ["Vincent Munier"],
+  writers: ["Vincent Munier", "Ann Lee"],
+  originalLanguage: "fr",
   cast: [
     { name: "Michel Munier", character: "Self", profilePath: "/m.jpg" },
     { name: "Simon Munier", character: "", profilePath: null },
   ],
-  countries: ["France"],
+  countries: ["FR", "BE"],
   companies: ["Paprika Films", "Kobalann"],
   trailerKey: "Hg84mjAvwyQ",
 };
 
+const TODAY = "2026-11-09";
+
+const renderFilm = (
+  overrides: Partial<MovieDetails> = {},
+  extra: { today?: string; range?: { from: string; to: string } } = {},
+) =>
+  renderWithIntl(
+    <FilmDetail film={{ ...film, ...overrides }} today={extra.today ?? TODAY} range={extra.range} />,
+  );
+
 describe("FilmDetail", () => {
-  it("renders the title as the page heading with the release date", () => {
-    const { container } = renderWithIntl(<FilmDetail film={film} />);
+  it("shows date, distance from today, title, subtitle and byline in the hero", () => {
+    const { container } = renderFilm();
+    const hero = container.querySelector("[data-part='film-hero']");
 
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Il canto della foresta");
-    expect(container.querySelector("[data-part='film-subtitle']")).toHaveTextContent(
-      "Le Chant des forêts",
-    );
     expect(container.querySelector("time")).toHaveAttribute("datetime", "2026-11-12");
-    expect(container.querySelector("time")).toHaveTextContent("gio 12 nov");
-  });
-
-  it("shows the limited badge and note", () => {
-    renderWithIntl(<FilmDetail film={film} />);
-
-    expect(screen.getByText("Uscita limitata")).toBeInTheDocument();
-    expect(screen.getByText("IMAX")).toBeInTheDocument();
-  });
-
-  it("puts director and running time in the hero byline", () => {
-    const { container } = renderWithIntl(<FilmDetail film={film} />);
-    const byline = container.querySelector("[data-part='film-byline']");
-
-    expect(byline).toHaveTextContent("Vincent Munier");
-    expect(byline).toHaveTextContent("2025");
-    expect(byline).toHaveTextContent("1h 39");
-    expect(byline).not.toHaveTextContent("99 min");
-    expect(container.querySelector("[data-part='film-hero']")).toContainElement(
-      byline as HTMLElement,
+    expect(container.querySelector("[data-part='film-date']")).toHaveTextContent(
+      "Al cinema da gio 12 nov · tra 3 giorni",
+    );
+    expect(hero).toHaveTextContent("Le Chant des forêts");
+    expect(container.querySelector("[data-part='film-byline']")).toHaveTextContent(
+      /^Vincent Munier · 2025$/,
     );
   });
 
-  it("omits the byline when there is neither director nor running time", () => {
-    const { container } = renderWithIntl(
-      <FilmDetail film={{ ...film, directors: [], year: null, runtime: null }} />,
+  it("says 'da oggi' and 'da ieri' around the release day", () => {
+    const today = renderFilm({}, { today: "2026-11-12" });
+    expect(today.container.querySelector("[data-part='film-date']")).toHaveTextContent("· da oggi");
+    today.unmount();
+
+    const yesterday = renderFilm({}, { today: "2026-11-13" });
+    expect(yesterday.container.querySelector("[data-part='film-date']")).toHaveTextContent(
+      "· da ieri",
     );
+  });
+
+  it("shows no distance beyond two weeks", () => {
+    const { container } = renderFilm({}, { today: "2026-10-28" });
+
+    expect(container.querySelector("[data-part='film-date']")).toHaveTextContent(
+      /^Al cinema da gio 12 nov$/,
+    );
+  });
+
+  it("omits the byline when there is no director or year", () => {
+    const { container } = renderFilm({ directors: [], year: null });
 
     expect(container.querySelector("[data-part='film-byline']")).toBeNull();
   });
 
-  it("lists genres as chips", () => {
-    renderWithIntl(<FilmDetail film={{ ...film, genres: ["Documentario", "Natura"] }} />);
+  it("links back to the release list, keeping the range the film was opened from", () => {
+    const withRange = renderFilm({}, { range: { from: "2026-11-16", to: "2026-11-29" } });
+    expect(screen.getByRole("link", { name: "Uscite" })).toHaveAttribute(
+      "href",
+      "/?from=2026-11-16&to=2026-11-29",
+    );
+    withRange.unmount();
+
+    renderFilm();
+    expect(screen.getByRole("link", { name: "Uscite" })).toHaveAttribute("href", "/");
+  });
+
+  it("opens the sheet with the limited-release note", () => {
+    const { container } = renderFilm();
+    const body = container.querySelector("[data-part='film-body']");
+
+    expect(body?.firstElementChild).toHaveAttribute("data-part", "limited-note");
+    expect(body?.firstElementChild).toHaveTextContent("Uscita limitata");
+    expect(body?.firstElementChild).toHaveTextContent("IMAX");
+  });
+
+  it("has no limited-release note for a regular release", () => {
+    const { container } = renderFilm({ releaseType: "theatrical", releaseNote: "" });
+
+    expect(container.querySelector("[data-part='limited-note']")).toBeNull();
+    expect(screen.queryByText("Uscita limitata")).not.toBeInTheDocument();
+  });
+
+  it("lists genres as chips in TMDB order", () => {
+    renderFilm();
     const genres = screen.getByRole("list", { name: "Generi" });
 
     expect([...genres.querySelectorAll("li")].map((li) => li.textContent)).toEqual([
@@ -85,35 +136,79 @@ describe("FilmDetail", () => {
     ]);
   });
 
-  it("lists facts in a description list", () => {
-    const { container } = renderWithIntl(<FilmDetail film={film} />);
-    const dl = container.querySelector("dl");
+  it("ends the sheet with the trailer section, closed and with no player yet", () => {
+    const { container } = renderFilm();
+    const section = container.querySelector("[data-part='film-source']")?.previousElementSibling;
+    const details = section?.querySelector("details[data-part='trailer']");
 
-    expect(dl).toHaveTextContent("Paese");
-    expect(dl).toHaveTextContent("France");
-    expect(dl).toHaveTextContent("Produzione");
-    expect(dl).toHaveTextContent("Paprika Films, Kobalann");
-    expect(dl).toHaveTextContent("99 min");
-    expect(dl).toHaveTextContent("Titolo originale");
-    expect(dl).not.toHaveTextContent("Regia");
-    expect(dl).not.toHaveTextContent("Documentario");
-    expect([...(dl?.querySelectorAll("dt") ?? [])].map((dt) => dt.textContent)).toEqual([
-      "Paese",
-      "Produzione",
-      "Titolo originale",
-      "Durata",
-    ]);
+    expect(section).toHaveAttribute("data-part", "film-trailer");
+    expect(screen.getByRole("heading", { level: 2, name: "Trailer" })).toBeInTheDocument();
+    expect(details).not.toHaveAttribute("open");
+    expect(details?.querySelector("summary")).toHaveTextContent(/^Guarda il trailer$/);
+    expect(container.querySelector("iframe")).toBeNull();
   });
 
-  it("renders the plot under a heading", () => {
-    renderWithIntl(<FilmDetail film={film} />);
+  it("omits the trailer without a trailer", () => {
+    const { container } = renderFilm({ trailerKey: null });
 
+    expect(container.querySelector("[data-part='film-trailer']")).toBeNull();
+    expect(container.querySelector("[data-part='trailer']")).toBeNull();
+    expect(container.querySelector("iframe")).toBeNull();
+  });
+
+  it("renders the plot under a heading, with a fallback when it is missing", () => {
+    const withPlot = renderFilm();
     expect(screen.getByRole("heading", { level: 2, name: "Trama" })).toBeInTheDocument();
     expect(screen.getByText("Un viaggio nella foresta.")).toBeInTheDocument();
+    withPlot.unmount();
+
+    renderFilm({ overview: "" });
+    expect(screen.getByText("Trama non disponibile.")).toBeInTheDocument();
+  });
+
+  it("lists the facts in order and skips the empty ones", () => {
+    const { container } = renderFilm();
+    const terms = () => [...container.querySelectorAll("dl dt")].map((dt) => dt.textContent);
+
+    expect(terms()).toEqual([
+      "Sceneggiatura",
+      "Paesi di origine",
+      "Lingua originale",
+      "Prodotto da",
+      "Durata",
+    ]);
+    expect(container.querySelector("dl")).toHaveTextContent("Vincent Munier, Ann Lee");
+    expect(container.querySelector("dl")).toHaveTextContent("Francia, Belgio");
+    expect(container.querySelector("dl")).toHaveTextContent("Francese");
+    expect(container.querySelector("dl")).toHaveTextContent("Paprika Films, Kobalann");
+    expect(container.querySelector("dl")).toHaveTextContent("99 min");
+  });
+
+  it("drops empty facts and a zero running time, and the list when nothing is left", () => {
+    const partial = renderFilm({
+      writers: [],
+      countries: ["FR"],
+      originalLanguage: "xx",
+      runtime: 0,
+    });
+    expect([...partial.container.querySelectorAll("dl dt")].map((dt) => dt.textContent)).toEqual([
+      "Paese di origine",
+      "Prodotto da",
+    ]);
+    partial.unmount();
+
+    const { container } = renderFilm({
+      writers: [],
+      countries: [],
+      originalLanguage: "",
+      companies: [],
+      runtime: null,
+    });
+    expect(container.querySelector("dl")).toBeNull();
   });
 
   it("lists the cast with photo or initials", () => {
-    renderWithIntl(<FilmDetail film={film} />);
+    renderFilm();
     const cast = screen.getByRole("list", { name: "Cast" });
 
     expect(cast.querySelectorAll("li")).toHaveLength(2);
@@ -121,71 +216,64 @@ describe("FilmDetail", () => {
     expect(cast).toHaveTextContent("SM");
   });
 
-  it("keeps the youtube-nocookie trailer behind a closed disclosure", () => {
-    const { container } = renderWithIntl(<FilmDetail film={film} />);
-    const details = container.querySelector("details");
-    const iframe = details?.querySelector("iframe");
+  it("closes the sheet with the TMDB attribution and a link to the film on TMDB", () => {
+    const { container } = renderFilm();
+    const source = container.querySelector("[data-part='film-body'] > [data-part='film-source']");
 
-    expect(details).not.toHaveAttribute("open");
-    expect(details?.querySelector("summary")).toHaveTextContent("Guarda il trailer");
-    expect(iframe).toHaveAttribute("src", "https://www.youtube-nocookie.com/embed/Hg84mjAvwyQ");
-    expect(iframe).toHaveAttribute("title", "Trailer");
-    expect(iframe).toHaveAttribute("loading", "lazy");
+    expect(source).toHaveTextContent("Dati e immagini: TMDB");
+    expect(screen.getByRole("link", { name: /Apri su TMDB/ })).toHaveAttribute(
+      "href",
+      "https://www.themoviedb.org/movie/1309373",
+    );
   });
 
-  it("omits the trailer disclosure without a trailer", () => {
-    const { container } = renderWithIntl(<FilmDetail film={{ ...film, trailerKey: null }} />);
+  it("puts the poster beside the sheet, and no poster when TMDB has none", () => {
+    const withPoster = renderFilm();
+    expect(
+      withPoster.container.querySelector("[data-part='film-columns'] > [data-part='film-poster']"),
+    ).toBeInTheDocument();
+    withPoster.unmount();
 
-    expect(container.querySelector("iframe")).toBeNull();
-    expect(container.querySelector("details")).toBeNull();
+    const { container } = renderFilm({ posterPath: null });
+    expect(container.querySelector("[data-part='film-poster']")).toBeNull();
   });
 
-  it("never prints a stray 0 when TMDB has no running time", () => {
-    const { container } = renderWithIntl(<FilmDetail film={{ ...film, runtime: 0 }} />);
+  it("shows the backdrop in the hero, and none without a backdrop", () => {
+    const withBackdrop = renderFilm();
+    expect(withBackdrop.container.querySelector("[data-part='film']")).toHaveAttribute(
+      "data-backdrop",
+    );
+    expect(withBackdrop.container.querySelector("[data-part='film-hero'] > img")).toBeInTheDocument();
+    withBackdrop.unmount();
 
-    expect(container.querySelector("dl")).not.toHaveTextContent(/^0|Durata/);
-    expect(container.querySelector("dl")?.textContent).not.toMatch(/(^|\D)0(\D|$)/);
-  });
-
-  it("omits the poster block when there is no poster", () => {
-    const { container } = renderWithIntl(<FilmDetail film={{ ...film, posterPath: null }} />);
-
-    expect(container.querySelector("[data-part='film-body'] > img")).toBeNull();
-    expect(screen.queryByText("Locandina non disponibile")).not.toBeInTheDocument();
-  });
-
-  it("marks the page when there is no backdrop and blurs the poster behind it instead", () => {
-    const { container } = renderWithIntl(<FilmDetail film={{ ...film, backdropPath: null }} />);
-
+    const { container } = renderFilm({ backdropPath: null });
     expect(container.querySelector("[data-part='film']")).not.toHaveAttribute("data-backdrop");
     expect(container.querySelector("[data-part='film-hero'] img")).toBeNull();
-    expect(
-      container.querySelector("[data-part='film-ambient'] img")?.getAttribute("src"),
-    ).toContain(encodeURIComponent("/t/p/w342/poster.jpg"));
   });
+});
 
-  it("blurs the backdrop behind the page as a hidden decoration", () => {
-    const { container } = renderWithIntl(<FilmDetail film={film} />);
-    const ambient = container.querySelector("[data-part='film-ambient']");
-
-    expect(ambient).toHaveAttribute("aria-hidden", "true");
-    expect(ambient?.querySelector("img")).toHaveAttribute("alt", "");
-    expect(ambient?.querySelector("img")?.getAttribute("src")).toContain(
-      encodeURIComponent("/t/p/w780/back.jpg"),
-    );
-  });
-
-  it("renders no ambient layer without any image", () => {
+describe("FilmState", () => {
+  it("shows a title in an empty hero with the back link, and its action in the sheet", () => {
     const { container } = renderWithIntl(
-      <FilmDetail film={{ ...film, backdropPath: null, posterPath: null }} />,
+      <FilmState title="Film non trovato.">
+        <button type="button">Riprova</button>
+      </FilmState>,
     );
 
-    expect(container.querySelector("[data-part='film-ambient']")).toBeNull();
-  });
-
-  it("links back to the release list", () => {
-    renderWithIntl(<FilmDetail film={film} />);
-
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Film non trovato.");
     expect(screen.getByRole("link", { name: "Uscite" })).toHaveAttribute("href", "/");
+    expect(container.querySelector("[data-part='film-hero'] img")).toBeNull();
+    expect(container.querySelector("[data-part='film-body']")).toContainElement(
+      screen.getByRole("button", { name: "Riprova" }),
+    );
+  });
+});
+
+describe("FilmSkeleton", () => {
+  it("is a busy page shell with three placeholder lines", () => {
+    const { container } = renderWithIntl(<FilmSkeleton />);
+
+    expect(container.querySelector("[data-part='film']")).toHaveAttribute("aria-busy", "true");
+    expect(container.querySelectorAll("[data-part='skeleton-line']")).toHaveLength(3);
   });
 });
