@@ -75,8 +75,10 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
         <NextIntlClientProvider>
           {children}
           <footer data-part="site-footer">
-            <Image src="/tmdb-logo.svg" alt="TMDB" width={273} height={36} />
-            <p>{t("attribution")}</p>
+            <div data-part="footer-attribution">
+              <Image src="/tmdb-logo.svg" alt="TMDB" width={273} height={36} />
+              <p>{t("attribution")}</p>
+            </div>
             <div data-part="footer-controls">
               <LocaleSwitch />
               <ThemeToggle />
