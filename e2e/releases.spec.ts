@@ -86,15 +86,16 @@ test("the range cannot start before the week of 2026-01-01", async ({ page }) =>
   ).toHaveCount(3);
 });
 
-test("the week tabs mark the week the range starts on", async ({ page }) => {
-  await page.goto("/it?from=2026-11-02&to=2026-11-15");
+test("the week tabs show and mark every week of a picked range", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/it?from=2026-11-02&to=2026-11-22");
   const tabs = page.getByRole("navigation", { name: "Settimane", exact: true });
+  const current = tabs.locator("a[aria-current='true']");
 
-  await expect(tabs.getByRole("link")).toHaveCount(5);
-  await expect(tabs.locator("a[aria-current='page']")).toHaveAttribute(
-    "href",
-    /from=2026-11-02&to=2026-11-08$/,
-  );
+  await expect(tabs.locator(":scope > ul > li > a")).toHaveCount(7);
+  await expect(current).toHaveCount(3);
+  await expect(current.first()).toHaveAttribute("href", /from=2026-11-02&to=2026-11-08$/);
+  await expect(current.last()).toHaveAttribute("href", /from=2026-11-16&to=2026-11-22$/);
 });
 
 test("Italian page lists releases grouped by week", async ({ page }) => {

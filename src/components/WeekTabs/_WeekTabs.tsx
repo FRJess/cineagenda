@@ -36,8 +36,9 @@ function CalendarIcon() {
 }
 
 /**
- * Week navigation of the navbar. From 48rem: five Mondays around the range, each linking to its
- * one-week page, and the "Date" disclosure beside the list. Below 48rem the stylesheet swaps them
+ * Week navigation of the navbar. From 48rem: every week of the range, marked current, with two
+ * more on each side, each linking to its one-week page, and the "Date" disclosure beside the
+ * list. Below 48rem the stylesheet swaps them
  * for the period bar: arrows that move the period by its own length around the same disclosure,
  * whose summary then shows the period. Every link keeps the country.
  * @param props Current normalized range, the Monday of the current week, today's ISO date and
@@ -89,7 +90,8 @@ export function WeekTabs({
           <li key={monday}>
             <Link
               href={{ pathname: "/", query: query(pageRange(monday)) }}
-              aria-current={monday === range.from ? "page" : undefined}
+              // Every week of the range is current; "true", since a set can have several.
+              aria-current={monday >= range.from && monday <= range.to ? "true" : undefined}
             >
               <b>{short(monday)}</b>
               <small>

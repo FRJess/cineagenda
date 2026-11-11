@@ -69,13 +69,13 @@
   color: var(--muted);
 }
 
-[data-part="week-tabs"] > ul > li > a[aria-current="page"] {
+[data-part="week-tabs"] > ul > li > a[aria-current="true"] {
   color: var(--tab-fg);
   background: var(--tab-bg);
   border-color: var(--tab-bg);
 }
 
-[data-part="week-tabs"] > ul > li > a[aria-current="page"] > small {
+[data-part="week-tabs"] > ul > li > a[aria-current="true"] > small {
   color: var(--tab-muted);
 }
 
