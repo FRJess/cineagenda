@@ -81,6 +81,10 @@ export type TmdbMovieDetails = {
     }[];
   };
   readonly translations: { readonly translations: readonly TmdbTranslation[] };
+  /** Appended with `keywords`; tells short films apart when TMDB has no running time. */
+  readonly keywords?: {
+    readonly keywords: readonly { readonly id: number; readonly name: string }[];
+  };
 };
 
 /** `GET /genre/movie/list`. */

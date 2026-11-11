@@ -1,5 +1,6 @@
 import { cacheLife } from "next/cache";
 import type { Country } from "@/lib/country";
+import { dedupeMovies } from "@/lib/releases/dedupe";
 import { byDateThenTitle } from "@/lib/releases/group-by-week";
 import type { Movie } from "@/lib/releases/movie";
 import { MIN_DATE, mondayOf, sundayOf } from "@/lib/releases/window";
@@ -39,7 +40,7 @@ async function getGenreNames(locale: UiLocale) {
 }
 
 /**
- * Cinema releases of one week in one country, sorted by date then title.
+ * Cinema releases of one week in one country, without TMDB duplicates, sorted by date then title.
  * @param weekStart Monday, ISO date.
  * @param locale UI locale for genres and overviews.
  * @param past Whether the week is before the current one; past weeks are cached longer.
@@ -58,9 +59,11 @@ export async function getWeekReleases(
     getGenreNames(locale),
   ]);
 
-  return details
-    .flatMap((film) => toMovie(film, window, locale, genreNames, country) ?? [])
-    .sort(byDateThenTitle);
+  return [
+    ...dedupeMovies(
+      details.flatMap((film) => toMovie(film, window, locale, genreNames, country) ?? []),
+    ),
+  ].sort(byDateThenTitle);
 }
 
 // Any cinema release from the app's first week onward counts on the film page.

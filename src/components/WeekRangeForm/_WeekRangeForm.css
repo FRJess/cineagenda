@@ -280,10 +280,27 @@
   cursor: pointer;
 }
 
-/* ─── Phone: one month, bottom sheet ─── */
+/* ─── Phone: one full-width month in the bottom sheet ─── */
 
+/* The picker renders one month below 48rem (numberOfMonths), so both arrows belong to it. */
 @media (max-width: 47.99rem) {
-  [data-part="week-range"] .rdp-month + .rdp-month {
-    display: none;
+  [data-part="week-range"] .rdp-months,
+  [data-part="week-range"] .rdp-month {
+    width: 100%;
+    max-width: none;
+  }
+
+  [data-part="week-range"] .rdp-month_grid {
+    width: 100%;
+    table-layout: fixed;
+  }
+
+  [data-part="week-range"] .rdp-day,
+  [data-part="week-range"] .rdp-day_button {
+    width: 100%;
+  }
+
+  [data-part="week-range"] .rdp-month_caption {
+    justify-content: center;
   }
 }

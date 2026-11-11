@@ -41,7 +41,7 @@ describe("WeekTabs", () => {
     expect(hrefs.every((href) => href?.startsWith("/?country=fr&"))).toBe(true);
   });
 
-  it("links five weeks around the range, each to a one-week page", () => {
+  it("starts at the range and links four weeks, each to a one-week page", () => {
     renderWithIntl(<WeekTabs country="IT" range={range} todayMonday="2026-11-02" today={today} />);
     const nav = screen.getByRole("navigation", { name: "Settimane" });
     const links = [...nav.querySelectorAll(":scope > ul > li > a")].map((a) =>
@@ -49,27 +49,28 @@ describe("WeekTabs", () => {
     );
 
     expect(links).toEqual([
-      "/?country=it&from=2026-10-19&to=2026-10-25",
-      "/?country=it&from=2026-10-26&to=2026-11-01",
       "/?country=it&from=2026-11-02&to=2026-11-08",
       "/?country=it&from=2026-11-09&to=2026-11-15",
       "/?country=it&from=2026-11-16&to=2026-11-22",
+      "/?country=it&from=2026-11-23&to=2026-11-29",
     ]);
   });
 
-  it("marks the week the range starts on as current", () => {
+  it("marks every week of the range as current", () => {
     renderWithIntl(<WeekTabs country="IT" range={range} todayMonday="2026-10-26" today={today} />);
+    const current = screen.getAllByRole("link", { current: true });
 
-    expect(screen.getByRole("link", { current: "page" })).toHaveTextContent("2 nov");
+    expect(current.map((link) => link.querySelector("b")?.textContent)).toEqual(["2 nov", "9 nov"]);
   });
 
   it("labels today's week and shows the Sunday on the others", () => {
     renderWithIntl(<WeekTabs country="IT" range={range} todayMonday="2026-11-02" today={today} />);
-    const current = screen.getByRole("link", { current: "page" });
+    const [current] = screen.getAllByRole("link", { current: true });
 
     expect(current).toHaveTextContent("2 nov");
     expect(current).toHaveTextContent("questa");
-    expect(screen.getByRole("link", { name: /9 nov/ })).toHaveTextContent("15 nov");
+    // Anchored: the new last tab, "23 nov / 29 nov", also contains "9 nov".
+    expect(screen.getByRole("link", { name: /^9 nov/ })).toHaveTextContent("15 nov");
   });
 
   it("has arrows that move the period by its own length, keeping the country", () => {
@@ -122,7 +123,7 @@ describe("WeekTabs", () => {
     expect(period("2026-11-16", "2026-12-06")).toMatch(/3 settimane$/);
   });
 
-  it("adds the year to the period only when it is not the current one", () => {
+  it("never puts a year or a leading zero in the phone period", () => {
     const { container } = renderWithIntl(
       <WeekTabs
         country="IT"
@@ -132,7 +133,9 @@ describe("WeekTabs", () => {
       />,
     );
 
-    expect(container.querySelector("[data-part='period'] b")).toHaveTextContent(/2027/);
+    expect(container.querySelector("[data-part='period'] b")).toHaveTextContent(
+      /^28 dic \u2013 10 gen$/,
+    );
   });
 
   it("keeps the date form in a closed disclosure beside the list, not inside it", () => {

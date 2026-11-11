@@ -51,6 +51,7 @@ export function WeekRangeForm({
         from={range.from}
         to={range.to}
         releaseDay={releaseWeekday(country)}
+        today={today}
       >
         <ul aria-label={t("shortcuts")} data-part="shortcuts">
           {quickRanges(today).map((shortcut, index) => (

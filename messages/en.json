@@ -50,6 +50,7 @@
   },
   "Film": {
     "director": "Director",
+    "directedBy": "Directed by",
     "cast": "Cast",
     "country": "{count, plural, one {Country of origin} other {Countries of origin}}",
     "production": "Produced by",
@@ -70,15 +71,18 @@
     "originalLanguage": "Original language",
     "fromToday": "from today",
     "fromYesterday": "since yesterday",
-    "source": "Data and images: TMDB",
-    "openTmdb": "Open on TMDB ↗",
     "spoilerLines": [
       "No spoilers before the popcorn",
       "The director would rather you didn't",
       "Better found out in the dark",
       "Read at your own risk",
       "Last call before the opening credits"
-    ]
+    ],
+    "noteAnniversary": "{years, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} anniversary",
+    "noteRerelease": "{format, select, IMAX {IMAX re-release} 4K {4K re-release} other {Re-release}}",
+    "noteRestoration": "Restored version",
+    "noteImax": "IMAX",
+    "voiceRole": "{character} (voice)"
   },
   "NotFound": {
     "eyebrow": "Not showing",

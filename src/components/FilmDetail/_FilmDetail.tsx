@@ -3,6 +3,7 @@ import { useFormatter, useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { type Country, countryQuery } from "@/lib/country";
 import { daysFromToday } from "@/lib/releases/days-from-today";
+import { parseReleaseNote } from "@/lib/releases/release-note";
 import { isoDateToUtc, WEEKDAY_DAY_MONTH } from "@/lib/releases/iso-date";
 import type { ReleaseWindow } from "@/lib/releases/window";
 import type { CastMember, MovieDetails } from "@/lib/tmdb/movie-details";
@@ -30,7 +31,15 @@ function displayName(code: string, type: "language" | "region", locale: string):
   return name ? name.charAt(0).toLocaleUpperCase(locale) + name.slice(1) : "";
 }
 
+// TMDB writes role annotations in English; the voice one is said in the UI language.
+const VOICE_ROLE = /\s*\(voice\)\s*$/i;
+
 function CastItem({ member }: { readonly member: CastMember }) {
+  const t = useTranslations("Film");
+  const character = VOICE_ROLE.test(member.character)
+    ? t("voiceRole", { character: member.character.replace(VOICE_ROLE, "") })
+    : member.character;
+
   return (
     <li>
       {member.profilePath ? (
@@ -39,16 +48,15 @@ function CastItem({ member }: { readonly member: CastMember }) {
         <span aria-hidden="true">{initials(member.name)}</span>
       )}
       <strong>{member.name}</strong>
-      {member.character && <small>{member.character}</small>}
+      {character && <small>{character}</small>}
     </li>
   );
 }
 
 /**
  * Film page body: backdrop hero with date, title and byline, then a single-column sheet with the
- * limited release note, genres, plot behind a spoiler, details, cast, trailer and the TMDB
- * attribution; from 48rem
- * the poster sits beside the sheet.
+ * limited release note, genres, plot behind a spoiler, details, cast and trailer; from 48rem the
+ * poster sits beside the sheet. The TMDB attribution is in the site footer.
  * @param props Film details, today's ISO date in Europe/Rome, and the list range and country the
  * film was opened from, kept on the back link.
  * @returns Main landmark.
@@ -80,9 +88,9 @@ export function FilmDetail({
               unit: "day",
             })
           : null;
-  const byline = [film.directors.join(", "), film.year === null ? "" : String(film.year)]
-    .filter(Boolean)
-    .join(" · ");
+  const directors = new Intl.ListFormat(locale, { type: "conjunction" }).format(film.directors);
+  // The year only tells something for a re-release: a new film's year is the release year.
+  const showYear = film.year !== null && String(film.year) !== film.releaseDate.slice(0, 4);
   const countries = film.countries
     .map((code) => displayName(code, "region", locale))
     .filter(Boolean)
@@ -94,6 +102,16 @@ export function FilmDetail({
     [t("production"), film.companies.join(", ")],
     [t("runtimeLabel"), film.runtime ? t("runtime", { minutes: film.runtime }) : ""],
   ].filter(([, value]) => value);
+  const parsed = parseReleaseNote(film.releaseNote);
+  const note = !parsed
+    ? ""
+    : parsed.kind === "anniversary"
+      ? t("noteAnniversary", { years: parsed.years })
+      : parsed.kind === "rerelease"
+        ? t("noteRerelease", { format: parsed.format ?? "none" })
+        : parsed.kind === "restoration"
+          ? t("noteRestoration")
+          : t("noteImax");
   const backHref = { pathname: "/", query: { ...countryQuery(country), ...range } };
 
   return (
@@ -124,7 +142,17 @@ export function FilmDetail({
           </p>
           <h1 id="film-title">{film.title}</h1>
           {film.subtitle && <p data-part="film-subtitle">{film.subtitle}</p>}
-          {byline && <p data-part="film-byline">{byline}</p>}
+          {film.directors.length > 0 && (
+            <p data-part="film-director">
+              <span>{t("directedBy")}</span> <b>{directors}</b>
+              {showYear && (
+                <>
+                  {" "}
+                  <span data-part="film-year">· {film.year}</span>
+                </>
+              )}
+            </p>
+          )}
         </div>
       </header>
       <div data-part="film-columns">
@@ -141,7 +169,7 @@ export function FilmDetail({
           {film.releaseType === "limited" && (
             <p data-part="limited-note">
               <span data-release="limited">{tReleases("limited")}</span>
-              {film.releaseNote && <span>{film.releaseNote}</span>}
+              {note && <span>{note}</span>}
             </p>
           )}
           {film.genres.length > 0 && (
@@ -191,16 +219,6 @@ export function FilmDetail({
               <FilmTrailer trailerKey={film.trailerKey} />
             </section>
           )}
-          <p data-part="film-source">
-            {t("source")} ·{" "}
-            <a
-              href={`https://www.themoviedb.org/movie/${film.id}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {t("openTmdb")}
-            </a>
-          </p>
         </div>
       </div>
     </main>

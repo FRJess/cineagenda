@@ -20,17 +20,29 @@ const group = {
   ],
 };
 
-const range = new Intl.DateTimeFormat("it", {
-  day: "numeric",
-  month: "long",
-  timeZone: "UTC",
-}).formatRange(new Date("2026-11-02T00:00:00Z"), new Date("2026-11-08T00:00:00Z"));
+const range = "2 \u2013 8 novembre";
 
 describe("WeekSection", () => {
+  it("writes the week range by hand, with the year on both ends across a new year", () => {
+    renderWithIntl(
+      <WeekSection
+        country="IT"
+        today="2026-11-06"
+        group={{ weekStart: "2026-12-28", weekEnd: "2027-01-03", movies: [] }}
+        todayMonday="2026-11-02"
+      />,
+    );
+
+    expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent(
+      "28 dicembre 2026 \u2013 3 gennaio 2027",
+    );
+  });
+
   it("hands the list range to every card link", () => {
     renderWithIntl(
       <WeekSection
         country="IT"
+        today="2026-11-06"
         group={group}
         todayMonday="2026-11-02"
         range={{ from: "2026-11-02", to: "2026-11-15" }}
@@ -45,7 +57,9 @@ describe("WeekSection", () => {
   });
 
   it("is a region named by its week heading", () => {
-    renderWithIntl(<WeekSection country="IT" group={group} todayMonday="2026-10-19" />);
+    renderWithIntl(
+      <WeekSection country="IT" today="2026-11-06" group={group} todayMonday="2026-10-19" />,
+    );
 
     expect(screen.getByRole("region", { name: `Settimana ${range}` })).toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent(`Settimana ${range}`);
@@ -53,7 +67,7 @@ describe("WeekSection", () => {
 
   it("labels the current and the next week", () => {
     const { unmount } = renderWithIntl(
-      <WeekSection country="IT" group={group} todayMonday="2026-11-02" />,
+      <WeekSection country="IT" today="2026-11-06" group={group} todayMonday="2026-11-02" />,
     );
 
     expect(screen.getByRole("region", { name: `Questa settimana ${range}` })).toHaveAttribute(
@@ -61,7 +75,9 @@ describe("WeekSection", () => {
     );
     unmount();
 
-    renderWithIntl(<WeekSection country="IT" group={group} todayMonday="2026-10-26" />);
+    renderWithIntl(
+      <WeekSection country="IT" today="2026-11-06" group={group} todayMonday="2026-10-26" />,
+    );
 
     expect(screen.getByRole("region", { name: `Prossima settimana ${range}` })).not.toHaveAttribute(
       "data-today",
@@ -69,7 +85,9 @@ describe("WeekSection", () => {
   });
 
   it("does not count the films of the week", () => {
-    renderWithIntl(<WeekSection country="IT" group={group} todayMonday="2026-10-19" />);
+    renderWithIntl(
+      <WeekSection country="IT" today="2026-11-06" group={group} todayMonday="2026-10-19" />,
+    );
 
     expect(screen.queryByText("3 film")).not.toBeInTheDocument();
   });
@@ -79,7 +97,9 @@ describe("WeekSection", () => {
       ...group,
       movies: group.movies.map((m) => ({ ...m, backdropPath: null })),
     };
-    renderWithIntl(<WeekSection country="IT" group={noBackdrops} todayMonday="2026-10-19" />);
+    renderWithIntl(
+      <WeekSection country="IT" today="2026-11-06" group={noBackdrops} todayMonday="2026-10-19" />,
+    );
 
     const titles = screen.getAllByRole("heading", { level: 3 }).map((h) => h.textContent);
 
@@ -88,7 +108,7 @@ describe("WeekSection", () => {
 
   it("features the most popular film of the week as the first grid item", () => {
     const { container } = renderWithIntl(
-      <WeekSection country="IT" group={group} todayMonday="2026-11-02" />,
+      <WeekSection country="IT" today="2026-11-06" group={group} todayMonday="2026-11-02" />,
     );
     const first = container.querySelector("ol > li:first-child");
     const posterTitles = [...container.querySelectorAll("ol [data-part='movie-card'] h3")].map(
@@ -101,7 +121,7 @@ describe("WeekSection", () => {
 
   it("features a film in every week, not only the current one", () => {
     const { container } = renderWithIntl(
-      <WeekSection country="IT" group={group} todayMonday="2026-10-19" />,
+      <WeekSection country="IT" today="2026-11-06" group={group} todayMonday="2026-10-19" />,
     );
 
     expect(container.querySelector("[data-part='featured-card']")).toHaveTextContent("Secondo");
@@ -111,6 +131,7 @@ describe("WeekSection", () => {
     const { container } = renderWithIntl(
       <WeekSection
         country="IT"
+        today="2026-11-06"
         group={{ ...group, movies: [movie({ id: 9 })] }}
         todayMonday="2026-11-02"
       />,
@@ -128,18 +149,20 @@ describe("WeekSection", () => {
       );
 
     const { container, unmount } = renderWithIntl(
-      <WeekSection country="IT" group={four} todayMonday="2026-11-02" eager />,
+      <WeekSection country="IT" today="2026-11-06" group={four} todayMonday="2026-11-02" eager />,
     );
     expect(posterLoading(container)).toEqual(["eager", "eager", "lazy"]);
     unmount();
 
-    const lazy = renderWithIntl(<WeekSection country="IT" group={four} todayMonday="2026-11-02" />);
+    const lazy = renderWithIntl(
+      <WeekSection country="IT" today="2026-11-06" group={four} todayMonday="2026-11-02" />,
+    );
     expect(posterLoading(lazy.container)).toEqual(["lazy", "lazy", "lazy"]);
   });
 
   it("has no external links", () => {
     const { container } = renderWithIntl(
-      <WeekSection country="IT" group={group} todayMonday="2026-10-19" />,
+      <WeekSection country="IT" today="2026-11-06" group={group} todayMonday="2026-10-19" />,
     );
 
     expect(container.querySelector("a[target='_blank']")).toBeNull();
@@ -147,7 +170,12 @@ describe("WeekSection", () => {
 
   it("shows 'Nessuna uscita' beside the title for a week without releases", () => {
     const { container } = renderWithIntl(
-      <WeekSection country="IT" group={{ ...group, movies: [] }} todayMonday="2026-10-26" />,
+      <WeekSection
+        country="IT"
+        today="2026-11-06"
+        group={{ ...group, movies: [] }}
+        todayMonday="2026-10-26"
+      />,
     );
 
     expect(screen.getByText("Nessuna uscita")).toBeInTheDocument();

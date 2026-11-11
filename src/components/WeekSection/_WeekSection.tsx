@@ -1,10 +1,10 @@
-import { useFormatter, useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { FeaturedCard } from "@/components/FeaturedCard";
 import { MovieCard } from "@/components/MovieCard";
 import type { Country } from "@/lib/country";
 import { pickFeatured } from "@/lib/releases/featured";
 import type { WeekGroup } from "@/lib/releases/group-by-week";
-import { DAY_MONTH, isoDateToUtc } from "@/lib/releases/iso-date";
+import { formatDateRange } from "@/lib/releases/date-range";
 import { addDays, type ReleaseWindow } from "@/lib/releases/window";
 import "./_WeekSection.css";
 
@@ -14,31 +14,33 @@ const EAGER_POSTERS = 2;
 /**
  * One release week: labeled heading with the date range ("Nessuna uscita" beside it when the
  * week is empty), then a grid that opens with the week's featured film and holds the others.
- * @param props Week group, the Monday of the current week, `eager` for the week shown above
+ * @param props Week group, the Monday of the current week, today (for the year rule of the title), `eager` for the week shown above
  * the fold, and the list range and country the cards pass to the film page.
  * @returns Section labeled by its heading.
  */
 export function WeekSection({
   group,
   todayMonday,
+  today,
   eager = false,
   range,
   country,
 }: {
   readonly group: WeekGroup;
   readonly todayMonday: string;
+  readonly today: string;
   readonly eager?: boolean;
   readonly range?: ReleaseWindow;
   readonly country: Country;
 }) {
   const t = useTranslations("Releases");
-  const format = useFormatter();
+  const locale = useLocale();
   const headingId = `week-${group.weekStart}`;
-  const dates = format.dateTimeRange(
-    isoDateToUtc(group.weekStart),
-    isoDateToUtc(group.weekEnd),
-    DAY_MONTH,
-  );
+  const dates = formatDateRange(locale, group.weekStart, group.weekEnd, {
+    month: "long",
+    year: "auto",
+    currentYear: today.slice(0, 4),
+  });
   const isCurrent = group.weekStart === todayMonday;
   const isNext = group.weekStart === addDays(todayMonday, 7);
   const label = isCurrent ? t("thisWeek") : isNext ? t("nextWeek") : t("week");

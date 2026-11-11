@@ -1,9 +1,10 @@
-import { useFormatter, useTranslations } from "next-intl";
+import { useFormatter, useLocale, useTranslations } from "next-intl";
 import { DatePicker } from "@/components/DatePicker";
 import { WeekRangeForm } from "@/components/WeekRangeForm";
 import { Link } from "@/i18n/navigation";
 import { type Country, countryQuery } from "@/lib/country";
-import { DAY_MONTH_SHORT, DAY_MONTH_SHORT_YEAR, isoDateToUtc } from "@/lib/releases/iso-date";
+import { formatDateRange } from "@/lib/releases/date-range";
+import { DAY_MONTH_SHORT, isoDateToUtc } from "@/lib/releases/iso-date";
 import {
   addDays,
   MIN_DATE,
@@ -35,8 +36,9 @@ function CalendarIcon() {
 }
 
 /**
- * Week navigation of the navbar. From 48rem: five Mondays around the range, each linking to its
- * one-week page, and the "Date" disclosure beside the list. Below 48rem the stylesheet swaps them
+ * Week navigation of the navbar. From 48rem: tabs from the first week of the range, its weeks
+ * marked current, filled up to four with the following weeks, each linking to its one-week page,
+ * between the previous and next arrows, and the "Date" disclosure beside them. Below 48rem the stylesheet swaps them
  * for the period bar: arrows that move the period by its own length around the same disclosure,
  * whose summary then shows the period. Every link keeps the country.
  * @param props Current normalized range, the Monday of the current week, today's ISO date and
@@ -56,16 +58,16 @@ export function WeekTabs({
 }) {
   const t = useTranslations("Nav");
   const format = useFormatter();
+  const locale = useLocale();
   const short = (isoDate: string) => format.dateTime(isoDateToUtc(isoDate), DAY_MONTH_SHORT);
   const query = (window: ReleaseWindow) => ({ ...countryQuery(country), ...window });
   const weeks = weeksBetween(range).length;
-  const thisYear = today.slice(0, 4);
-  const showYear = range.from.slice(0, 4) !== thisYear || range.to.slice(0, 4) !== thisYear;
-  const period = format.dateTimeRange(
-    isoDateToUtc(range.from),
-    isoDateToUtc(range.to),
-    showYear ? DAY_MONTH_SHORT_YEAR : DAY_MONTH_SHORT,
-  );
+  // The phone bar never shows the year: the week titles below do.
+  const period = formatDateRange(locale, range.from, range.to, {
+    month: "short",
+    year: "never",
+    currentYear: today.slice(0, 4),
+  });
   const caption =
     range.from !== todayMonday
       ? t("weeksCount", { count: weeks })
@@ -88,7 +90,8 @@ export function WeekTabs({
           <li key={monday}>
             <Link
               href={{ pathname: "/", query: query(pageRange(monday)) }}
-              aria-current={monday === range.from ? "page" : undefined}
+              // Every week of the range is current; "true", since a set can have several.
+              aria-current={monday >= range.from && monday <= range.to ? "true" : undefined}
             >
               <b>{short(monday)}</b>
               <small>

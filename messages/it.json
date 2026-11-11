@@ -50,6 +50,7 @@
   },
   "Film": {
     "director": "Regia",
+    "directedBy": "Regia di",
     "cast": "Cast",
     "country": "{count, plural, one {Paese di origine} other {Paesi di origine}}",
     "production": "Prodotto da",
@@ -70,15 +71,18 @@
     "originalLanguage": "Lingua originale",
     "fromToday": "da oggi",
     "fromYesterday": "da ieri",
-    "source": "Dati e immagini: TMDB",
-    "openTmdb": "Apri su TMDB ↗",
     "spoilerLines": [
       "Niente spoiler prima dei popcorn",
       "La regia preferirebbe di no",
       "Meglio scoprirlo al buio, in sala",
       "Leggi a tuo rischio e pericolo",
       "Ultimo avviso prima dei titoli di testa"
-    ]
+    ],
+    "noteAnniversary": "{years}° anniversario",
+    "noteRerelease": "{format, select, IMAX {Riedizione IMAX} 4K {Riedizione in 4K} other {Riedizione}}",
+    "noteRestoration": "Versione restaurata",
+    "noteImax": "IMAX",
+    "voiceRole": "{character} (voce)"
   },
   "NotFound": {
     "eyebrow": "Fuori programmazione",

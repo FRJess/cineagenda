@@ -2,9 +2,10 @@
 
 import { DayPicker, type DateRange } from "@daypicker/react";
 import { enGB, fr, it } from "@daypicker/react/locale";
-import { useFormatter, useLocale, useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
-import { DAY_MONTH_SHORT_YEAR, isoDateToUtc } from "@/lib/releases/iso-date";
+import { formatDateRange } from "@/lib/releases/date-range";
+import { isoDateToUtc } from "@/lib/releases/iso-date";
 import { clampWeeks, extendWeeks, type WeekRange } from "@/lib/releases/week-range";
 import { MAX_WEEKS, MIN_DATE, todayInRome, weeksBetween } from "@/lib/releases/window";
 
@@ -14,10 +15,21 @@ const subscribeNever = () => () => undefined;
 const isClient = () => true;
 const isServer = () => false;
 
+const WIDE = "(min-width: 48rem)";
+const subscribeWide = (onChange: () => void) => {
+  const query = window.matchMedia?.(WIDE);
+  query?.addEventListener("change", onChange);
+
+  return () => query?.removeEventListener("change", onChange);
+};
+// jsdom and the server have no matchMedia: they get the phone layout.
+const isWideScreen = () => window.matchMedia?.(WIDE).matches ?? false;
+
 type Props = {
   readonly from: string; // YYYY-MM-DD, normalized range from the URL (Monday to Sunday)
   readonly to: string;
   readonly releaseDay: number; // usual release weekday of the country, 0 = Sunday
+  readonly today: string; // ISO date in Europe/Rome, for the year rule of the footer range
   readonly children?: ReactNode; // shortcut links, rendered between the calendar and the footer
 };
 
@@ -25,14 +37,15 @@ type Props = {
  * Week picker: the only date control of the GET form. Every calendar row is a week; a click
  * selects or extends whole weeks. The calendar renders after hydration; the hidden from/to
  * inputs and the footer submit work without JS.
- * @param props The URL range, the country's release weekday and the shortcut list.
+ * @param props The URL range, the country's release weekday, today's date and the shortcut list.
  * @returns Hidden inputs, calendar, shortcuts and footer.
  */
-export function WeekPicker({ from, to, releaseDay, children }: Props) {
+export function WeekPicker({ from, to, releaseDay, today, children }: Props) {
   const locale = useLocale() as keyof typeof LOCALES;
   const t = useTranslations("Nav");
-  const format = useFormatter();
   const hydrated = useSyncExternalStore(subscribeNever, isClient, isServer);
+  // Two months side by side from 48rem; one full-width month on phones, so both arrows show.
+  const wide = useSyncExternalStore(subscribeWide, isWideScreen, isServer);
   const [range, setRange] = useState<WeekRange>({ from, to });
   // Bumped on every opening, to remount DayPicker on the month of the URL range.
   const [openings, setOpenings] = useState(0);
@@ -81,7 +94,9 @@ export function WeekPicker({ from, to, releaseDay, children }: Props) {
           weekStartsOn={1}
           startMonth={isoDateToUtc(MIN_DATE)}
           disabled={{ before: isoDateToUtc(MIN_DATE) }}
-          numberOfMonths={2}
+          numberOfMonths={wide ? 2 : 1}
+          // With one month, a week across two months is still drawn complete.
+          showOutsideDays={!wide}
           captionLayout="label"
           navLayout="around"
           formatters={{
@@ -97,11 +112,11 @@ export function WeekPicker({ from, to, releaseDay, children }: Props) {
       <footer data-part="picker-footer">
         <output aria-live="polite" data-max={atMax ? "" : undefined}>
           <b>
-            {format.dateTimeRange(
-              isoDateToUtc(range.from),
-              isoDateToUtc(range.to),
-              DAY_MONTH_SHORT_YEAR,
-            )}
+            {formatDateRange(locale, range.from, range.to, {
+              month: "short",
+              year: "auto",
+              currentYear: today.slice(0, 4),
+            })}
           </b>
           <small>
             {t("weeksCount", { count: weeks })} ·{" "}

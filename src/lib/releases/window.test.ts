@@ -5,6 +5,7 @@ import {
   defaultRange,
   getReleaseWindow,
   MAX_RANGE_DAYS,
+  MAX_WEEKS,
   mondayOf,
   parseRange,
   sundayOf,
@@ -86,6 +87,13 @@ describe("parseRange", () => {
     });
   });
 
+  it("falls back to one week from the clamped start when the whole range is too early", () => {
+    expect(parseRange("2025-01-01", "2025-02-01", today)).toEqual({
+      from: "2025-12-29",
+      to: "2026-01-04",
+    });
+  });
+
   it("clamps the start to the week of 2026-01-01", () => {
     expect(parseRange("2025-06-01", "2026-01-11", today).from).toBe("2025-12-29");
   });
@@ -109,8 +117,12 @@ describe("parseRange", () => {
     });
   });
 
-  it("caps the range at 26 weeks", () => {
-    expect(parseRange("2026-01-05", "2027-12-31", today).to).toBe("2026-07-05");
+  it("caps the URL range at 6 weeks, the longest month shortcut", () => {
+    expect(parseRange("2026-01-05", "2027-12-31", today).to).toBe("2026-02-15");
+    expect(parseRange("2026-10-26", "2026-12-06", today)).toEqual({
+      from: "2026-10-26",
+      to: "2026-12-06",
+    });
   });
 });
 
@@ -124,28 +136,28 @@ describe("weeksBetween", () => {
 });
 
 describe("tabWeeks", () => {
-  it("returns two Mondays before, the start and two after", () => {
+  it("starts at the range and fills four tabs with the following weeks", () => {
     expect(tabWeeks({ from: "2026-11-02", to: "2026-11-15" })).toEqual([
-      "2026-10-19",
-      "2026-10-26",
       "2026-11-02",
       "2026-11-09",
       "2026-11-16",
+      "2026-11-23",
     ]);
   });
 
-  it("drops weeks before the week of 2026-01-01", () => {
-    expect(tabWeeks({ from: "2026-01-05", to: "2026-01-18" })).toEqual([
-      "2025-12-29",
-      "2026-01-05",
-      "2026-01-12",
-      "2026-01-19",
-    ]);
+  it("shows every week of a range longer than four, such as a month shortcut", () => {
+    expect(tabWeeks({ from: "2026-10-26", to: "2026-12-06" })).toHaveLength(6);
   });
 });
 
 describe("MAX_RANGE_DAYS", () => {
-  it("is 26 weeks in days, the cap of parseRange", () => {
-    expect(MAX_RANGE_DAYS).toBe(182);
+  it("is 6 weeks in days, the cap of parseRange", () => {
+    expect(MAX_RANGE_DAYS).toBe(42);
+  });
+});
+
+describe("MAX_WEEKS", () => {
+  it("lets the calendar select at most 4 weeks", () => {
+    expect(MAX_WEEKS).toBe(4);
   });
 });

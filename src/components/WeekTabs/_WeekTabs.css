@@ -25,8 +25,50 @@
   scrollbar-width: none;
 }
 
+/* Shrinks only when even the single tab of the narrowest desktop does not fit. */
 [data-part="week-tabs"] > ul > li {
-  flex: 0 0 auto;
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+/* From 48rem the list takes only its tabs' width, so the next arrow follows the last tab; the
+   Date disclosure stays at the right end. */
+@media (min-width: 48rem) {
+  [data-part="week-tabs"] > ul {
+    flex: 0 1 auto;
+  }
+
+  [data-part="date-picker"] {
+    margin-left: auto;
+  }
+}
+
+/* A mouse wheel cannot scroll the tabs sideways: the tabs that do not fit are not shown.
+   With 6.5rem tabs between the two arrows one fits from 48rem, two from 55rem, three from
+   62rem, four from 69rem, never more (a month shortcut of five or six weeks shows its first
+   four). */
+@media (min-width: 48rem) {
+  [data-part="week-tabs"] > ul > li:nth-child(n + 5) {
+    display: none;
+  }
+}
+
+@media (min-width: 48rem) and (max-width: 54.99rem) {
+  [data-part="week-tabs"] > ul > li:nth-child(n + 2) {
+    display: none;
+  }
+}
+
+@media (min-width: 55rem) and (max-width: 61.99rem) {
+  [data-part="week-tabs"] > ul > li:nth-child(n + 3) {
+    display: none;
+  }
+}
+
+@media (min-width: 62rem) and (max-width: 68.99rem) {
+  [data-part="week-tabs"] > ul > li:nth-child(n + 4) {
+    display: none;
+  }
 }
 
 /* ─── Tabs and the Date summary share one pill ─── */
@@ -46,6 +88,14 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 0.5rem;
+}
+
+/* One fixed width for every tab, the widest label included ("21 sept.", "28 déc."), so the row
+   and the next arrow do not move when the weeks change. */
+[data-part="week-tabs"] > ul > li > a {
+  width: 6.5rem;
+  max-width: 100%;
+  padding-inline: 0.5rem;
 }
 
 [data-part="week-tabs"] > ul > li > a:hover {
@@ -69,13 +119,13 @@
   color: var(--muted);
 }
 
-[data-part="week-tabs"] > ul > li > a[aria-current="page"] {
+[data-part="week-tabs"] > ul > li > a[aria-current="true"] {
   color: var(--tab-fg);
   background: var(--tab-bg);
   border-color: var(--tab-bg);
 }
 
-[data-part="week-tabs"] > ul > li > a[aria-current="page"] > small {
+[data-part="week-tabs"] > ul > li > a[aria-current="true"] > small {
   color: var(--tab-muted);
 }
 
@@ -108,11 +158,50 @@
   align-items: center;
 }
 
-/* The period bar exists only below 48rem. */
-[data-part="period"],
+/* The period exists only below 48rem. From 48rem the arrows frame the tabs: the tabs start at
+   the range and show no earlier weeks. */
+[data-part="period"] {
+  display: none;
+}
+
 [data-part="step-previous"],
 [data-part="step-next"] {
-  display: none;
+  display: flex;
+  flex: 0 0 2.75rem;
+  align-items: center;
+  align-self: stretch;
+  justify-content: center;
+  margin-block: var(--space-1);
+  color: var(--foreground);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+}
+
+[data-part="step-previous"]::after,
+[data-part="step-next"]::after {
+  width: 0.5rem;
+  height: 0.5rem;
+  content: "";
+  border-bottom: 2px solid currentColor;
+  border-left: 2px solid currentColor;
+}
+
+[data-part="step-previous"]::after {
+  margin-left: 0.1875rem;
+  transform: rotate(45deg);
+}
+
+[data-part="step-next"]::after {
+  margin-right: 0.1875rem;
+  transform: rotate(-135deg);
+}
+
+@media (hover: hover) {
+  [data-part="step-previous"]:hover,
+  [data-part="step-next"]:hover {
+    border-color: var(--foreground);
+  }
 }
 
 /* ─── Below 48rem: the period bar, previous | period | next, all 2.75rem tall ─── */
@@ -188,14 +277,23 @@
     min-width: 0;
   }
 
+  /* Range and caption centred under each other, whatever their lengths. */
   [data-part="period"] > span {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    min-width: 0;
+    text-align: center;
   }
 
+  /* Safety net: a long range never overflows the button. */
   [data-part="period"] b {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
     font-size: 0.9375rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   [data-part="period"] small {

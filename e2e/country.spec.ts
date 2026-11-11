@@ -111,3 +111,12 @@ test("the French UI keeps the chosen country and dates when switching language",
     "Pays des sorties : États-Unis",
   );
 });
+
+test("switching country on a film page goes back to the list of that country", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/it/film/372058?country=it&from=2026-11-23&to=2026-11-29");
+  await page.locator("[data-part='country-picker'] > summary:visible").click();
+  await page.getByRole("link", { name: "Francia" }).click();
+
+  await expect(page).toHaveURL(/\/it\?country=fr&from=2026-11-23&to=2026-11-29$/);
+});

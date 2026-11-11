@@ -71,7 +71,7 @@ export async function fetchReleaseDetails(
 
   return mapLimited(ids, MAX_IN_FLIGHT, (id) =>
     tmdbGet<TmdbMovieDetails>(`/movie/${id}`, {
-      append_to_response: "release_dates,translations",
+      append_to_response: "release_dates,translations,keywords",
     }),
   );
 }
@@ -97,7 +97,7 @@ export async function fetchGenreNames(locale: UiLocale): Promise<GenreNames> {
  */
 export async function fetchMovieDetails(id: number): Promise<TmdbMovieDetails> {
   return tmdbGet<TmdbMovieDetails>(`/movie/${id}`, {
-    append_to_response: "credits,videos,release_dates,translations",
+    append_to_response: "credits,videos,release_dates,translations,keywords",
     include_video_language: "it,en,fr",
   });
 }
