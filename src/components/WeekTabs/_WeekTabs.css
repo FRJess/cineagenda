@@ -188,14 +188,23 @@
     min-width: 0;
   }
 
+  /* Range and caption centred under each other, whatever their lengths. */
   [data-part="period"] > span {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    min-width: 0;
+    text-align: center;
   }
 
+  /* Safety net: a long range never overflows the button. */
   [data-part="period"] b {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
     font-size: 0.9375rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   [data-part="period"] small {

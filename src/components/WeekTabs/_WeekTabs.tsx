@@ -1,9 +1,10 @@
-import { useFormatter, useTranslations } from "next-intl";
+import { useFormatter, useLocale, useTranslations } from "next-intl";
 import { DatePicker } from "@/components/DatePicker";
 import { WeekRangeForm } from "@/components/WeekRangeForm";
 import { Link } from "@/i18n/navigation";
 import { type Country, countryQuery } from "@/lib/country";
-import { DAY_MONTH_SHORT, DAY_MONTH_SHORT_YEAR, isoDateToUtc } from "@/lib/releases/iso-date";
+import { formatDateRange } from "@/lib/releases/date-range";
+import { DAY_MONTH_SHORT, isoDateToUtc } from "@/lib/releases/iso-date";
 import {
   addDays,
   MIN_DATE,
@@ -56,16 +57,16 @@ export function WeekTabs({
 }) {
   const t = useTranslations("Nav");
   const format = useFormatter();
+  const locale = useLocale();
   const short = (isoDate: string) => format.dateTime(isoDateToUtc(isoDate), DAY_MONTH_SHORT);
   const query = (window: ReleaseWindow) => ({ ...countryQuery(country), ...window });
   const weeks = weeksBetween(range).length;
-  const thisYear = today.slice(0, 4);
-  const showYear = range.from.slice(0, 4) !== thisYear || range.to.slice(0, 4) !== thisYear;
-  const period = format.dateTimeRange(
-    isoDateToUtc(range.from),
-    isoDateToUtc(range.to),
-    showYear ? DAY_MONTH_SHORT_YEAR : DAY_MONTH_SHORT,
-  );
+  // The phone bar never shows the year: the week titles below do.
+  const period = formatDateRange(locale, range.from, range.to, {
+    month: "short",
+    year: "never",
+    currentYear: today.slice(0, 4),
+  });
   const caption =
     range.from !== todayMonday
       ? t("weeksCount", { count: weeks })

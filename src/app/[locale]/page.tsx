@@ -87,7 +87,7 @@ async function HeaderCountry({ searchParams }: { readonly searchParams: SearchPa
 
 // Streams into the page: one section per week. Paging happens in the navbar.
 async function Weeks({ locale, searchParams }: { locale: UiLocale; searchParams: SearchParams }) {
-  const { todayMonday, range, country } = await loadRange(searchParams);
+  const { today, todayMonday, range, country } = await loadRange(searchParams);
   const weeks = weeksBetween(range);
   const releases = await Promise.all(
     weeks.map((weekStart) => getWeekReleases(weekStart, locale, weekStart < todayMonday, country)),
@@ -100,6 +100,7 @@ async function Weeks({ locale, searchParams }: { locale: UiLocale; searchParams:
           key={weekStart}
           group={{ weekStart, weekEnd: sundayOf(weekStart), movies: releases[index] }}
           todayMonday={todayMonday}
+          today={today}
           eager={index === 0}
           range={range}
           country={country}

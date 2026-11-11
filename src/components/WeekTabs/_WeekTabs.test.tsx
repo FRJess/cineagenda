@@ -122,7 +122,7 @@ describe("WeekTabs", () => {
     expect(period("2026-11-16", "2026-12-06")).toMatch(/3 settimane$/);
   });
 
-  it("adds the year to the period only when it is not the current one", () => {
+  it("never puts a year or a leading zero in the phone period", () => {
     const { container } = renderWithIntl(
       <WeekTabs
         country="IT"
@@ -132,7 +132,9 @@ describe("WeekTabs", () => {
       />,
     );
 
-    expect(container.querySelector("[data-part='period'] b")).toHaveTextContent(/2027/);
+    expect(container.querySelector("[data-part='period'] b")).toHaveTextContent(
+      /^28 dic \u2013 10 gen$/,
+    );
   });
 
   it("keeps the date form in a closed disclosure beside the list, not inside it", () => {

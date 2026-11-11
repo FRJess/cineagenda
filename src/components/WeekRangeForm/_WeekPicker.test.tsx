@@ -1,7 +1,7 @@
 import { fireEvent, screen } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import { renderToString } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { renderWithIntl } from "@/test/intl";
 import it_ from "../../../messages/it.json";
 import { WeekPicker } from "./_WeekPicker";
@@ -14,7 +14,7 @@ const renderPicker = (
 ) =>
   renderWithIntl(
     <form>
-      <WeekPicker from={from} to={to} releaseDay={releaseDay} />
+      <WeekPicker from={from} to={to} releaseDay={releaseDay} today="2026-11-06" />
     </form>,
     locale,
   );
@@ -28,11 +28,23 @@ const click = (container: HTMLElement, isoDate: string) =>
 const cell = (container: HTMLElement, isoDate: string) =>
   container.querySelector(`[data-day="${isoDate}"]`);
 
+// jsdom has no matchMedia: without it the picker renders the phone layout, one month.
+const wideScreen = () =>
+  vi.stubGlobal("matchMedia", (query: string) => ({
+    matches: query === "(min-width: 48rem)",
+    addEventListener: () => undefined,
+    removeEventListener: () => undefined,
+  }));
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
+
 describe("WeekPicker", () => {
   it("renders no calendar before hydration, but keeps the range in hidden fields", () => {
     const html = renderToString(
       <NextIntlClientProvider locale="it" messages={it_} timeZone="Europe/Rome">
-        <WeekPicker from="2026-11-02" to="2026-11-15" releaseDay={4} />
+        <WeekPicker from="2026-11-02" to="2026-11-15" releaseDay={4} today="2026-11-06" />
       </NextIntlClientProvider>,
     );
     const doc = document.createElement("div");
@@ -62,10 +74,27 @@ describe("WeekPicker", () => {
     expect(container.querySelectorAll(".rdp-weekday")[3]).toHaveTextContent("jeu.");
   });
 
-  it("shows no days of the neighboring months", () => {
+  it("shows one month on phones, with the days of the neighboring months to complete a week", () => {
+    const { container } = renderPicker("2026-12-28", "2027-01-03");
+
+    expect(screen.getAllByRole("grid")).toHaveLength(1);
+    expect(cell(container, "2027-01-03")).toHaveAttribute("data-outside");
+    expect(container.querySelector(".rdp-button_previous")).toBeInTheDocument();
+    expect(container.querySelector(".rdp-button_next")).toBeInTheDocument();
+  });
+
+  it("shows two months from 48rem, with no days of the neighboring months", () => {
+    wideScreen();
     const { container } = renderPicker();
 
+    expect(screen.getAllByRole("grid")).toHaveLength(2);
     expect(container.querySelectorAll("[data-outside] button")).toHaveLength(0);
+  });
+
+  it("writes the footer range by hand: no leading zero, no year in the current one", () => {
+    const { container } = renderPicker("2026-11-09", "2026-11-15");
+
+    expect(container.querySelector("output b")).toHaveTextContent(/^9 \u2013 15 nov$/);
   });
 
   it("marks the days of the initial range as selected", () => {
@@ -127,7 +156,7 @@ describe("WeekPicker", () => {
     const { container } = renderWithIntl(
       <details open>
         <form>
-          <WeekPicker from="2026-11-09" to="2026-11-22" releaseDay={4} />
+          <WeekPicker from="2026-11-09" to="2026-11-22" releaseDay={4} today="2026-11-06" />
         </form>
       </details>,
     );
