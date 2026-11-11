@@ -251,6 +251,19 @@ test("from 48rem the week tabs show and the period bar does not", async ({ page 
   await expect(nav.getByRole("link", { name: "Periodo successivo" })).toBeHidden();
 });
 
+test("from 48rem a previous-period arrow sits before the week tabs", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/it?country=it&from=2026-11-09&to=2026-11-15");
+  const nav = page.getByRole("navigation", { name: "Settimane", exact: true });
+  const previous = nav.getByRole("link", { name: "Periodo precedente" });
+
+  await expect(previous).toBeVisible();
+  await expect(previous).toHaveAttribute("href", /country=it&from=2026-11-02&to=2026-11-08$/);
+  const arrow = await previous.boundingBox();
+  const firstTab = await nav.locator(":scope > ul > li > a").first().boundingBox();
+  expect(arrow!.x + arrow!.width).toBeLessThanOrEqual(firstTab!.x);
+});
+
 for (const colorScheme of ["light", "dark"] as const) {
   test(`the open date popover has no WCAG 2.2 AA violations (${colorScheme})`, async ({ page }) => {
     await page.emulateMedia({ colorScheme });

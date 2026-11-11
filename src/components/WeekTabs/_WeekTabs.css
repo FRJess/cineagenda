@@ -30,8 +30,15 @@
 }
 
 /* A mouse wheel cannot scroll the tabs sideways: the tabs that do not fit are not shown.
-   Two fit from 48rem, four from 64rem, five from 80rem; a picked range is at most four weeks. */
-@media (min-width: 48rem) and (max-width: 63.99rem) {
+   Beside the previous arrow, one fits from 48rem, two from 52rem, four from 64rem, five from
+   80rem; a picked range is at most four weeks. */
+@media (min-width: 48rem) and (max-width: 51.99rem) {
+  [data-part="week-tabs"] > ul > li:nth-child(n + 2) {
+    display: none;
+  }
+}
+
+@media (min-width: 52rem) and (max-width: 63.99rem) {
   [data-part="week-tabs"] > ul > li:nth-child(n + 3) {
     display: none;
   }
@@ -122,11 +129,40 @@
   align-items: center;
 }
 
-/* The period bar exists only below 48rem. */
+/* The period and the next arrow exist only below 48rem. From 48rem the previous arrow stays,
+   before the tabs, since the tabs start at the range and show no earlier weeks. */
 [data-part="period"],
-[data-part="step-previous"],
 [data-part="step-next"] {
   display: none;
+}
+
+[data-part="step-previous"] {
+  display: flex;
+  flex: 0 0 2.75rem;
+  align-items: center;
+  align-self: stretch;
+  justify-content: center;
+  margin-block: var(--space-1);
+  color: var(--foreground);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+}
+
+[data-part="step-previous"]::after {
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-left: 0.1875rem;
+  content: "";
+  border-bottom: 2px solid currentColor;
+  border-left: 2px solid currentColor;
+  transform: rotate(45deg);
+}
+
+@media (hover: hover) {
+  [data-part="step-previous"]:hover {
+    border-color: var(--foreground);
+  }
 }
 
 /* ─── Below 48rem: the period bar, previous | period | next, all 2.75rem tall ─── */
