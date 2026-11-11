@@ -63,6 +63,34 @@ const renderFilm = (
   );
 
 describe("FilmDetail", () => {
+  it("translates the voice role of the cast into the UI language", () => {
+    renderFilm({
+      cast: [{ name: "Oscar Isaac", character: "Jesus Christ (voice)", profilePath: null }],
+    });
+
+    expect(screen.getByRole("list", { name: "Cast" })).toHaveTextContent("Jesus Christ (voce)");
+  });
+
+  it("shows the limited-release note in the UI language, and hides notes it cannot translate", () => {
+    const anniversary = renderFilm({ releaseNote: "10th Anniversary" });
+    expect(anniversary.container.querySelector("[data-part='limited-note']")).toHaveTextContent(
+      /^Uscita limitata10° anniversario$/,
+    );
+    anniversary.unmount();
+
+    const { container } = renderFilm({ releaseNote: "New York City, New York" });
+    expect(container.querySelector("[data-part='limited-note']")).toHaveTextContent(
+      /^Uscita limitata$/,
+    );
+  });
+
+  it("has no TMDB source line in the sheet: the footer carries the attribution", () => {
+    renderFilm();
+
+    expect(screen.queryByText(/Dati e immagini/)).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /Apri su TMDB/ })).not.toBeInTheDocument();
+  });
+
   it("shows date, distance from today, title, subtitle and byline in the hero", () => {
     const { container } = renderFilm();
     const hero = container.querySelector("[data-part='film-hero']");
@@ -164,7 +192,7 @@ describe("FilmDetail", () => {
 
   it("ends the sheet with the trailer section, closed and with no player yet", () => {
     const { container } = renderFilm();
-    const section = container.querySelector("[data-part='film-source']")?.previousElementSibling;
+    const section = container.querySelector("[data-part='film-body']")?.lastElementChild;
     const details = section?.querySelector("details[data-part='trailer']");
 
     expect(section).toHaveAttribute("data-part", "film-trailer");
@@ -297,17 +325,6 @@ describe("FilmDetail", () => {
     expect(cast.querySelectorAll("li")).toHaveLength(2);
     expect(cast.querySelectorAll("img")).toHaveLength(1);
     expect(cast).toHaveTextContent("SM");
-  });
-
-  it("closes the sheet with the TMDB attribution and a link to the film on TMDB", () => {
-    const { container } = renderFilm();
-    const source = container.querySelector("[data-part='film-body'] > [data-part='film-source']");
-
-    expect(source).toHaveTextContent("Dati e immagini: TMDB");
-    expect(screen.getByRole("link", { name: /Apri su TMDB/ })).toHaveAttribute(
-      "href",
-      "https://www.themoviedb.org/movie/1309373",
-    );
   });
 
   it("puts the poster beside the sheet, and no poster when TMDB has none", () => {

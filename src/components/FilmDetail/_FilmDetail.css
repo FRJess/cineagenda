@@ -1,7 +1,7 @@
 /**
  * FILE: _FilmDetail.css
  * USAGE: Film page: hero on the backdrop, sheet with details, poster beside the sheet from 48rem; also the loading, not-found and error shells
- * SCOPE: [data-part="film"], [data-part="film-hero"], [data-part="film-hero-text"], [data-part="film-date"], [data-part="film-subtitle"], [data-part="film-byline"], [data-part="film-columns"], [data-part="film-poster"], [data-part="film-body"], [data-part="limited-note"], [data-part="genres"], [data-part="film-trailer"], [data-part="trailer"], [data-part="film-plot"], [data-part="spoiler"], [data-part="film-facts"], [data-part="facts"], [data-part="film-cast"], [data-part="film-source"], [data-part="skeleton-line"]
+ * SCOPE: [data-part="film"], [data-part="film-hero"], [data-part="film-hero-text"], [data-part="film-date"], [data-part="film-subtitle"], [data-part="film-byline"], [data-part="film-columns"], [data-part="film-poster"], [data-part="film-body"], [data-part="limited-note"], [data-part="genres"], [data-part="film-trailer"], [data-part="trailer"], [data-part="film-plot"], [data-part="spoiler"], [data-part="film-facts"], [data-part="facts"], [data-part="film-cast"], [data-part="skeleton-line"]
  */
 
 /* ─── Page: no side padding, the hero runs edge to edge; space before the footer ─── */
@@ -467,23 +467,9 @@
   color: var(--muted);
 }
 
-/* ─── Attribution: closes the sheet ─── */
-
-[data-part="film-source"] {
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: var(--muted);
-}
-
-[data-part="film-source"] a {
-  color: var(--foreground);
-  text-underline-offset: 0.125rem;
-}
-
-/* ─── Focus: the project ring on the back link, the TMDB link and the trailer tile ─── */
+/* ─── Focus: the project ring on the back link, the spoiler and the trailer tile ─── */
 
 [data-part="film-hero"] nav a:focus-visible,
-[data-part="film-source"] a:focus-visible,
 [data-part="spoiler"] > summary:focus-visible,
 [data-part="trailer"] > summary:focus-visible {
   outline: 3px solid var(--accent);

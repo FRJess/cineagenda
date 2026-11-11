@@ -70,15 +70,18 @@
     "originalLanguage": "Langue originale",
     "fromToday": "dès aujourd'hui",
     "fromYesterday": "depuis hier",
-    "source": "Données et images : TMDB",
-    "openTmdb": "Ouvrir sur TMDB ↗",
     "spoilerLines": [
       "Pas de spoiler avant le pop-corn",
       "La réalisation préférerait que non",
       "Mieux vaut le découvrir dans le noir, en salle",
       "À lire à vos risques et périls",
       "Dernier avertissement avant le générique"
-    ]
+    ],
+    "noteAnniversary": "{years, selectordinal, one {#er} other {#e}} anniversaire",
+    "noteRerelease": "{format, select, IMAX {Reprise en IMAX} 4K {Reprise en 4K} other {Reprise}}",
+    "noteRestoration": "Version restaurée",
+    "noteImax": "IMAX",
+    "voiceRole": "{character} (voix)"
   },
   "NotFound": {
     "eyebrow": "Hors programme",
