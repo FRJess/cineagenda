@@ -25,8 +25,10 @@
   scrollbar-width: none;
 }
 
+/* Shrinks only when even the single tab of the narrowest desktop does not fit. */
 [data-part="week-tabs"] > ul > li {
-  flex: 0 0 auto;
+  flex: 0 1 auto;
+  min-width: 0;
 }
 
 /* From 48rem the list takes only its tabs' width, so the next arrow follows the last tab; the
@@ -42,27 +44,28 @@
 }
 
 /* A mouse wheel cannot scroll the tabs sideways: the tabs that do not fit are not shown.
-   Between the two arrows one fits from 48rem, two from 54rem, three from 61rem, four from
-   67rem, never more (a month shortcut of five or six weeks shows its first four). */
+   With 6.5rem tabs between the two arrows one fits from 48rem, two from 55rem, three from
+   62rem, four from 69rem, never more (a month shortcut of five or six weeks shows its first
+   four). */
 @media (min-width: 48rem) {
   [data-part="week-tabs"] > ul > li:nth-child(n + 5) {
     display: none;
   }
 }
 
-@media (min-width: 48rem) and (max-width: 53.99rem) {
+@media (min-width: 48rem) and (max-width: 54.99rem) {
   [data-part="week-tabs"] > ul > li:nth-child(n + 2) {
     display: none;
   }
 }
 
-@media (min-width: 54rem) and (max-width: 60.99rem) {
+@media (min-width: 55rem) and (max-width: 61.99rem) {
   [data-part="week-tabs"] > ul > li:nth-child(n + 3) {
     display: none;
   }
 }
 
-@media (min-width: 61rem) and (max-width: 66.99rem) {
+@media (min-width: 62rem) and (max-width: 68.99rem) {
   [data-part="week-tabs"] > ul > li:nth-child(n + 4) {
     display: none;
   }
@@ -85,6 +88,14 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 0.5rem;
+}
+
+/* One fixed width for every tab, the widest label included ("21 sept.", "28 déc."), so the row
+   and the next arrow do not move when the weeks change. */
+[data-part="week-tabs"] > ul > li > a {
+  width: 6.5rem;
+  max-width: 100%;
+  padding-inline: 0.5rem;
 }
 
 [data-part="week-tabs"] > ul > li > a:hover {
