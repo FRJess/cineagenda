@@ -10,9 +10,19 @@ export type UiLocale = "it" | "en" | "fr";
 
 /** Films shorter than this are shorts and are not listed; unknown running times pass. */
 const MIN_RUNTIME_MINUTES = 60;
-// TMDB keyword "short film": catches shorts whose running time TMDB does not know (runtime 0),
-// such as one screened before a feature.
-const SHORT_FILM_KEYWORD = 263548;
+// TMDB keywords that mark a short: they catch shorts whose running time TMDB does not know
+// (runtime 0), such as one screened before a feature. By id, not by name: "based on short film"
+// (268132) is a feature. Topic keywords such as "livestream" are not used: they tag features too.
+const SHORT_FILM_KEYWORDS: ReadonlySet<number> = new Set([
+  263548, // short film
+  369103, // horror short
+  377594, // elevated horror short
+  386113, // psychological drama short film
+  386244, // indie short film
+  386616, // horror short film, (sic)
+  386617, // horror short film
+  386921, // experimental short film
+]);
 
 const overviewIn = (details: TmdbMovieDetails, lang: UiLocale): string =>
   details.translations.translations
@@ -42,7 +52,7 @@ export function toMovie(
   const release = pickRelease(details, window, country);
   const isShort =
     (!!details.runtime && details.runtime < MIN_RUNTIME_MINUTES) ||
-    !!details.keywords?.keywords.some((keyword) => keyword.id === SHORT_FILM_KEYWORD);
+    !!details.keywords?.keywords.some((keyword) => SHORT_FILM_KEYWORDS.has(keyword.id));
 
   if (!release || isShort) {
     return null;

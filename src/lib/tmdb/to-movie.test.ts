@@ -156,6 +156,22 @@ describe("toMovie", () => {
     expect(toMovie(short, { from: "2026-11-23", to: "2026-11-29" }, "it", genreNames)).toBeNull();
   });
 
+  it("drops films tagged with a short-film variant, but keeps features based on a short", () => {
+    const tagged = (id: number, name: string) =>
+      toMovie(
+        details({ runtime: 0, keywords: { keywords: [{ id, name }] } }, [rd(3, "2026-11-05")]),
+        window,
+        "it",
+        genreNames,
+      );
+
+    expect(tagged(386617, "horror short film")).toBeNull();
+    expect(tagged(369103, "horror short")).toBeNull();
+    expect(tagged(386244, "indie short film")).toBeNull();
+    expect(tagged(386921, "experimental short film")).toBeNull();
+    expect(tagged(268132, "based on short film")).not.toBeNull();
+  });
+
   it("keeps films of 60 minutes or more", () => {
     expect(
       toMovie(details({ runtime: 60 }, [rd(3, "2026-11-05")]), window, "it", genreNames),
