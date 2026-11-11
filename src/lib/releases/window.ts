@@ -112,7 +112,9 @@ export function parseRange(
 
   const [low, high] = to && to < from ? [to, from] : [from, to];
   const start = mondayOf(low < MIN_DATE ? MIN_DATE : low);
-  const wantedEnd = high ? sundayOf(high) : addDays(start, DEFAULT_WEEKS * 7 - 1);
+  const defaultEnd = addDays(start, DEFAULT_WEEKS * 7 - 1);
+  // A range entirely before the first week ends before the clamped start: show that week only.
+  const wantedEnd = high && sundayOf(high) >= start ? sundayOf(high) : defaultEnd;
   const maxEnd = addDays(start, MAX_WEEKS * 7 - 1);
 
   return { from: start, to: wantedEnd > maxEnd ? maxEnd : wantedEnd };
@@ -140,15 +142,16 @@ export function pageRange(monday: string): ReleaseWindow {
 }
 
 /**
- * Mondays of the week tabs: two before the range start, the start, two after; weeks before
- * the week of {@link MIN_DATE} are dropped.
+ * Mondays of the week tabs: two before the range, every week of the range, two after; weeks
+ * before the week of {@link MIN_DATE} are dropped.
  * @param range Normalized range.
  * @returns ISO dates, ascending.
  */
 export function tabWeeks(range: ReleaseWindow): readonly string[] {
   const minFrom = mondayOf(MIN_DATE);
+  const last = weeksBetween(range).length - 1;
 
-  return [-2, -1, 0, 1, 2]
+  return [-2, -1, ...weeksBetween(range).map((_, index) => index), last + 1, last + 2]
     .map((offset) => addDays(range.from, offset * 7))
     .filter((monday) => monday >= minFrom);
 }

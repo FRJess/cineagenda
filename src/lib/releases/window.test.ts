@@ -86,6 +86,13 @@ describe("parseRange", () => {
     });
   });
 
+  it("falls back to one week from the clamped start when the whole range is too early", () => {
+    expect(parseRange("2025-01-01", "2025-02-01", today)).toEqual({
+      from: "2025-12-29",
+      to: "2026-01-04",
+    });
+  });
+
   it("clamps the start to the week of 2026-01-01", () => {
     expect(parseRange("2025-06-01", "2026-01-11", today).from).toBe("2025-12-29");
   });
@@ -124,13 +131,14 @@ describe("weeksBetween", () => {
 });
 
 describe("tabWeeks", () => {
-  it("returns two Mondays before, the start and two after", () => {
+  it("returns two Mondays before, every week of the range and two after", () => {
     expect(tabWeeks({ from: "2026-11-02", to: "2026-11-15" })).toEqual([
       "2026-10-19",
       "2026-10-26",
       "2026-11-02",
       "2026-11-09",
       "2026-11-16",
+      "2026-11-23",
     ]);
   });
 
@@ -140,6 +148,7 @@ describe("tabWeeks", () => {
       "2026-01-05",
       "2026-01-12",
       "2026-01-19",
+      "2026-01-26",
     ]);
   });
 });
