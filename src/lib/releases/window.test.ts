@@ -136,17 +136,16 @@ describe("weeksBetween", () => {
 });
 
 describe("tabWeeks", () => {
-  it("starts at the range and fills five tabs with the following weeks", () => {
+  it("starts at the range and fills four tabs with the following weeks", () => {
     expect(tabWeeks({ from: "2026-11-02", to: "2026-11-15" })).toEqual([
       "2026-11-02",
       "2026-11-09",
       "2026-11-16",
       "2026-11-23",
-      "2026-11-30",
     ]);
   });
 
-  it("shows every week of a range longer than five, such as a month shortcut", () => {
+  it("shows every week of a range longer than four, such as a month shortcut", () => {
     expect(tabWeeks({ from: "2026-10-26", to: "2026-12-06" })).toHaveLength(6);
   });
 });

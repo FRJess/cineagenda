@@ -13,8 +13,9 @@ const DEFAULT_WEEKS = 1;
 export const MAX_WEEKS = 4;
 /** Longest range a URL may hold: a month shortcut covers up to six weeks. */
 const MAX_URL_WEEKS = 6;
-/** Tabs shown from the range start; fewer fit at narrow desktop widths, see the CSS. */
-const TAB_COUNT = 5;
+/** Tabs shown from the range start, the most a range picked in the calendar needs; fewer fit
+    at narrow desktop widths, see the CSS. */
+const TAB_COUNT = 4;
 
 /** Longest range a URL may hold, in days; matches the cap of {@link parseRange}. */
 export const MAX_RANGE_DAYS = MAX_URL_WEEKS * 7;
@@ -147,7 +148,7 @@ export function pageRange(monday: string): ReleaseWindow {
 
 /**
  * Mondays of the week tabs: they start at the range, so they never run out of the navbar on
- * the left, and the weeks that follow fill five tabs; a longer range shows all its weeks.
+ * the left, and the weeks that follow fill four tabs; a longer range shows all its weeks.
  * @param range Normalized range.
  * @returns ISO dates, ascending.
  */

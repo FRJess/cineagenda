@@ -29,23 +29,41 @@
   flex: 0 0 auto;
 }
 
+/* From 48rem the list takes only its tabs' width, so the next arrow follows the last tab; the
+   Date disclosure stays at the right end. */
+@media (min-width: 48rem) {
+  [data-part="week-tabs"] > ul {
+    flex: 0 1 auto;
+  }
+
+  [data-part="date-picker"] {
+    margin-left: auto;
+  }
+}
+
 /* A mouse wheel cannot scroll the tabs sideways: the tabs that do not fit are not shown.
-   Beside the previous arrow, one fits from 48rem, two from 52rem, four from 64rem, five from
-   80rem; a picked range is at most four weeks. */
-@media (min-width: 48rem) and (max-width: 51.99rem) {
+   Between the two arrows one fits from 48rem, two from 54rem, three from 61rem, four from
+   67rem, never more (a month shortcut of five or six weeks shows its first four). */
+@media (min-width: 48rem) {
+  [data-part="week-tabs"] > ul > li:nth-child(n + 5) {
+    display: none;
+  }
+}
+
+@media (min-width: 48rem) and (max-width: 53.99rem) {
   [data-part="week-tabs"] > ul > li:nth-child(n + 2) {
     display: none;
   }
 }
 
-@media (min-width: 52rem) and (max-width: 63.99rem) {
+@media (min-width: 54rem) and (max-width: 60.99rem) {
   [data-part="week-tabs"] > ul > li:nth-child(n + 3) {
     display: none;
   }
 }
 
-@media (min-width: 64rem) and (max-width: 79.99rem) {
-  [data-part="week-tabs"] > ul > li:nth-child(n + 5) {
+@media (min-width: 61rem) and (max-width: 66.99rem) {
+  [data-part="week-tabs"] > ul > li:nth-child(n + 4) {
     display: none;
   }
 }
@@ -129,14 +147,14 @@
   align-items: center;
 }
 
-/* The period and the next arrow exist only below 48rem. From 48rem the previous arrow stays,
-   before the tabs, since the tabs start at the range and show no earlier weeks. */
-[data-part="period"],
-[data-part="step-next"] {
+/* The period exists only below 48rem. From 48rem the arrows frame the tabs: the tabs start at
+   the range and show no earlier weeks. */
+[data-part="period"] {
   display: none;
 }
 
-[data-part="step-previous"] {
+[data-part="step-previous"],
+[data-part="step-next"] {
   display: flex;
   flex: 0 0 2.75rem;
   align-items: center;
@@ -149,18 +167,28 @@
   border-radius: 0.5rem;
 }
 
-[data-part="step-previous"]::after {
+[data-part="step-previous"]::after,
+[data-part="step-next"]::after {
   width: 0.5rem;
   height: 0.5rem;
-  margin-left: 0.1875rem;
   content: "";
   border-bottom: 2px solid currentColor;
   border-left: 2px solid currentColor;
+}
+
+[data-part="step-previous"]::after {
+  margin-left: 0.1875rem;
   transform: rotate(45deg);
 }
 
+[data-part="step-next"]::after {
+  margin-right: 0.1875rem;
+  transform: rotate(-135deg);
+}
+
 @media (hover: hover) {
-  [data-part="step-previous"]:hover {
+  [data-part="step-previous"]:hover,
+  [data-part="step-next"]:hover {
     border-color: var(--foreground);
   }
 }
