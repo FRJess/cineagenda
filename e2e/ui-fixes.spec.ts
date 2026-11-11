@@ -88,6 +88,9 @@ test.describe("on a touch phone", () => {
   test("cast roles start at one height and the row still scrolls sideways", async ({ page }) => {
     await page.goto(RERELEASE);
     const list = page.locator("[data-part='film-cast'] ul");
+    // The film streams in: measure only once the cast and the fonts are there.
+    await list.locator("li > small").first().waitFor();
+    await page.evaluate(() => document.fonts.ready);
     const tops = await list
       .locator("li > small")
       .evaluateAll((roles) => roles.map((role) => Math.round(role.getBoundingClientRect().top)));
