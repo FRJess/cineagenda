@@ -50,6 +50,7 @@
   },
   "Film": {
     "director": "Regia",
+    "directedBy": "Regia di",
     "cast": "Cast",
     "country": "{count, plural, one {Paese di origine} other {Paesi di origine}}",
     "production": "Prodotto da",

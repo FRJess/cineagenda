@@ -50,6 +50,7 @@
   },
   "Film": {
     "director": "Director",
+    "directedBy": "Directed by",
     "cast": "Cast",
     "country": "{count, plural, one {Country of origin} other {Countries of origin}}",
     "production": "Produced by",

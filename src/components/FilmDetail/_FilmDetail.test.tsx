@@ -91,7 +91,7 @@ describe("FilmDetail", () => {
     expect(screen.queryByRole("link", { name: /Apri su TMDB/ })).not.toBeInTheDocument();
   });
 
-  it("shows date, distance from today, title, subtitle and byline in the hero", () => {
+  it("shows date, distance from today, title, subtitle and director in the hero", () => {
     const { container } = renderFilm();
     const hero = container.querySelector("[data-part='film-hero']");
 
@@ -101,8 +101,29 @@ describe("FilmDetail", () => {
       "Al cinema da gio 12 nov · tra 3 giorni",
     );
     expect(hero).toHaveTextContent("Le Chant des forêts");
-    expect(container.querySelector("[data-part='film-byline']")).toHaveTextContent(
-      /^Vincent Munier · 2025$/,
+    expect(container.querySelector("[data-part='film-director']")).toHaveTextContent(
+      /^Regia di Vincent Munier/,
+    );
+  });
+
+  it("shows the year after the director only when it differs from the release year", () => {
+    const rerelease = renderFilm({ directors: ["Stanley Kubrick"], year: 1968 });
+    expect(rerelease.container.querySelector("[data-part='film-director']")).toHaveTextContent(
+      /^Regia di Stanley Kubrick · 1968$/,
+    );
+    rerelease.unmount();
+
+    const { container } = renderFilm({ year: 2026 });
+    expect(container.querySelector("[data-part='film-director']")).toHaveTextContent(
+      /^Regia di Vincent Munier$/,
+    );
+  });
+
+  it("joins several directors in the UI language", () => {
+    const { container } = renderFilm({ directors: ["Joel Coen", "Ethan Coen"], year: 2026 });
+
+    expect(container.querySelector("[data-part='film-director'] b")).toHaveTextContent(
+      /^Joel Coen e Ethan Coen$/,
     );
   });
 
@@ -125,10 +146,10 @@ describe("FilmDetail", () => {
     );
   });
 
-  it("omits the byline when there is no director or year", () => {
+  it("omits the director line when there is no director", () => {
     const { container } = renderFilm({ directors: [], year: null });
 
-    expect(container.querySelector("[data-part='film-byline']")).toBeNull();
+    expect(container.querySelector("[data-part='film-director']")).toBeNull();
   });
 
   it("links back to the release list, keeping the range the film was opened from", () => {

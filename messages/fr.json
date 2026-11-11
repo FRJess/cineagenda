@@ -50,6 +50,7 @@
   },
   "Film": {
     "director": "Réalisation",
+    "directedBy": "Réalisé par",
     "cast": "Distribution",
     "country": "{count, plural, one {Pays d'origine} other {Pays d'origine}}",
     "production": "Production",

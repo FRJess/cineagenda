@@ -88,9 +88,9 @@ export function FilmDetail({
               unit: "day",
             })
           : null;
-  const byline = [film.directors.join(", "), film.year === null ? "" : String(film.year)]
-    .filter(Boolean)
-    .join(" · ");
+  const directors = new Intl.ListFormat(locale, { type: "conjunction" }).format(film.directors);
+  // The year only tells something for a re-release: a new film's year is the release year.
+  const showYear = film.year !== null && String(film.year) !== film.releaseDate.slice(0, 4);
   const countries = film.countries
     .map((code) => displayName(code, "region", locale))
     .filter(Boolean)
@@ -142,7 +142,17 @@ export function FilmDetail({
           </p>
           <h1 id="film-title">{film.title}</h1>
           {film.subtitle && <p data-part="film-subtitle">{film.subtitle}</p>}
-          {byline && <p data-part="film-byline">{byline}</p>}
+          {film.directors.length > 0 && (
+            <p data-part="film-director">
+              <span>{t("directedBy")}</span> <b>{directors}</b>
+              {showYear && (
+                <>
+                  {" "}
+                  <span data-part="film-year">· {film.year}</span>
+                </>
+              )}
+            </p>
+          )}
         </div>
       </header>
       <div data-part="film-columns">

@@ -1,7 +1,7 @@
 /**
  * FILE: _FilmDetail.css
  * USAGE: Film page: hero on the backdrop, sheet with details, poster beside the sheet from 48rem; also the loading, not-found and error shells
- * SCOPE: [data-part="film"], [data-part="film-hero"], [data-part="film-hero-text"], [data-part="film-date"], [data-part="film-subtitle"], [data-part="film-byline"], [data-part="film-columns"], [data-part="film-poster"], [data-part="film-body"], [data-part="limited-note"], [data-part="genres"], [data-part="film-trailer"], [data-part="trailer"], [data-part="film-plot"], [data-part="spoiler"], [data-part="film-facts"], [data-part="facts"], [data-part="film-cast"], [data-part="skeleton-line"]
+ * SCOPE: [data-part="film"], [data-part="film-hero"], [data-part="film-hero-text"], [data-part="film-date"], [data-part="film-subtitle"], [data-part="film-director"], [data-part="film-year"], [data-part="film-columns"], [data-part="film-poster"], [data-part="film-body"], [data-part="limited-note"], [data-part="genres"], [data-part="film-trailer"], [data-part="trailer"], [data-part="film-plot"], [data-part="spoiler"], [data-part="film-facts"], [data-part="facts"], [data-part="film-cast"], [data-part="skeleton-line"]
  */
 
 /* ─── Page: no side padding, the hero runs edge to edge; space before the footer ─── */
@@ -13,13 +13,16 @@
 
 /* ─── Hero: backdrop under a veil, back link top left, text bottom left ─── */
 
+/* A column: the back link, then the text pushed to the bottom. A long title makes the hero
+   taller instead of climbing under the link. */
 [data-part="film-hero"] {
   position: relative;
   display: flex;
-  align-items: flex-end;
+  flex-direction: column;
+  gap: 1.25rem;
   /* min-height, not height: a three-line title with subtitle must push the hero, not overflow it. */
   min-height: 20rem;
-  padding: 3.5rem 1rem 1.75rem;
+  padding: 0.75rem 1rem 1.75rem;
   overflow: hidden;
   color: #fff;
   background: var(--tab-bg);
@@ -43,10 +46,9 @@
 }
 
 [data-part="film-hero"] nav {
-  position: absolute;
-  top: 0.75rem;
-  left: 0.75rem;
+  position: relative;
   z-index: 1;
+  align-self: flex-start;
 }
 
 /* Dark glass pill, fixed in both themes since it sits on the image; the white circle and the
@@ -97,6 +99,8 @@
 [data-part="film-hero-text"] {
   position: relative;
   z-index: 1;
+  min-width: 0;
+  margin-top: auto;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -112,9 +116,12 @@
   color: var(--accent-soft);
 }
 
+/* Syne 800 is about 0.9em per letter: the clamp fits a 12-letter word on a 360px screen. */
 [data-part="film-hero"] h1 {
   font-family: var(--font-display);
-  font-size: 2.5rem;
+  font-size: clamp(1.5rem, 8.5vw, 2.5rem);
+  overflow-wrap: break-word;
+  hyphens: manual;
   font-weight: 800;
   line-height: 0.95;
   letter-spacing: -0.04em;
@@ -126,7 +133,31 @@
   color: #d9d9e3;
 }
 
-[data-part="film-byline"] {
+/* Director: a small label, then the name in the display face; the year only for re-releases. */
+[data-part="film-director"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.125rem 0.4375rem;
+}
+
+[data-part="film-director"] > span:first-child {
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #ffb3a6;
+}
+
+[data-part="film-director"] b {
+  font-family: var(--font-display);
+  font-size: 1.1875rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+}
+
+[data-part="film-year"] {
   font-size: 0.9375rem;
   font-weight: 500;
   color: #d9d9e3;
@@ -461,10 +492,26 @@
   background: var(--background);
 }
 
+/* The name always takes two lines of height, so every role starts at the same height. */
+[data-part="film-cast"] li > strong {
+  display: -webkit-box;
+  min-height: 2.5em;
+  overflow: hidden;
+  line-height: 1.25;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
 [data-part="film-cast"] small {
+  display: -webkit-box;
+  overflow: hidden;
   font-size: 0.8125rem;
   font-weight: 400;
   color: var(--muted);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
 }
 
 /* ─── Focus: the project ring on the back link, the spoiler and the trailer tile ─── */
@@ -502,16 +549,15 @@
 @media (min-width: 48rem) {
   [data-part="film-hero"] {
     min-height: 21rem;
-    padding: 4rem 1.5rem 2rem;
-  }
-
-  [data-part="film-hero"] nav {
-    top: 1.25rem;
-    left: 1.25rem;
+    padding: 1.25rem 1.5rem 2rem;
   }
 
   [data-part="film-hero"] h1 {
     font-size: 3.25rem;
+  }
+
+  [data-part="film-director"] b {
+    font-size: 1.5rem;
   }
 
   /* Aligns the hero text with the sheet column when a poster sits beside the sheet. */
