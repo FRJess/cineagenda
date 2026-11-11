@@ -110,9 +110,10 @@ export default async function FilmPage({ params, searchParams }: PageProps<"/[lo
     <>
       <SiteHeader
         country={
+          // The film may not open in the other country, so switching goes back to its list.
           <CountryPicker
             country={loaded.country}
-            pathname={`/film/${loaded.film.id}`}
+            pathname="/"
             range={from && to ? { from, to } : undefined}
           />
         }
