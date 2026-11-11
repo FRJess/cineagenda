@@ -36,9 +36,9 @@ function CalendarIcon() {
 }
 
 /**
- * Week navigation of the navbar. From 48rem: every week of the range, marked current, with two
- * more on each side, each linking to its one-week page, and the "Date" disclosure beside the
- * list. Below 48rem the stylesheet swaps them
+ * Week navigation of the navbar. From 48rem: tabs from the first week of the range, its weeks
+ * marked current, filled up to five with the following weeks, each linking to its one-week page,
+ * and the "Date" disclosure beside the list. Below 48rem the stylesheet swaps them
  * for the period bar: arrows that move the period by its own length around the same disclosure,
  * whose summary then shows the period. Every link keeps the country.
  * @param props Current normalized range, the Monday of the current week, today's ISO date and

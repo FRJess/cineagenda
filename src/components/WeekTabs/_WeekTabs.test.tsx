@@ -41,7 +41,7 @@ describe("WeekTabs", () => {
     expect(hrefs.every((href) => href?.startsWith("/?country=fr&"))).toBe(true);
   });
 
-  it("links every week of the range and two on each side, each to a one-week page", () => {
+  it("starts at the range and links five weeks, each to a one-week page", () => {
     renderWithIntl(<WeekTabs country="IT" range={range} todayMonday="2026-11-02" today={today} />);
     const nav = screen.getByRole("navigation", { name: "Settimane" });
     const links = [...nav.querySelectorAll(":scope > ul > li > a")].map((a) =>
@@ -49,12 +49,11 @@ describe("WeekTabs", () => {
     );
 
     expect(links).toEqual([
-      "/?country=it&from=2026-10-19&to=2026-10-25",
-      "/?country=it&from=2026-10-26&to=2026-11-01",
       "/?country=it&from=2026-11-02&to=2026-11-08",
       "/?country=it&from=2026-11-09&to=2026-11-15",
       "/?country=it&from=2026-11-16&to=2026-11-22",
       "/?country=it&from=2026-11-23&to=2026-11-29",
+      "/?country=it&from=2026-11-30&to=2026-12-06",
     ]);
   });
 

@@ -56,15 +56,15 @@ test("a later week tab shows only that week", async ({ page }) => {
   await expect(page.getByRole("region")).toHaveCount(1);
 });
 
-test("an earlier week tab shows only that week", async ({ page }) => {
-  await page.goto("/it?from=2026-11-02&to=2026-11-15");
-  await page
-    .getByRole("navigation", { name: "Settimane", exact: true })
-    .getByRole("link", { name: /^19 ott/ })
-    .click();
+test("the week tabs start at the first week of the range", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/it?from=2026-11-09&to=2026-11-15");
+  const tabs = page.getByRole("navigation", { name: "Settimane", exact: true });
 
-  await expect(page).toHaveURL(/from=2026-10-19&to=2026-10-25$/);
-  await expect(page.getByRole("region")).toHaveCount(1);
+  await expect(tabs.locator(":scope > ul > li > a").first()).toHaveAttribute(
+    "href",
+    /from=2026-11-09&to=2026-11-15$/,
+  );
 });
 
 test("the URL range selects the weeks shown", async ({ page }) => {
@@ -83,7 +83,7 @@ test("the range cannot start before the week of 2026-01-01", async ({ page }) =>
   await expect(page.locator("input[name='from']")).toHaveValue("2025-12-29");
   await expect(
     page.getByRole("navigation", { name: "Settimane", exact: true }).getByRole("link"),
-  ).toHaveCount(3);
+  ).toHaveCount(5);
 });
 
 test("the week tabs show and mark every week of a picked range", async ({ page }) => {
@@ -92,7 +92,7 @@ test("the week tabs show and mark every week of a picked range", async ({ page }
   const tabs = page.getByRole("navigation", { name: "Settimane", exact: true });
   const current = tabs.locator("a[aria-current='true']");
 
-  await expect(tabs.locator(":scope > ul > li > a")).toHaveCount(7);
+  await expect(tabs.locator(":scope > ul > li > a")).toHaveCount(5);
   await expect(current).toHaveCount(3);
   await expect(current.first()).toHaveAttribute("href", /from=2026-11-02&to=2026-11-08$/);
   await expect(current.last()).toHaveAttribute("href", /from=2026-11-16&to=2026-11-22$/);

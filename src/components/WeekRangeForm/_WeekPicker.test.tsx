@@ -141,13 +141,13 @@ describe("WeekPicker", () => {
     expect(container.querySelector("output small")).toHaveTextContent("1 settimana");
   });
 
-  it("caps the selection at 26 weeks, cutting the end far from the click, and flags the footer", () => {
-    const { container } = renderPicker("2026-05-04", "2026-11-08");
+  it("caps the selection at 4 weeks, cutting the end far from the click, and flags the footer", () => {
+    const { container } = renderPicker("2026-11-02", "2026-11-22");
 
-    click(container, "2026-05-01");
+    click(container, "2026-12-01");
 
-    expect(hidden(container, "from")).toHaveValue("2026-04-27");
-    expect(hidden(container, "to")).toHaveValue("2026-10-25");
+    expect(hidden(container, "from")).toHaveValue("2026-11-09");
+    expect(hidden(container, "to")).toHaveValue("2026-12-06");
     expect(container.querySelector("output")).toHaveAttribute("data-max");
     expect(container.querySelector("output small")).toHaveTextContent("massimo raggiunto");
   });

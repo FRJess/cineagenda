@@ -29,6 +29,20 @@
   flex: 0 0 auto;
 }
 
+/* A mouse wheel cannot scroll the tabs sideways: the tabs that do not fit are not shown.
+   Two fit from 48rem, four from 64rem, five from 80rem; a picked range is at most four weeks. */
+@media (min-width: 48rem) and (max-width: 63.99rem) {
+  [data-part="week-tabs"] > ul > li:nth-child(n + 3) {
+    display: none;
+  }
+}
+
+@media (min-width: 64rem) and (max-width: 79.99rem) {
+  [data-part="week-tabs"] > ul > li:nth-child(n + 5) {
+    display: none;
+  }
+}
+
 /* ─── Tabs and the Date summary share one pill ─── */
 
 [data-part="week-tabs"] > ul > li > a,
