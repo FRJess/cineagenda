@@ -87,7 +87,7 @@ describe("fetchReleaseDetails", () => {
     const detailCalls = tmdb.urls.filter((u) => u.pathname === "/3/movie/7");
     expect(detailCalls).toHaveLength(1);
     expect(detailCalls[0].searchParams.get("append_to_response")).toBe(
-      "release_dates,translations",
+      "release_dates,translations,keywords",
     );
   });
 

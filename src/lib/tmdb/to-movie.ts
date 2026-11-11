@@ -10,6 +10,9 @@ export type UiLocale = "it" | "en" | "fr";
 
 /** Films shorter than this are shorts and are not listed; unknown running times pass. */
 const MIN_RUNTIME_MINUTES = 60;
+// TMDB keyword "short film": catches shorts whose running time TMDB does not know (runtime 0),
+// such as one screened before a feature.
+const SHORT_FILM_KEYWORD = 263548;
 
 const overviewIn = (details: TmdbMovieDetails, lang: UiLocale): string =>
   details.translations.translations
@@ -37,7 +40,9 @@ export function toMovie(
   country: Country = DEFAULT_COUNTRY,
 ): Movie | null {
   const release = pickRelease(details, window, country);
-  const isShort = !!details.runtime && details.runtime < MIN_RUNTIME_MINUTES;
+  const isShort =
+    (!!details.runtime && details.runtime < MIN_RUNTIME_MINUTES) ||
+    !!details.keywords?.keywords.some((keyword) => keyword.id === SHORT_FILM_KEYWORD);
 
   if (!release || isShort) {
     return null;

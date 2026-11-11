@@ -147,6 +147,15 @@ describe("toMovie", () => {
     ).toBeNull();
   });
 
+  it("drops films TMDB tags as short films, even without a running time", () => {
+    const short = details(
+      { runtime: 0, keywords: { keywords: [{ id: 263548, name: "short film" }] } },
+      [rd(3, "2026-11-26", "with Hexed")],
+    );
+
+    expect(toMovie(short, { from: "2026-11-23", to: "2026-11-29" }, "it", genreNames)).toBeNull();
+  });
+
   it("keeps films of 60 minutes or more", () => {
     expect(
       toMovie(details({ runtime: 60 }, [rd(3, "2026-11-05")]), window, "it", genreNames),
