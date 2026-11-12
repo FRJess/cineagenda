@@ -36,6 +36,14 @@ test("footer shows TMDB attribution and logo", async ({ page }) => {
   await expect(footer.getByRole("img", { name: "TMDB" })).toBeVisible();
 });
 
+test("the English attribution is marked as English on non-English pages only", async ({ page }) => {
+  await page.goto("/fr");
+  await expect(page.getByText(ATTRIBUTION)).toHaveAttribute("lang", "en");
+
+  await page.goto("/en");
+  await expect(page.getByText(ATTRIBUTION)).not.toHaveAttribute("lang", /.*/);
+});
+
 test("default view shows only the current week", async ({ page }) => {
   await page.goto("/it");
 
@@ -73,6 +81,8 @@ test("the URL range selects the weeks shown", async ({ page }) => {
   const headings = page.getByRole("region").getByRole("heading", { level: 2 });
   await expect(headings).toHaveCount(2);
   await expect(headings.first()).toContainText("gennaio");
+  // The date form is mounted only while its popover is open.
+  await page.getByText("Date", { exact: true }).click();
   await expect(page.locator("input[name='from']")).toHaveValue("2026-01-05");
   await expect(page.locator("input[name='to']")).toHaveValue("2026-01-18");
 });
@@ -80,10 +90,11 @@ test("the URL range selects the weeks shown", async ({ page }) => {
 test("the range cannot start before the week of 2026-01-01", async ({ page }) => {
   await page.goto("/it?from=2025-01-01&to=2025-02-01");
 
-  await expect(page.locator("input[name='from']")).toHaveValue("2025-12-29");
   await expect(
     page.getByRole("navigation", { name: "Settimane", exact: true }).getByRole("link"),
   ).toHaveCount(5);
+  await page.getByText("Date", { exact: true }).click();
+  await expect(page.locator("input[name='from']")).toHaveValue("2025-12-29");
 });
 
 test("the week tabs show and mark every week of a picked range", async ({ page }) => {
@@ -213,7 +224,10 @@ test("a shortcut chip navigates and closes the date popover", async ({ page }) =
   // The chips follow the real date, so only the change of range is checked.
   await expect(page).not.toHaveURL(/from=2026-11-02&to=2026-11-15/);
   await expect(page).toHaveURL(/from=\d{4}-\d{2}-\d{2}&to=\d{4}-\d{2}-\d{2}/);
-  await expect(page.locator("details[data-part='date-picker']")).not.toHaveAttribute("open");
+  await expect(page.locator("[data-part='date-picker'] > button")).toHaveAttribute(
+    "aria-expanded",
+    "false",
+  );
 });
 
 test("the period button opens the date popover with one month on phones", async ({ page }) => {
@@ -236,7 +250,7 @@ test("on a 360px phone the period bar replaces the week tabs", async ({ page }) 
     "href",
     /country=it&from=2026-11-23&to=2026-11-29$/,
   );
-  await expect(page.locator("[data-part='country-picker'] > summary")).toHaveAccessibleName(
+  await expect(page.locator("[data-part='country-picker'] > button")).toHaveAccessibleName(
     "Paese delle uscite: Italia",
   );
 });

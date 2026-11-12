@@ -1,4 +1,4 @@
-import { screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { renderWithIntl } from "@/test/intl";
 import { WeekTabs } from "./_WeekTabs";
@@ -138,16 +138,20 @@ describe("WeekTabs", () => {
     );
   });
 
-  it("keeps the date form in a closed disclosure beside the list, not inside it", () => {
+  it("keeps the date form behind a collapsed button beside the list, not inside it", () => {
     const { container } = renderWithIntl(
       <WeekTabs country="IT" range={range} todayMonday="2026-11-02" today={today} />,
     );
-    const details = container.querySelector("details");
+    const picker = container.querySelector("[data-part='date-picker']");
+    const button = picker?.querySelector(":scope > button");
 
-    expect(details).not.toHaveAttribute("open");
-    expect(details?.querySelector("summary")).toHaveTextContent("Date");
-    expect(details?.querySelector("form")).toHaveAttribute("method", "get");
-    expect(details?.closest("ul")).toBeNull();
-    expect(details?.parentElement).toBe(screen.getByRole("navigation", { name: "Settimane" }));
+    expect(button).toHaveAttribute("aria-expanded", "false");
+    expect(button).toHaveTextContent("Date");
+    expect(picker?.querySelector("form")).toBeNull();
+    expect(picker?.closest("ul")).toBeNull();
+    expect(picker?.parentElement).toBe(screen.getByRole("navigation", { name: "Settimane" }));
+
+    fireEvent.click(button!);
+    expect(picker?.querySelector("form")).toHaveAttribute("method", "get");
   });
 });

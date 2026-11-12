@@ -1,15 +1,15 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 /**
- * Navbar disclosure, for the dates and the country: a native details element that also closes
- * on Escape, on a press outside its summary and panel, and on a link inside it (a shortcut chip,
- * a country), since client navigation keeps the layout and the details open. The page stays
- * server-rendered; only this disclosure needs script.
- * @param props Summary content, its accessible name when the visible text is not enough, the
- * panel content and the `data-part` of the details.
- * @returns Details element.
+ * Navbar disclosure, for the dates and the country: a button with `aria-expanded` and a panel
+ * mounted only while open, so every opening starts from the URL state. It closes on Escape
+ * (focus back on the button), on a press outside the button and panel, and on a link inside it
+ * (a shortcut chip, a country), since client navigation keeps the layout mounted.
+ * @param props Button content, its accessible name when the visible text is not enough, the
+ * panel content and the `data-part` of the wrapper.
+ * @returns Button and, while open, the panel.
  */
 export function DatePicker({
   summary,
@@ -22,22 +22,29 @@ export function DatePicker({
   readonly children: ReactNode;
   readonly part?: string;
 }) {
-  const ref = useRef<HTMLDetailsElement>(null);
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const button = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    // The phone scrim is a pseudo-element of the details box, so a press on it targets the box.
-    const onPointerDown = (event: Event) => {
-      const details = ref.current;
-      const target = event.target;
-      const inPanel = target instanceof Node && target !== details && details?.contains(target);
+    if (!open) {
+      return;
+    }
 
-      if (details?.open && !inPanel) {
-        details.open = false;
+    // The phone scrim is a pseudo-element of the wrapper, so a press on it targets the wrapper.
+    const onPointerDown = (event: Event) => {
+      const wrapper = ref.current;
+      const target = event.target;
+      const inside = target instanceof Node && target !== wrapper && wrapper?.contains(target);
+
+      if (!inside) {
+        setOpen(false);
       }
     };
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && ref.current?.open) {
-        ref.current.open = false;
+      if (event.key === "Escape") {
+        setOpen(false);
+        button.current?.focus();
       }
     };
 
@@ -48,20 +55,28 @@ export function DatePicker({
       document.removeEventListener("pointerdown", onPointerDown);
       document.removeEventListener("keydown", onKeyDown);
     };
-  }, []);
+  }, [open]);
 
   return (
-    <details
+    <div
       ref={ref}
       data-part={part}
       onClick={(event) => {
         if (event.target instanceof Element && event.target.closest("a")) {
-          event.currentTarget.open = false;
+          setOpen(false);
         }
       }}
     >
-      <summary aria-label={summaryLabel}>{summary}</summary>
-      {children}
-    </details>
+      <button
+        ref={button}
+        type="button"
+        aria-expanded={open}
+        aria-label={summaryLabel}
+        onClick={() => setOpen(!open)}
+      >
+        {summary}
+      </button>
+      {open && children}
+    </div>
   );
 }

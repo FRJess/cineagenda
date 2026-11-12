@@ -1,6 +1,6 @@
 /**
  * FILE: _WeekTabs.css
- * USAGE: Styles for WeekTabs: from 48rem the row of week tabs and its Date disclosure, the active tab inverted; below 48rem the period bar (arrows around the same disclosure, whose summary shows the period)
+ * USAGE: Styles for WeekTabs: from 48rem the row of week tabs and its Date disclosure, the active tab inverted; below 48rem the period bar (arrows around the same disclosure, whose button shows the period)
  * SCOPE: [data-part="week-tabs"], [data-part="date-picker"], [data-part="date-label"], [data-part="period"], [data-part="step-previous"], [data-part="step-next"]
  */
 
@@ -71,10 +71,10 @@
   }
 }
 
-/* ─── Tabs and the Date summary share one pill ─── */
+/* ─── Tabs and the Date button share one pill ─── */
 
 [data-part="week-tabs"] > ul > li > a,
-[data-part="date-picker"] > summary {
+[data-part="date-picker"] > button {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -136,18 +136,12 @@
   flex: 0 0 auto;
 }
 
-[data-part="date-picker"] > summary {
-  cursor: pointer;
-  list-style: none;
+[data-part="date-picker"] > button {
   background: none;
   border-style: dashed;
 }
 
-[data-part="date-picker"] > summary::-webkit-details-marker {
-  display: none;
-}
-
-[data-part="date-picker"][open] > summary {
+[data-part="date-picker"] > button[aria-expanded="true"] {
   border-style: solid;
   border-color: var(--foreground);
 }
@@ -259,9 +253,11 @@
     min-width: 0;
   }
 
-  [data-part="date-picker"] > summary,
-  [data-part="date-picker"][open] > summary {
+  /* A button, unlike a summary, does not stretch to its box on its own. */
+  [data-part="date-picker"] > button,
+  [data-part="date-picker"] > button[aria-expanded="true"] {
     flex-direction: row;
+    width: 100%;
     height: 2.75rem;
     padding: 0 0.75rem;
     color: var(--tab-fg);
@@ -308,7 +304,7 @@
 
 /* Below 48rem the form is a bottom sheet; this scrim dims the page behind it. */
 @media (max-width: 47.99rem) {
-  [data-part="date-picker"][open]::before {
+  [data-part="date-picker"]:has(> button[aria-expanded="true"])::before {
     position: fixed;
     inset: 0;
     z-index: 4;

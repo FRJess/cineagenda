@@ -3,7 +3,7 @@
 import { DayPicker, type DateRange } from "@daypicker/react";
 import { enGB, fr, it } from "@daypicker/react/locale";
 import { useLocale, useTranslations } from "next-intl";
-import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
+import { useState, useSyncExternalStore, type ReactNode } from "react";
 import { formatDateRange } from "@/lib/releases/date-range";
 import { isoDateToUtc } from "@/lib/releases/iso-date";
 import { clampWeeks, extendWeeks, type WeekRange } from "@/lib/releases/week-range";
@@ -46,26 +46,8 @@ export function WeekPicker({ from, to, releaseDay, today, children }: Props) {
   const hydrated = useSyncExternalStore(subscribeNever, isClient, isServer);
   // Two months side by side from 48rem; one full-width month on phones, so both arrows show.
   const wide = useSyncExternalStore(subscribeWide, isWideScreen, isServer);
+  // DatePicker mounts the form on every opening, so an unsent selection is dropped there.
   const [range, setRange] = useState<WeekRange>({ from, to });
-  // Bumped on every opening, to remount DayPicker on the month of the URL range.
-  const [openings, setOpenings] = useState(0);
-  const fromInput = useRef<HTMLInputElement>(null);
-
-  // A chip to the range already in the URL does not navigate, so the key in WeekRangeForm does
-  // not change: reset on every opening instead, dropping any selection that was not sent.
-  useEffect(() => {
-    const details = fromInput.current?.closest("details");
-    const onToggle = () => {
-      if (details?.open) {
-        setRange({ from, to });
-        setOpenings((count) => count + 1);
-      }
-    };
-
-    details?.addEventListener("toggle", onToggle);
-
-    return () => details?.removeEventListener("toggle", onToggle);
-  }, [from, to]);
 
   const handleDayClick = (day: Date) => {
     const iso = todayInRome(day);
@@ -79,11 +61,10 @@ export function WeekPicker({ from, to, releaseDay, today, children }: Props) {
 
   return (
     <>
-      <input ref={fromInput} type="hidden" name="from" value={range.from} />
+      <input type="hidden" name="from" value={range.from} />
       <input type="hidden" name="to" value={range.to} />
       {hydrated && (
         <DayPicker
-          key={openings}
           mode="range"
           selected={selected}
           defaultMonth={isoDateToUtc(range.from)}

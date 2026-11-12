@@ -26,7 +26,7 @@ test("the film page has no WCAG 2.2 AA violations", async ({ page }) => {
   await page.goto("/it");
   await page.locator("article a").first().click();
   await page.locator("dl").waitFor();
-  // The trailer is closed, so its iframe is hidden and outside the scan.
+  // The trailer is not played, so no iframe is in the scan.
   const results = await new AxeBuilder({ page }).withTags(WCAG_TAGS).analyze();
 
   expect(results.violations).toEqual([]);
@@ -50,8 +50,8 @@ for (const colorScheme of ["light", "dark"] as const) {
     await page.emulateMedia({ colorScheme });
     await page.goto("/it");
     await page.locator("article a").first().click();
-    await page.locator("[data-part='spoiler'] > summary").click();
-    await page.locator("[data-part='spoiler'][open]").waitFor();
+    await page.getByRole("button", { name: /^Mostra la trama/ }).click();
+    await page.getByRole("button", { name: "Nascondi la trama" }).waitFor();
     const results = await new AxeBuilder({ page }).withTags(WCAG_TAGS).analyze();
 
     expect(results.violations).toEqual([]);

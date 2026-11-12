@@ -18,91 +18,127 @@ const renderPicker = () =>
     </>,
   );
 
-const openPicker = () => {
-  const details = document.querySelector("details") as HTMLDetailsElement;
-  details.open = true;
+const trigger = () => screen.getByRole("button", { name: "Date" });
 
-  return details;
+const openPicker = () => {
+  fireEvent.click(trigger());
+
+  return trigger();
 };
 
 describe("DatePicker", () => {
-  it("renders a closed details element named by the summary", () => {
+  it("renders a collapsed button named by its content, and no panel", () => {
     renderPicker();
 
-    expect(document.querySelector("details")).not.toHaveAttribute("open");
-    expect(screen.getByText("Date")).toBeInTheDocument();
+    expect(trigger()).toHaveAttribute("aria-expanded", "false");
+    expect(trigger()).toHaveAttribute("type", "button");
+    expect(screen.queryByLabelText("Dal")).toBeNull();
+  });
+
+  it("takes an accessible name when the visible content is not enough", () => {
+    render(
+      <DatePicker summary={<b>FR</b>} summaryLabel="Paese delle uscite: Francia">
+        <ul />
+      </DatePicker>,
+    );
+
+    expect(screen.getByRole("button", { name: "Paese delle uscite: Francia" })).toBeInTheDocument();
   });
 
   it("takes the data-part it is given, for the country menu", () => {
-    render(
+    const { container } = render(
       <DatePicker part="country-picker" summary={<b>Italia</b>}>
         <ul />
       </DatePicker>,
     );
 
-    expect(document.querySelector("details")).toHaveAttribute("data-part", "country-picker");
+    expect(container.firstElementChild).toHaveAttribute("data-part", "country-picker");
+  });
+
+  it("opens the panel and marks the button expanded, then closes on a second press", () => {
+    renderPicker();
+
+    expect(openPicker()).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByLabelText("Dal")).toBeInTheDocument();
+
+    fireEvent.click(trigger());
+    expect(trigger()).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByLabelText("Dal")).toBeNull();
   });
 
   it("closes when the pointer is pressed outside it", () => {
     renderPicker();
-    const details = openPicker();
+    openPicker();
 
     fireEvent.pointerDown(screen.getByRole("button", { name: "altrove" }));
 
-    expect(details.open).toBe(false);
+    expect(trigger()).toHaveAttribute("aria-expanded", "false");
   });
 
-  it("closes when the pointer is pressed on the details box itself, the phone scrim", () => {
-    renderPicker();
-    const details = openPicker();
+  it("closes when the pointer is pressed on the picker box itself, the phone scrim", () => {
+    const { container } = renderPicker();
+    openPicker();
 
-    fireEvent.pointerDown(details);
+    fireEvent.pointerDown(container.querySelector("[data-part='date-picker']")!);
 
-    expect(details.open).toBe(false);
+    expect(trigger()).toHaveAttribute("aria-expanded", "false");
   });
 
   it("stays open when the pointer is pressed inside the form", () => {
     renderPicker();
-    const details = openPicker();
+    openPicker();
 
     fireEvent.pointerDown(screen.getByLabelText("Dal"));
 
-    expect(details.open).toBe(true);
+    expect(trigger()).toHaveAttribute("aria-expanded", "true");
   });
 
   it("closes when a link inside it is clicked, such as a shortcut chip", () => {
     renderPicker();
-    const details = openPicker();
+    openPicker();
 
     fireEvent.click(screen.getByRole("link", { name: "2 settimane" }));
 
-    expect(details.open).toBe(false);
+    expect(trigger()).toHaveAttribute("aria-expanded", "false");
   });
 
   it("stays open when the panel is clicked outside its links", () => {
     renderPicker();
-    const details = openPicker();
+    openPicker();
 
     fireEvent.click(screen.getByLabelText("Dal"));
 
-    expect(details.open).toBe(true);
+    expect(trigger()).toHaveAttribute("aria-expanded", "true");
   });
 
-  it("closes on Escape", () => {
+  it("closes on Escape and gives focus back to the button", () => {
     renderPicker();
-    const details = openPicker();
+    openPicker();
+    screen.getByLabelText("Dal").focus();
 
     fireEvent.keyDown(document, { key: "Escape" });
 
-    expect(details.open).toBe(false);
+    expect(trigger()).toHaveAttribute("aria-expanded", "false");
+    expect(trigger()).toHaveFocus();
   });
 
   it("ignores other keys", () => {
     renderPicker();
-    const details = openPicker();
+    openPicker();
 
     fireEvent.keyDown(document, { key: "Enter" });
 
-    expect(details.open).toBe(true);
+    expect(trigger()).toHaveAttribute("aria-expanded", "true");
+  });
+
+  it("drops what was typed but not sent when it reopens", () => {
+    renderPicker();
+    openPicker();
+    fireEvent.change(screen.getByLabelText("Dal"), { target: { value: "2026-12-01" } });
+
+    fireEvent.click(trigger());
+    openPicker();
+
+    expect(screen.getByLabelText("Dal")).toHaveValue("");
   });
 });

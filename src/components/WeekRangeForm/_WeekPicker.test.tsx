@@ -2,6 +2,7 @@ import { fireEvent, screen } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import { renderToString } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { DatePicker } from "@/components/DatePicker";
 import { renderWithIntl } from "@/test/intl";
 import it_ from "../../../messages/it.json";
 import { WeekPicker } from "./_WeekPicker";
@@ -154,24 +155,21 @@ describe("WeekPicker", () => {
 
   it("drops an unsent selection and returns to the URL range when the popover reopens", () => {
     const { container } = renderWithIntl(
-      <details open>
+      <DatePicker summary="Date">
         <form>
           <WeekPicker from="2026-11-09" to="2026-11-22" releaseDay={4} today="2026-11-06" />
         </form>
-      </details>,
+      </DatePicker>,
     );
-    const details = container.querySelector("details")!;
-    const toggle = (open: boolean) => {
-      details.open = open;
-      fireEvent(details, new Event("toggle"));
-    };
+    const toggle = () => fireEvent.click(screen.getByRole("button", { name: "Date" }));
 
+    toggle();
     click(container, "2026-11-29");
     fireEvent.click(screen.getByRole("button", { name: /successivo/i }));
     expect(hidden(container, "to")).toHaveValue("2026-11-29");
 
-    toggle(false);
-    toggle(true);
+    toggle();
+    toggle();
 
     expect(hidden(container, "from")).toHaveValue("2026-11-09");
     expect(hidden(container, "to")).toHaveValue("2026-11-22");

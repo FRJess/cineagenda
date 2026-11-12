@@ -1,4 +1,4 @@
-import { screen, within } from "@testing-library/react";
+import { fireEvent, screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { renderWithIntl } from "@/test/intl";
 import { CountryPicker } from "./_CountryPicker";
@@ -22,19 +22,22 @@ vi.mock("@/i18n/navigation", () => ({
 
 const RANGE = { from: "2026-11-09", to: "2026-11-15" };
 
+const openMenu = () => fireEvent.click(screen.getByRole("button", { name: /^Paese delle uscite/ }));
+
 describe("CountryPicker", () => {
   it("names its button after the chosen country, with the flag beside the name", () => {
-    const { container } = renderWithIntl(<CountryPicker country="FR" pathname="/" range={RANGE} />);
-    const summary = container.querySelector("summary");
+    renderWithIntl(<CountryPicker country="FR" pathname="/" range={RANGE} />);
+    const button = screen.getByRole("button", { name: "Paese delle uscite: Francia" });
 
-    expect(summary).toHaveAttribute("aria-label", "Paese delle uscite: Francia");
-    expect(summary).toHaveTextContent("Francia");
-    expect(summary?.querySelector("img")).toHaveAttribute("src", "/flags/fr.svg");
-    expect(summary?.querySelector("img")).toHaveAttribute("alt", "");
+    expect(button).toHaveAttribute("aria-expanded", "false");
+    expect(button).toHaveTextContent("Francia");
+    expect(button.querySelector("img")).toHaveAttribute("src", "/flags/fr.svg");
+    expect(button.querySelector("img")).toHaveAttribute("alt", "");
   });
 
   it("lists the active countries in order under its title", () => {
     renderWithIntl(<CountryPicker country="FR" pathname="/" range={RANGE} />);
+    openMenu();
     const list = screen.getByRole("list", { name: "Uscite al cinema in" });
 
     expect(
@@ -46,6 +49,7 @@ describe("CountryPicker", () => {
 
   it("links each country to the same page and range, and marks the chosen one", () => {
     renderWithIntl(<CountryPicker country="FR" pathname="/" range={RANGE} />);
+    openMenu();
 
     expect(screen.getByRole("link", { name: "Stati Uniti" })).toHaveAttribute(
       "href",
@@ -57,6 +61,7 @@ describe("CountryPicker", () => {
 
   it("keeps the film page when switching country there", () => {
     renderWithIntl(<CountryPicker country="IT" pathname="/film/62" />);
+    openMenu();
 
     expect(screen.getByRole("link", { name: "Francia" })).toHaveAttribute(
       "href",
@@ -66,6 +71,7 @@ describe("CountryPicker", () => {
 
   it("names the countries in the UI language", () => {
     renderWithIntl(<CountryPicker country="US" pathname="/" />, "en");
+    fireEvent.click(screen.getByRole("button", { name: /^Release country/ }));
 
     expect(screen.getByRole("link", { name: "United States" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "France" })).toBeInTheDocument();
