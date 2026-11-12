@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { fetchGenreNames, fetchReleaseDetails } from "./releases";
+import { fetchGenreNames, fetchMovieDetails, fetchReleaseDetails } from "./releases";
 
 const window = { from: "2026-10-26", to: "2027-01-28" };
 const json = (body: unknown) => new Response(JSON.stringify(body), { status: 200 });
@@ -146,5 +146,39 @@ describe("fetchGenreNames", () => {
     await fetchGenreNames("en");
 
     expect(tmdb.urls[0].searchParams.get("language")).toBe("en-US");
+  });
+});
+
+describe("fetchMovieDetails", () => {
+  // Without include_video_language TMDB returns English videos only, losing dubbed trailers.
+  it("asks for videos in every UI language and the untagged ones", async () => {
+    const tmdb = stubTmdb(() => ({ id: 7, original_language: "en" }));
+
+    await fetchMovieDetails(7);
+
+    expect(tmdb.urls[0].searchParams.get("include_video_language")).toBe("it,en,fr,null");
+  });
+
+  it("adds the original-language videos when that language is not a UI one", async () => {
+    const en = { key: "en", iso_639_1: "en" };
+    const ko = { key: "ko", iso_639_1: "ko" };
+    const tmdb = stubTmdb((url) =>
+      url.pathname === "/3/movie/7/videos"
+        ? { results: [ko] }
+        : { id: 7, original_language: "ko", videos: { results: [en] } },
+    );
+
+    const result = await fetchMovieDetails(7);
+
+    expect(tmdb.urls[1].searchParams.get("include_video_language")).toBe("ko");
+    expect(result.videos?.results).toEqual([en, ko]);
+  });
+
+  it("makes one call when the original language is a UI one", async () => {
+    const tmdb = stubTmdb(() => ({ id: 7, original_language: "fr", videos: { results: [] } }));
+
+    await fetchMovieDetails(7);
+
+    expect(tmdb.urls).toHaveLength(1);
   });
 });
