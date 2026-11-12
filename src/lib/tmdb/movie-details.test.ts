@@ -123,29 +123,55 @@ describe("toMovieDetails", () => {
 });
 
 describe("pickTrailer", () => {
-  it("prefers an official trailer in the UI language", () => {
+  it("prefers an official dubbed trailer in the UI language", () => {
     const videos = [
       video({ key: "en-official", iso_639_1: "en" }),
       video({ key: "it-unofficial", iso_639_1: "it", official: false }),
       video({ key: "it-official", iso_639_1: "it" }),
     ];
 
-    expect(pickTrailer(videos, "it")).toBe("it-official");
+    expect(pickTrailer(videos, "it", "en")).toBe("it-official");
   });
 
-  it("falls back to English when the UI language has none", () => {
-    const videos = [video({ key: "en-official", iso_639_1: "en" })];
+  it("skips a VOST trailer in the UI language when a dubbed one exists", () => {
+    const videos = [
+      video({ key: "fr-vostfr", name: "Bande-annonce VOSTFR", iso_639_1: "fr" }),
+      video({ key: "fr-dubbed", name: "Bande-annonce VF", iso_639_1: "fr" }),
+    ];
 
-    expect(pickTrailer(videos, "it")).toBe("en-official");
+    expect(pickTrailer(videos, "fr", "en")).toBe("fr-dubbed");
   });
 
-  it("picks the newest among equals", () => {
+  it("uses a VOST trailer before the original-language one", () => {
+    const videos = [
+      video({ key: "en-original", iso_639_1: "en" }),
+      video({ key: "fr-vostfr", name: "Bande-annonce vostfr", iso_639_1: "fr" }),
+    ];
+
+    expect(pickTrailer(videos, "fr", "en")).toBe("fr-vostfr");
+  });
+
+  it("falls back to the original-language trailer", () => {
+    const videos = [
+      video({ key: "en-original", iso_639_1: "en" }),
+      video({ key: "de", iso_639_1: "de" }),
+    ];
+
+    expect(pickTrailer(videos, "it", "en")).toBe("en-original");
+  });
+
+  it("falls back to any trailer when there is no dubbed, VOST or original-language one", () => {
+    expect(pickTrailer([video({ key: "de", iso_639_1: "de" })], "it", "en")).toBe("de");
+  });
+
+  it("picks the official, then the newest among equals", () => {
     const videos = [
       video({ key: "old", published_at: "2024-01-01T00:00:00.000Z" }),
       video({ key: "new", published_at: "2026-01-01T00:00:00.000Z" }),
+      video({ key: "unofficial", official: false, published_at: "2027-01-01T00:00:00.000Z" }),
     ];
 
-    expect(pickTrailer(videos, "en")).toBe("new");
+    expect(pickTrailer(videos, "en", "en")).toBe("new");
   });
 
   it("ignores teasers, clips and non-YouTube videos", () => {
@@ -154,10 +180,6 @@ describe("pickTrailer", () => {
       video({ key: "vimeo", site: "Vimeo" }),
     ];
 
-    expect(pickTrailer(videos, "en")).toBeNull();
-  });
-
-  it("ignores other languages", () => {
-    expect(pickTrailer([video({ key: "fr", iso_639_1: "fr" })], "it")).toBeNull();
+    expect(pickTrailer(videos, "en", "en")).toBeNull();
   });
 });

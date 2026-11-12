@@ -11,7 +11,7 @@
   flex: 0 0 auto;
 }
 
-[data-part="country-picker"] > summary {
+[data-part="country-picker"] > button {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -22,18 +22,12 @@
   font-weight: 800;
   letter-spacing: -0.02em;
   color: var(--tab-fg);
-  list-style: none;
-  cursor: pointer;
   background: var(--tab-bg);
   border-radius: 0.5rem;
 }
 
-[data-part="country-picker"] > summary::-webkit-details-marker {
-  display: none;
-}
-
 /* Chevron: 7px, 2px stroke, the text colour at 70%. */
-[data-part="country-picker"] > summary::after {
+[data-part="country-picker"] > button::after {
   width: 0.4375rem;
   height: 0.4375rem;
   margin: -0.1875rem 0 0 0.125rem;
@@ -43,12 +37,12 @@
   transform: rotate(45deg);
 }
 
-[data-part="country-picker"][open] > summary::after {
+[data-part="country-picker"] > button[aria-expanded="true"]::after {
   margin-top: 0.1875rem;
   transform: rotate(-135deg);
 }
 
-[data-part="country-picker"] > summary:focus-visible,
+[data-part="country-picker"] > button:focus-visible,
 [data-part="country-menu"] a:focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 2px;
@@ -136,7 +130,7 @@
 
 /* Below 48rem: a neutral pill with the flag alone; the name stays for screen readers. */
 @media (max-width: 47.99rem) {
-  [data-part="country-picker"] > summary {
+  [data-part="country-picker"] > button {
     gap: 0.4375rem;
     height: 2.25rem;
     padding: 0 0.625rem 0 0.5625rem;
@@ -146,7 +140,7 @@
     border-radius: 999px;
   }
 
-  [data-part="country-picker"] > summary img {
+  [data-part="country-picker"] > button img {
     width: 24px;
     height: 17px;
   }
@@ -161,7 +155,7 @@
   }
 
   /* The menu is a bottom sheet; this scrim dims the page behind it. */
-  [data-part="country-picker"][open]::before {
+  [data-part="country-picker"]:has(> button[aria-expanded="true"])::before {
     position: fixed;
     inset: 0;
     z-index: 4;

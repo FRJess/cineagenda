@@ -77,7 +77,8 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
           <footer data-part="site-footer">
             <div data-part="footer-attribution">
               <Image src="/tmdb-logo.svg" alt="TMDB" width={273} height={36} />
-              <p>{t("attribution")}</p>
+              {/* TMDB's notice stays in English in every locale. */}
+              <p lang={locale === "en" ? undefined : "en"}>{t("attribution")}</p>
             </div>
             <div data-part="footer-controls">
               <LocaleSwitch />

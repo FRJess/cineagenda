@@ -18,10 +18,9 @@ function Flag({ country }: { readonly country: Country }) {
 
 /**
  * Country of the releases, top right of the navbar: a filled button with flag and name that opens
- * a menu with one plain link per country, so it works without JavaScript. The links keep the
- * page and the list range.
+ * a menu with one plain link per country. The links keep the page and the list range.
  * @param props Chosen country, the path the links point to, and the list range to keep.
- * @returns Details element.
+ * @returns Disclosure button and, while open, the menu.
  */
 export function CountryPicker({
   country,

@@ -27,28 +27,51 @@ export type MovieDetails = Movie & {
   /** ISO 3166-1 codes of the production countries, e.g. "FR". */
   readonly countries: readonly string[];
   readonly companies: readonly string[];
-  /** YouTube video id, null when TMDB has no trailer in the UI language or English. */
+  /** YouTube video id: dubbed in the UI language, else VOST, else original language, else any; null if none. */
   readonly trailerKey: string | null;
 };
 
 const MAX_CAST = 10;
 const WRITER_JOBS: ReadonlySet<string> = new Set(["Screenplay", "Writer"]);
 
+const VOST_NAME = /\bVOST/i;
+
 /**
- * YouTube trailer to embed: UI language first, then English; official first, then newest.
+ * YouTube trailer to embed. Tiers, first non-empty wins: dubbed in the UI language (no VOST
+ * in the name), then any VOST trailer, then the original language, then any trailer. Inside a
+ * tier: official first, then newest.
  * @param videos TMDB videos.
  * @param locale UI locale.
+ * @param originalLanguage ISO 639-1 code of the film's original language.
  * @returns YouTube video key, or null.
  */
-export function pickTrailer(videos: readonly TmdbVideo[], locale: UiLocale): string | null {
+export function pickTrailer(
+  videos: readonly TmdbVideo[],
+  locale: UiLocale,
+  originalLanguage: string,
+): string | null {
   const trailers = videos.filter((video) => video.site === "YouTube" && video.type === "Trailer");
-  const rank = (video: TmdbVideo): number =>
-    (video.iso_639_1 === locale ? 0 : 2) + (video.official ? 0 : 1);
-  const best = [...trailers]
-    .filter((video) => video.iso_639_1 === locale || video.iso_639_1 === "en")
-    .sort((a, b) => rank(a) - rank(b) || b.published_at.localeCompare(a.published_at))[0];
+  const tiers: readonly ((video: TmdbVideo) => boolean)[] = [
+    (video) => video.iso_639_1 === locale && !VOST_NAME.test(video.name),
+    (video) => VOST_NAME.test(video.name),
+    (video) => video.iso_639_1 === originalLanguage,
+    () => true,
+  ];
 
-  return best?.key ?? null;
+  for (const matches of tiers) {
+    const best = trailers
+      .filter(matches)
+      .sort(
+        (a, b) =>
+          Number(b.official) - Number(a.official) || b.published_at.localeCompare(a.published_at),
+      )[0];
+
+    if (best) {
+      return best.key;
+    }
+  }
+
+  return null;
 }
 
 /**
@@ -94,6 +117,6 @@ export function toMovieDetails(
       })),
     countries: (details.production_countries ?? []).map((country) => country.iso_3166_1),
     companies: (details.production_companies ?? []).map((company) => company.name),
-    trailerKey: pickTrailer(details.videos?.results ?? [], locale),
+    trailerKey: pickTrailer(details.videos?.results ?? [], locale, details.original_language),
   };
 }

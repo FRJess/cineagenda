@@ -2,10 +2,17 @@ import { type Country, DEFAULT_COUNTRY } from "@/lib/country";
 import type { ReleaseWindow } from "@/lib/releases/window";
 import { tmdbGet } from "./client";
 import type { UiLocale } from "./to-movie";
-import type { GenreNames, TmdbDiscoverPage, TmdbGenreList, TmdbMovieDetails } from "./types";
+import type {
+  GenreNames,
+  TmdbDiscoverPage,
+  TmdbGenreList,
+  TmdbMovieDetails,
+  TmdbVideo,
+} from "./types";
 
 const MAX_DISCOVER_PAGES = 20;
 const MAX_IN_FLIGHT = 8;
+const VIDEO_LANGUAGES: readonly string[] = ["it", "en", "fr", "null"];
 const TMDB_LANGUAGE: Readonly<Record<UiLocale, string>> = {
   it: "it-IT",
   en: "en-US",
@@ -92,12 +99,29 @@ export async function fetchGenreNames(locale: UiLocale): Promise<GenreNames> {
 /**
  * Full details of one film for the film page.
  * @param id TMDB movie id.
- * @returns Details with credits, Italian, English and French videos, release dates and translations.
+ * @returns Details with credits, release dates, translations and videos in the UI languages,
+ * untagged and in the original language.
  * @throws {TmdbError} With status 404 when the id does not exist.
  */
 export async function fetchMovieDetails(id: number): Promise<TmdbMovieDetails> {
-  return tmdbGet<TmdbMovieDetails>(`/movie/${id}`, {
+  const details = await tmdbGet<TmdbMovieDetails>(`/movie/${id}`, {
     append_to_response: "credits,videos,release_dates,translations,keywords",
-    include_video_language: "it,en,fr",
+    // Without it TMDB returns English videos only, so dubbed trailers never arrive.
+    include_video_language: VIDEO_LANGUAGES.join(","),
   });
+
+  if (VIDEO_LANGUAGES.includes(details.original_language)) {
+    return details;
+  }
+
+  // TMDB has no "all languages" value and drops languages from a long list, so ask separately.
+  const original = await tmdbGet<{ readonly results: readonly TmdbVideo[] }>(
+    `/movie/${id}/videos`,
+    { include_video_language: details.original_language },
+  );
+
+  return {
+    ...details,
+    videos: { results: [...(details.videos?.results ?? []), ...original.results] },
+  };
 }

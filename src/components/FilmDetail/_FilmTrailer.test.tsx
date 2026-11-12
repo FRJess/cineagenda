@@ -6,33 +6,28 @@ import { renderWithIntl } from "@/test/intl";
 import it_ from "../../../messages/it.json";
 import { FilmTrailer } from "./_FilmTrailer";
 
-const toggle = (details: HTMLDetailsElement, open: boolean) =>
-  act(() => {
-    details.open = open;
-    fireEvent(details, new Event("toggle"));
-  });
-
 describe("FilmTrailer", () => {
-  it("renders no player until the user presses play", () => {
+  it("renders a play button and no player until the user presses it", () => {
     const { container } = renderWithIntl(<FilmTrailer trailerKey="Hg84mjAvwyQ" />);
 
-    expect(container.querySelector("details")).not.toHaveAttribute("open");
-    expect(container.querySelector("summary")).toHaveTextContent("Guarda il trailer");
+    const button = screen.getByRole("button", { name: "Guarda il trailer" });
+    expect(button).not.toHaveAttribute("aria-expanded");
+    expect(container.querySelector("details, summary")).toBeNull();
     expect(container.querySelector("iframe")).toBeNull();
   });
 
-  it("mounts the player on play and removes it on close", () => {
-    const { container } = renderWithIntl(<FilmTrailer trailerKey="Hg84mjAvwyQ" />);
-    const details = container.querySelector("details")!;
+  it("replaces the button with the player and moves focus to it", () => {
+    renderWithIntl(<FilmTrailer trailerKey="Hg84mjAvwyQ" />);
 
-    toggle(details, true);
-    expect(screen.getByTitle("Trailer")).toHaveAttribute(
+    fireEvent.click(screen.getByRole("button", { name: "Guarda il trailer" }));
+
+    const player = screen.getByTitle("Trailer");
+    expect(player).toHaveAttribute(
       "src",
       "https://www.youtube-nocookie.com/embed/Hg84mjAvwyQ?autoplay=1",
     );
-
-    toggle(details, false);
-    expect(container.querySelector("iframe")).toBeNull();
+    expect(player).toHaveFocus();
+    expect(screen.queryByRole("button", { name: "Guarda il trailer" })).toBeNull();
   });
 
   it("stops the player when the page is hidden, as Next does when the user navigates away", () => {
@@ -44,16 +39,15 @@ describe("FilmTrailer", () => {
       </NextIntlClientProvider>
     );
     const { container, rerender } = renderWithIntl(view("visible"));
-    const details = container.querySelector("details")!;
 
-    toggle(details, true);
+    fireEvent.click(screen.getByRole("button", { name: "Guarda il trailer" }));
     expect(container.querySelector("iframe")).not.toBeNull();
 
     act(() => rerender(view("hidden")));
     expect(container.querySelector("iframe")).toBeNull();
-    expect(details).not.toHaveAttribute("open");
 
     act(() => rerender(view("visible")));
     expect(container.querySelector("iframe")).toBeNull();
+    expect(screen.getByRole("button", { name: "Guarda il trailer" })).toBeInTheDocument();
   });
 });

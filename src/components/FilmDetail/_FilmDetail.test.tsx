@@ -214,12 +214,11 @@ describe("FilmDetail", () => {
   it("ends the sheet with the trailer section, closed and with no player yet", () => {
     const { container } = renderFilm();
     const section = container.querySelector("[data-part='film-body']")?.lastElementChild;
-    const details = section?.querySelector("details[data-part='trailer']");
-
     expect(section).toHaveAttribute("data-part", "film-trailer");
     expect(screen.getByRole("heading", { level: 2, name: "Trailer" })).toBeInTheDocument();
-    expect(details).not.toHaveAttribute("open");
-    expect(details?.querySelector("summary")).toHaveTextContent(/^Guarda il trailer$/);
+    expect(section?.querySelector("[data-part='trailer'] > button")).toHaveAccessibleName(
+      "Guarda il trailer",
+    );
     expect(container.querySelector("iframe")).toBeNull();
   });
 
@@ -233,42 +232,31 @@ describe("FilmDetail", () => {
 
   it("hides the plot behind a closed spoiler veil under its heading", () => {
     const { container } = renderFilm();
-    const spoiler = container.querySelector("[data-part='film-plot'] details[data-part='spoiler']");
-    const summary = spoiler?.querySelector("summary");
+    const spoiler = container.querySelector("[data-part='film-plot'] [data-part='spoiler']");
+    const button = spoiler?.querySelector(":scope > button");
 
     expect(screen.getByRole("heading", { level: 2, name: "Trama" })).toBeInTheDocument();
-    expect(spoiler).not.toHaveAttribute("open");
-    expect(summary).toHaveAccessibleName(/^Mostra la trama/);
-    expect(summary?.querySelector("small")?.textContent ?? "").not.toBe("");
-    expect(summary?.querySelector("[data-part='spoiler-copy']")).toHaveAttribute(
+    expect(button).toHaveAttribute("aria-expanded", "false");
+    expect(button).toHaveAccessibleName(/^Mostra la trama/);
+    expect(button?.querySelector("small")?.textContent ?? "").not.toBe("");
+    expect(button?.querySelector("[data-part='spoiler-copy']")).toHaveAttribute(
       "aria-hidden",
       "true",
     );
     expect(spoiler?.querySelector(":scope > p")).toHaveTextContent("Un viaggio nella foresta.");
+    expect(spoiler?.querySelector(":scope > p")).not.toBeVisible();
   });
 
   it("opens the spoiler on a click on the veil, and veils the plot again on a second click", () => {
     const { container } = renderFilm();
-    const spoiler = container.querySelector("details[data-part='spoiler']");
-    const summary = spoiler?.querySelector("summary");
+    const button = container.querySelector<HTMLButtonElement>("[data-part='spoiler'] > button")!;
 
-    if (summary) {
-      fireEvent.click(summary);
-    }
-    expect(spoiler).toHaveAttribute("open");
+    fireEvent.click(button);
+    expect(button).toHaveAttribute("aria-expanded", "true");
+    expect(button).toHaveAccessibleName("Nascondi la trama");
 
-    if (summary) {
-      fireEvent.click(summary);
-    }
-    expect(spoiler).not.toHaveAttribute("open");
-  });
-
-  it("keeps a short hide label in the summary for the open state", () => {
-    const { container } = renderFilm();
-
-    expect(
-      container.querySelector("[data-part='spoiler'] > summary [data-part='spoiler-hide']"),
-    ).toHaveTextContent(/^Nascondi$/);
+    fireEvent.click(button);
+    expect(button).toHaveAttribute("aria-expanded", "false");
   });
 
   it("shows the missing-plot fallback in plain sight, with no spoiler", () => {

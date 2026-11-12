@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useEffect, useRef } from "react";
+import { useEffect, useId, useState } from "react";
 
 /** Eye icon for the reveal pill; decorative, the label carries the meaning. */
 function EyeIcon() {
@@ -40,10 +40,11 @@ function EyeOffIcon() {
 }
 
 /**
- * Plot behind a spoiler veil: a blurred copy with "Mostra la trama" until clicked, then the real
- * text with a "Nascondi" control that veils it again. Every visit starts veiled.
+ * Plot behind a spoiler veil: a disclosure button showing a blurred copy with "Mostra la trama"
+ * until clicked, then a "Nascondi la trama" control that veils the text again. Every visit
+ * starts veiled.
  * @param props Plot text and the playful hint line picked on the server.
- * @returns Details element.
+ * @returns Disclosure button and the plot it controls.
  */
 export function FilmSpoiler({
   overview,
@@ -53,39 +54,48 @@ export function FilmSpoiler({
   readonly hint: string;
 }) {
   const t = useTranslations("Film");
-  const ref = useRef<HTMLDetailsElement>(null);
+  const plotId = useId();
+  const [open, setOpen] = useState(false);
 
   // With cacheComponents Next keeps a visited page mounted but hidden (React Activity), so an
   // opened plot would still be open on return. Hiding runs this cleanup.
-  useEffect(() => {
-    const details = ref.current;
-
-    return () => {
-      if (details) {
-        details.open = false;
-      }
-    };
-  }, []);
+  useEffect(() => () => setOpen(false), []);
 
   return (
-    <details ref={ref} data-part="spoiler">
-      <summary>
-        <span data-part="spoiler-copy" aria-hidden="true">
-          {overview}
-        </span>
-        <span data-part="spoiler-cta">
-          <b>
-            <EyeIcon />
-            {t("showPlot")}
-          </b>
-          <small>{hint}</small>
-        </span>
-        <span data-part="spoiler-hide">
-          <EyeOffIcon />
-          {t("hidePlot")}
-        </span>
-      </summary>
-      <p>{overview}</p>
-    </details>
+    <div data-part="spoiler">
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-controls={plotId}
+        onClick={() => setOpen(!open)}
+      >
+        {open ? (
+          <span data-part="spoiler-hide">
+            <EyeOffIcon />
+            <span>
+              {t.rich("hidePlot", {
+                sr: (chunks) => <span data-part="sr-only">{chunks}</span>,
+              })}
+            </span>
+          </span>
+        ) : (
+          <>
+            <span data-part="spoiler-copy" aria-hidden="true">
+              {overview}
+            </span>
+            <span data-part="spoiler-cta">
+              <b>
+                <EyeIcon />
+                {t("showPlot")}
+              </b>
+              <small>{hint}</small>
+            </span>
+          </>
+        )}
+      </button>
+      <p id={plotId} hidden={!open}>
+        {overview}
+      </p>
+    </div>
   );
 }

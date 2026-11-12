@@ -37,14 +37,14 @@ test("a card opens the film page in the same country", async ({ page }) => {
 
 test("picking a country from the menu keeps the weeks on screen", async ({ page }) => {
   await page.goto("/it?country=it&from=2026-11-09&to=2026-11-15");
-  await page.locator("[data-part='country-picker'] > summary").click();
+  await page.locator("[data-part='country-picker'] > button").click();
   await page
     .getByRole("list", { name: "Uscite al cinema in" })
     .getByRole("link", { name: "Francia" })
     .click();
 
   await expect(page).toHaveURL(/\/it\?country=fr&from=2026-11-09&to=2026-11-15$/);
-  await expect(page.locator("[data-part='country-picker'] > summary")).toHaveAccessibleName(
+  await expect(page.locator("[data-part='country-picker'] > button")).toHaveAccessibleName(
     "Paese delle uscite: Francia",
   );
 });
@@ -67,7 +67,7 @@ for (const colorScheme of ["light", "dark"] as const) {
     await page.emulateMedia({ colorScheme });
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/it?country=fr");
-    await page.locator("[data-part='country-picker'] > summary").click();
+    await page.locator("[data-part='country-picker'] > button").click();
     const results = await new AxeBuilder({ page })
       .include("[data-part='country-picker']")
       .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
@@ -106,8 +106,8 @@ test("the French UI keeps the chosen country and dates when switching language",
   await expect(page.locator("html")).toHaveAttribute("lang", "fr");
   await expect(page.getByRole("navigation", { name: "Semaines", exact: true })).toBeVisible();
   await expect(page).toHaveTitle("Sorties au cinéma aux États-Unis · Cineagenda");
-  // Next keeps the previous page mounted but hidden, so only the visible summary counts.
-  await expect(page.locator("[data-part='country-picker'] > summary:visible")).toHaveAccessibleName(
+  // Next keeps the previous page mounted but hidden, so only the visible button counts.
+  await expect(page.locator("[data-part='country-picker'] > button:visible")).toHaveAccessibleName(
     "Pays des sorties : États-Unis",
   );
 });
@@ -115,7 +115,7 @@ test("the French UI keeps the chosen country and dates when switching language",
 test("switching country on a film page goes back to the list of that country", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("/it/film/372058?country=it&from=2026-11-23&to=2026-11-29");
-  await page.locator("[data-part='country-picker'] > summary:visible").click();
+  await page.locator("[data-part='country-picker'] > button:visible").click();
   await page.getByRole("link", { name: "Francia" }).click();
 
   await expect(page).toHaveURL(/\/it\?country=fr&from=2026-11-23&to=2026-11-29$/);
