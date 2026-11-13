@@ -24,7 +24,15 @@ const SHORT_FILM_KEYWORDS: ReadonlySet<number> = new Set([
   386921, // experimental short film
 ]);
 
-const overviewIn = (details: TmdbMovieDetails, lang: UiLocale): string =>
+// Stage shows (stand-up, one-man shows) that TMDB files as films with a theatrical entry. Exact
+// keywords by id: `community theater` or `national theatre` also tag real films, and concert
+// films stay listed on purpose.
+const STAGE_SHOW_KEYWORDS: ReadonlySet<number> = new Set([
+  6656, // one-man show
+  284103, // theatre
+]);
+
+const overviewIn =(details: TmdbMovieDetails, lang: UiLocale): string =>
   details.translations.translations
     .find((t) => t.iso_639_1 === lang && t.data.overview?.trim())
     ?.data.overview?.trim() ?? "";
@@ -39,8 +47,8 @@ const overviewOrder = (locale: UiLocale): readonly UiLocale[] => [locale, "en", 
  * @param locale UI locale for the overview.
  * @param genreNames Localized genre names.
  * @param country Country whose release date and title are shown; Italy by default.
- * @returns Movie, or null when it has no cinema release in that country in the window or is a
- * short.
+ * @returns Movie, or null when it has no cinema release in that country in the window, is a
+ * short, or is a stage show.
  */
 export function toMovie(
   details: TmdbMovieDetails,
@@ -52,7 +60,9 @@ export function toMovie(
   const release = pickRelease(details, window, country);
   const isShort =
     (!!details.runtime && details.runtime < MIN_RUNTIME_MINUTES) ||
-    !!details.keywords?.keywords.some((keyword) => SHORT_FILM_KEYWORDS.has(keyword.id));
+    !!details.keywords?.keywords.some(
+      (keyword) => SHORT_FILM_KEYWORDS.has(keyword.id) || STAGE_SHOW_KEYWORDS.has(keyword.id),
+    );
 
   if (!release || isShort) {
     return null;

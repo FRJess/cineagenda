@@ -172,6 +172,23 @@ describe("toMovie", () => {
     expect(tagged(268132, "based on short film")).not.toBeNull();
   });
 
+  it("drops stage shows TMDB lists as films, but keeps concert films and films about theater", () => {
+    // Bancàl (IT) and Damien Gillard - Rude (FR): theatrical entries of 90 minutes.
+    const tagged = (id: number, name: string) =>
+      toMovie(
+        details({ runtime: 90, keywords: { keywords: [{ id, name }] } }, [rd(3, "2026-11-05")]),
+        window,
+        "it",
+        genreNames,
+      );
+
+    expect(tagged(6656, "one-man show")).toBeNull();
+    expect(tagged(284103, "theatre")).toBeNull();
+    expect(tagged(156205, "concert film")).not.toBeNull();
+    expect(tagged(240862, "community theater")).not.toBeNull();
+    expect(tagged(319259, "national theatre")).not.toBeNull();
+  });
+
   it("keeps films of 60 minutes or more", () => {
     expect(
       toMovie(details({ runtime: 60 }, [rd(3, "2026-11-05")]), window, "it", genreNames),

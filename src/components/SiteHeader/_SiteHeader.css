@@ -42,12 +42,13 @@
 
 /* ─── Brand: mark, then the wordmark with "agenda" in the accent ─── */
 
-/* Syne is wide: a smaller wordmark on phones keeps brand and country on one row. */
+/* Syne is wide: a smaller wordmark on phones keeps brand and country on one row. 1.175rem
+   (18.8px) in 800 weight is the smallest large text (14pt bold), where --accent's 3.1:1 passes. */
 [data-part="brand"] {
   display: inline-flex;
   align-items: center;
   font-family: var(--font-display);
-  font-size: 1.0625rem;
+  font-size: 1.175rem;
   font-weight: 800;
   line-height: 1;
   letter-spacing: -0.03em;
@@ -55,10 +56,8 @@
   text-decoration: none;
 }
 
-/* At the phone size the wordmark is small text, so it takes the AA red; the light red returns
-   at 22px, where it counts as large text. */
 [data-part="brand"] span {
-  color: var(--accent-strong);
+  color: var(--accent);
 }
 
 [data-part="brand"] picture {
@@ -79,10 +78,6 @@
 @media (min-width: 48rem) {
   [data-part="brand"] {
     font-size: 1.375rem;
-  }
-
-  [data-part="brand"] span {
-    color: var(--accent);
   }
 
   [data-part="brand"] picture {
