@@ -148,13 +148,14 @@ a {
    gap can show. Update it when the navbar height changes. */
 [data-part="home"] {
   --site-header-height: 7.5rem;
-  padding-block: 6rem;
+  padding-block: var(--space-8) 6rem;
   padding-inline: var(--space-4);
 }
 
 @media (min-width: 48rem) {
   [data-part="home"] {
     --site-header-height: 4.625rem;
+    padding-top: 6rem;
     padding-inline: var(--space-6);
   }
 }
