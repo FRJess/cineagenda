@@ -213,22 +213,52 @@ test("the date popover shows the calendar and picks a new range", async ({ page 
   await expect(page.getByRole("region")).toHaveCount(3);
 });
 
-test("a shortcut chip navigates and closes the date popover", async ({ page }) => {
+test("a shortcut chip selects its weeks and leaves the date popover open", async ({ page }) => {
   await page.goto("/it?from=2026-11-02&to=2026-11-15");
   await page.getByText("Date", { exact: true }).click();
-  await page
+  const chip = page
     .getByRole("list", { name: "Scorciatoie" })
-    .getByRole("link", { name: "Prossima settimana" })
-    .click();
+    .getByRole("button", { name: "Prossima settimana" });
+  await chip.click();
 
-  // The chips follow the real date, so only the change of range is checked.
-  await expect(page).not.toHaveURL(/from=2026-11-02&to=2026-11-15/);
-  await expect(page).toHaveURL(/from=\d{4}-\d{2}-\d{2}&to=\d{4}-\d{2}-\d{2}/);
+  await expect(chip).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator("[data-part='date-picker'] > button")).toHaveAttribute(
     "aria-expanded",
-    "false",
+    "true",
   );
+  await expect(page).toHaveURL(/from=2026-11-02&to=2026-11-15/);
+
+  // The chips follow the real date, so only the change of range is checked.
+  await page.getByRole("button", { name: "Mostra 1 settimana" }).click();
+  await expect(page).not.toHaveURL(/from=2026-11-02&to=2026-11-15/);
+  await expect(page).toHaveURL(/from=\d{4}-\d{2}-\d{2}&to=\d{4}-\d{2}-\d{2}/);
 });
+
+for (const width of [360, 1280]) {
+  test(`the week heading sticks right under the navbar while its week scrolls (${width}px)`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 700 });
+    await page.goto("/it?from=2026-11-09&to=2026-11-22");
+    const heading = page.locator("[data-part='week-section'] > header").first();
+    await page.locator("ol article").first().waitFor();
+    await page.mouse.wheel(0, 500);
+    await expect
+      .poll(() => page.evaluate(() => window.scrollY))
+      .toBeGreaterThan(400);
+
+    const navbarBottom = await page
+      .locator("[data-part='site-header']")
+      .evaluate((el) => el.getBoundingClientRect().bottom);
+    const bar = await heading.evaluate((el) => el.getBoundingClientRect().top);
+    const text = await heading.locator("h2").evaluate((el) => el.getBoundingClientRect().top);
+
+    // No gap above the bar, and the text is not under the navbar.
+    expect(bar).toBeLessThanOrEqual(navbarBottom);
+    expect(text).toBeGreaterThanOrEqual(navbarBottom);
+    expect(text - navbarBottom).toBeLessThan(16);
+  });
+}
 
 test("the period button opens the date popover with one month on phones", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });

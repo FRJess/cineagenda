@@ -1,4 +1,3 @@
-import { isoDateToUtc } from "./iso-date";
 import { addDays, mondayOf, sundayOf, weeksBetween, type ReleaseWindow } from "./window";
 
 /** Whole weeks as ISO dates: `from` is a Monday, `to` is a Sunday. */
@@ -35,22 +34,34 @@ export function extendWeeks(current: WeekRange, isoDate: string): WeekRange {
 }
 
 /**
- * Keeps at most `maxWeeks` weeks, cutting the end furthest from the clicked day.
- * @param range Whole-week range.
+ * Range after a click on a day, at most `maxWeeks` long: the click extends the range as
+ * {@link extendWeeks} does, and a day too far to reach restarts from its own week.
+ * @param current Selected weeks.
+ * @param isoDate Clicked day.
  * @param maxWeeks Cap, in weeks.
- * @param anchor ISO date of the clicked day.
- * @returns The range, cut to the cap when needed.
+ * @returns The next range.
  */
-export function clampWeeks(range: WeekRange, maxWeeks: number, anchor: string): WeekRange {
-  if (weeksBetween(range).length <= maxWeeks) {
-    return range;
+export function selectWeeks(current: WeekRange, isoDate: string, maxWeeks: number): WeekRange {
+  const next = extendWeeks(current, isoDate);
+
+  return weeksBetween(next).length > maxWeeks ? weekOf(isoDate) : next;
+}
+
+/**
+ * Days a click can extend the range to without passing `maxWeeks`.
+ * @param range Selected weeks.
+ * @param maxWeeks Cap, in weeks.
+ * @returns The days before the range and the days after it; empty when the range is at the cap.
+ */
+export function reachOf(range: WeekRange, maxWeeks: number): readonly WeekRange[] {
+  if (weeksBetween(range).length >= maxWeeks) {
+    return [];
   }
 
   const span = maxWeeks * 7 - 1;
-  const distanceToStart = isoDateToUtc(anchor).getTime() - isoDateToUtc(range.from).getTime();
-  const distanceToEnd = isoDateToUtc(range.to).getTime() - isoDateToUtc(anchor).getTime();
 
-  return distanceToStart <= distanceToEnd
-    ? { from: range.from, to: addDays(range.from, span) }
-    : { from: addDays(range.to, -span), to: range.to };
+  return [
+    { from: addDays(range.to, -span), to: addDays(range.from, -1) },
+    { from: addDays(range.to, 1), to: addDays(range.from, span) },
+  ];
 }

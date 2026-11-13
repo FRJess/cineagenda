@@ -121,7 +121,7 @@
   font-size: 0.6rem;
   letter-spacing: 0.08em;
   white-space: nowrap;
-  color: #ffb3a6;
+  color: #fcb5b1;
 }
 
 [data-part="movie-card"] [data-part="card-text"] [data-release="limited"]::before {

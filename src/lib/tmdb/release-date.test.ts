@@ -104,6 +104,20 @@ describe("pickRelease", () => {
     expect(pickRelease(film, window)?.date).toBe("2026-11-12");
   });
 
+  it("drops a limited entry that previews a theatrical release a few weeks later", () => {
+    // TMDB lists "Vous pouvez tout voir" in France as limited on Dec 1 and theatrical on Dec 30.
+    const film = details({}, [rd(2, "2026-12-01"), rd(3, "2026-12-30")]);
+
+    expect(pickRelease(film, { from: "2026-11-30", to: "2026-12-06" })).toBeNull();
+    expect(pickRelease(film, window)).toEqual({ date: "2026-12-30", type: "theatrical", note: "" });
+  });
+
+  it("keeps a limited entry when the theatrical release is months later", () => {
+    const film = details({}, [rd(2, "2026-11-05"), rd(3, "2027-03-10")]);
+
+    expect(pickRelease(film, window)?.date).toBe("2026-11-05");
+  });
+
   it("includes the first day of the window", () => {
     expect(pickRelease(details({}, [rd(3, "2026-10-26")]), window)?.date).toBe("2026-10-26");
   });

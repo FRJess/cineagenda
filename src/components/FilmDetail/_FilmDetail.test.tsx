@@ -119,12 +119,16 @@ describe("FilmDetail", () => {
     );
   });
 
-  it("joins several directors in the UI language", () => {
+  it("sets several directors apart with a separator, not a conjunction", () => {
     const { container } = renderFilm({ directors: ["Joel Coen", "Ethan Coen"], year: 2026 });
+    const line = container.querySelector("[data-part='film-director']");
 
-    expect(container.querySelector("[data-part='film-director'] b")).toHaveTextContent(
-      /^Joel Coen e Ethan Coen$/,
-    );
+    expect([...line!.querySelectorAll("b")].map((name) => name.textContent)).toEqual([
+      "Joel Coen",
+      "Ethan Coen",
+    ]);
+    expect(line!.querySelectorAll("[data-part='director-sep']")).toHaveLength(1);
+    expect(line).toHaveTextContent(/^Regia di Joel Coen \/ Ethan Coen$/);
   });
 
   it("says 'da oggi' and 'da ieri' around the release day", () => {

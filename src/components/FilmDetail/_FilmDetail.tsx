@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { useFormatter, useLocale, useTranslations } from "next-intl";
+import { Fragment } from "react";
 import { Link } from "@/i18n/navigation";
 import { type Country, countryQuery } from "@/lib/country";
 import { daysFromToday } from "@/lib/releases/days-from-today";
@@ -88,7 +89,6 @@ export function FilmDetail({
               unit: "day",
             })
           : null;
-  const directors = new Intl.ListFormat(locale, { type: "conjunction" }).format(film.directors);
   // The year only tells something for a re-release: a new film's year is the release year.
   const showYear = film.year !== null && String(film.year) !== film.releaseDate.slice(0, 4);
   const countries = film.countries
@@ -144,7 +144,18 @@ export function FilmDetail({
           {film.subtitle && <p data-part="film-subtitle">{film.subtitle}</p>}
           {film.directors.length > 0 && (
             <p data-part="film-director">
-              <span>{t("directedBy")}</span> <b>{directors}</b>
+              <span>{t("directedBy")}</span>{" "}
+              {film.directors.map((director, index) => (
+                <Fragment key={director}>
+                  {/* The separator stays with the name before it, so it never opens a line. */}
+                  <span data-part="director">
+                    <b>{director}</b>
+                    {index < film.directors.length - 1 && (
+                      <span data-part="director-sep"> /</span>
+                    )}
+                  </span>{" "}
+                </Fragment>
+              ))}
               {showYear && (
                 <>
                   {" "}
@@ -159,10 +170,11 @@ export function FilmDetail({
         {film.posterPath && (
           <Image
             data-part="film-poster"
-            src={`${IMAGE_BASE}/w500${film.posterPath}`}
+            src={`${IMAGE_BASE}/w780${film.posterPath}`}
             alt=""
-            width={500}
-            height={750}
+            width={780}
+            height={1170}
+            sizes="18rem"
           />
         )}
         <div data-part="film-body">
