@@ -182,4 +182,31 @@ describe("pickTrailer", () => {
 
     expect(pickTrailer(videos, "en", "en")).toBeNull();
   });
+
+  it("ignores keys that are not a plain YouTube id", () => {
+    const videos = [
+      video({ key: "../watch?v=x" }),
+      video({ key: "abc?autoplay=1&mute=0" }),
+      video({ key: "" }),
+    ];
+
+    expect(pickTrailer(videos, "en", "en")).toBeNull();
+  });
+});
+
+describe("toMovieDetails image paths", () => {
+  it("drops a cast photo whose path is not a plain file name", () => {
+    const film = details(
+      {
+        credits: {
+          cast: [{ id: 1, name: "A", character: "B", profile_path: "/../../x.jpg", order: 0 }],
+          crew: [],
+        },
+      },
+      [rd(3, "2026-11-05")],
+    );
+    const window = { from: "2026-10-26", to: "2027-01-28" };
+
+    expect(toMovieDetails(film, window, "it", {})?.cast[0].profilePath).toBeNull();
+  });
 });

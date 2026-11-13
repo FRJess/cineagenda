@@ -1,7 +1,7 @@
 import { type Country, DEFAULT_COUNTRY } from "@/lib/country";
 import type { Movie } from "@/lib/releases/movie";
 import type { ReleaseWindow } from "@/lib/releases/window";
-import { toMovie, type UiLocale } from "./to-movie";
+import { imagePath, toMovie, type UiLocale } from "./to-movie";
 import type { GenreNames, TmdbMovieDetails, TmdbVideo } from "./types";
 
 /** One credited actor as the film page shows it. */
@@ -35,6 +35,8 @@ const MAX_CAST = 10;
 const WRITER_JOBS: ReadonlySet<string> = new Set(["Screenplay", "Writer"]);
 
 const VOST_NAME = /\bVOST/i;
+// The key goes into the player URL: letters, digits, "-" and "_" only, as YouTube ids are.
+const YOUTUBE_KEY = /^[\w-]+$/;
 
 /**
  * YouTube trailer to embed. Tiers, first non-empty wins: dubbed in the UI language (no VOST
@@ -50,7 +52,9 @@ export function pickTrailer(
   locale: UiLocale,
   originalLanguage: string,
 ): string | null {
-  const trailers = videos.filter((video) => video.site === "YouTube" && video.type === "Trailer");
+  const trailers = videos.filter(
+    (video) => video.site === "YouTube" && video.type === "Trailer" && YOUTUBE_KEY.test(video.key),
+  );
   const tiers: readonly ((video: TmdbVideo) => boolean)[] = [
     (video) => video.iso_639_1 === locale && !VOST_NAME.test(video.name),
     (video) => VOST_NAME.test(video.name),
@@ -113,7 +117,7 @@ export function toMovieDetails(
       .map((member) => ({
         name: member.name,
         character: member.character,
-        profilePath: member.profile_path,
+        profilePath: imagePath(member.profile_path),
       })),
     countries: (details.production_countries ?? []).map((country) => country.iso_3166_1),
     companies: (details.production_companies ?? []).map((company) => company.name),

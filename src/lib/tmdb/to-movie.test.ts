@@ -224,4 +224,14 @@ describe("toMovie", () => {
 
     expect(toMovie(film, window, "it", genreNames)?.posterPath).toBeNull();
   });
+
+  it("drops image paths that are not a plain file name", () => {
+    const film = details({ poster_path: "/../evil/x.jpg", backdrop_path: "//evil.example/x.jpg" }, [
+      rd(3, "2026-11-05"),
+    ]);
+    const mapped = toMovie(film, window, "it", genreNames);
+
+    expect(mapped?.posterPath).toBeNull();
+    expect(mapped?.backdropPath).toBeNull();
+  });
 });
