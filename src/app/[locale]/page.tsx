@@ -10,7 +10,8 @@ import { WeekSection } from "@/components/WeekSection";
 import { WeekTabs } from "@/components/WeekTabs";
 import { routing } from "@/i18n/routing";
 import { DEFAULT_COUNTRY, parseCountry } from "@/lib/country";
-import { mondayOf, parseRange, sundayOf, todayInRome, weeksBetween } from "@/lib/releases/window";
+import { parsePeriod, periodHref } from "@/lib/releases/period";
+import { defaultRange, mondayOf, sundayOf, todayInRome, weeksBetween } from "@/lib/releases/window";
 import { getWeekReleases } from "@/lib/tmdb/cached";
 import type { UiLocale } from "@/lib/tmdb/to-movie";
 
@@ -56,17 +57,22 @@ function WeekSkeleton({ label }: { readonly label: string }) {
 }
 
 // Request-time: reads searchParams and the clock. The header and the weeks both need them.
+// The proxy turns the period of the address (`/it/2026-11-09`) into `week` and `weeks`.
 async function loadRange(searchParams: SearchParams) {
   const params = await searchParams;
 
   // The clock is request data: without this Next flags `new Date()` as unstable at prerender.
   await connection();
   const today = todayInRome(new Date());
+  const week = first(params.week);
+  const picked = week ? parsePeriod(week, first(params.weeks) ?? null, today) : null;
 
   return {
     today,
     todayMonday: mondayOf(today),
-    range: parseRange(first(params.from), first(params.to), today),
+    range: picked ?? defaultRange(today),
+    /** Whether the address names a period; without one the links stay on the bare page. */
+    picked: picked !== null,
     country: parseCountry(first(params.country)) ?? DEFAULT_COUNTRY,
   };
 }
@@ -78,11 +84,12 @@ async function HeaderTabs({ searchParams }: { readonly searchParams: SearchParam
   return <WeekTabs range={range} todayMonday={todayMonday} today={today} country={country} />;
 }
 
-// Streams into the country slot of the header; switching keeps the range on screen.
+// Streams into the country slot of the header; switching keeps the period on screen.
 async function HeaderCountry({ searchParams }: { readonly searchParams: SearchParams }) {
-  const { range, country } = await loadRange(searchParams);
+  const { range, picked, country } = await loadRange(searchParams);
+  const { pathname, query } = picked ? periodHref(range) : { pathname: "/", query: {} };
 
-  return <CountryPicker country={country} pathname="/" range={range} />;
+  return <CountryPicker country={country} pathname={pathname} query={query} />;
 }
 
 // Streams into the page: one section per week. Paging happens in the navbar.
@@ -102,7 +109,6 @@ async function Weeks({ locale, searchParams }: { locale: UiLocale; searchParams:
           todayMonday={todayMonday}
           today={today}
           eager={index === 0}
-          range={range}
           country={country}
         />
       ))}
@@ -111,7 +117,7 @@ async function Weeks({ locale, searchParams }: { locale: UiLocale; searchParams:
 }
 
 /**
- * Release list page: the navbar with the week tabs, then the weeks stream in from the URL range.
+ * Release list page: the navbar with the week tabs, then the weeks of the period stream in.
  * @param props Route props.
  * @returns Header and releases grouped by week.
  */

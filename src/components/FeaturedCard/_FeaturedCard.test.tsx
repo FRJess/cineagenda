@@ -17,19 +17,10 @@ describe("FeaturedCard", () => {
     expect(screen.getByRole("link")).toHaveAttribute("href", "/film/42?country=it");
   });
 
-  it("passes the range of the list to the film page, for its back link", () => {
-    renderWithIntl(
-      <FeaturedCard
-        country="IT"
-        movie={movie({ id: 42 })}
-        range={{ from: "2026-11-16", to: "2026-11-29" }}
-      />,
-    );
+  it("links to the film page with the country of the list", () => {
+    renderWithIntl(<FeaturedCard country="IT" movie={movie({ id: 42 })} />);
 
-    expect(screen.getByRole("link")).toHaveAttribute(
-      "href",
-      "/film/42?country=it&from=2026-11-16&to=2026-11-29",
-    );
+    expect(screen.getByRole("link")).toHaveAttribute("href", "/film/42?country=it");
   });
 
   it("prints the eyebrow, then the title, then the date line", () => {

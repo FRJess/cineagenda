@@ -38,14 +38,18 @@ test("an unknown film answers 404 with the film service page", async ({ page }) 
   );
 });
 
-for (const query of [
-  "from=9999-01-01",
-  "from=abc",
-  "from=2025-01-01&to=2025-02-01",
-  "from=2026-11-02&to=9999-01-01",
+for (const address of [
+  "/it/9999-01-01",
+  "/it/2025-01-01",
+  "/it/2026-13-45",
+  "/it/2030-01",
+  "/it/2026-11-09?weeks=9",
+  "/it?from=9999-01-01",
+  "/it?from=abc",
+  "/it?from=2026-11-02&to=9999-01-01",
 ]) {
-  test(`dates the calendar cannot reach answer 404: ${query}`, async ({ page }) => {
-    const response = await page.goto(`/it?${query}`);
+  test(`dates the calendar cannot reach answer 404: ${address}`, async ({ page }) => {
+    const response = await page.goto(address);
 
     expect(response?.status()).toBe(404);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(
@@ -54,13 +58,23 @@ for (const query of [
   });
 }
 
-test("the film page answers 404 for dates the calendar cannot reach", async ({ page }) => {
-  const response = await page.goto("/en/film/62?from=9999-01-01");
+for (const [address, canonical] of [
+  ["/it/2026-11-11", "/it/2026-11-09"],
+  ["/en/2026-11-09?weeks=1", "/en/2026-11-09"],
+  ["/it/2026-11-30?weeks=5&country=fr", "/it/2026-12?country=fr"],
+  ["/it?country=fr&from=2026-11-09&to=2026-11-29", "/it/2026-11-09?country=fr&weeks=3"],
+] as const) {
+  test(`a period has one address: ${address}`, async ({ page, baseURL }) => {
+    await page.goto(address);
 
-  expect(response?.status()).toBe(404);
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "This page is not in the listings.",
-  );
+    await expect(page).toHaveURL(baseURL + canonical);
+  });
+}
+
+test("a month address shows the weeks of that month", async ({ page }) => {
+  await page.goto("/it/2026-12");
+
+  await expect(page.getByRole("region").getByRole("heading", { level: 2 })).toHaveCount(5);
 });
 
 test("pages send the security headers", async ({ page }) => {

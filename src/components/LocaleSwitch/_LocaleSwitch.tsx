@@ -10,7 +10,7 @@ import "./_LocaleSwitch.css";
 type Query = Readonly<Record<string, string>>;
 
 /** The only params a locale link carries; anything else in the URL is dropped. */
-const KEPT_PARAMS = ["country", "from", "to"] as const;
+const KEPT_PARAMS = ["country", "weeks"] as const;
 
 const CODE_KEY = { it: "itCode", en: "enCode", fr: "frCode" } as const;
 
@@ -41,7 +41,7 @@ function Links({ query }: { readonly query: Query }) {
   );
 }
 
-// Reads the query so changing language keeps the country and the dates.
+// Reads the query so changing language keeps the country and the weeks; the path holds the date.
 function LinksWithQuery() {
   const params = useSearchParams();
   const query = Object.fromEntries(

@@ -17,7 +17,7 @@ A single Next.js 16 App Router app with Cache Components. There is no database a
 - **Data source:** The Movie Database (TMDB) API v3, called only from the server with a v4 read token. Per week: one `discover/movie` query filtered on `region=IT`, then one details call per film with its release dates and translations. Per film page: one details call with credits and videos.
 - **Data rules** (`src/lib/tmdb`, `src/lib/releases`): the Italian date is the type 3 (theatrical) entry inside the week, else type 2 (limited); other types never show. Festival and event entries are dropped. The display title is the Italian title with the original in parentheses, or the original with the English title when there is no Italian one. Weeks run Monday to Sunday in Europe/Rome.
 - **Caching:** each week and each film page is a `"use cache"` function with a daily lifetime (weekly for past weeks), so TMDB is called at most once a day per week or film.
-- **Routing:** `/it` and `/en` via next-intl; `/` redirects to `/it`. The list range lives in the URL (`?from=YYYY-MM-DD&to=YYYY-MM-DD`). Film pages are `/[locale]/film/[id]`.
+- **Routing:** `/it` and `/en` via next-intl; `/` redirects to `/it`. The list period lives in the path: `/it/2026-11-09` is the week of that Monday (`?weeks=3` for several weeks) and `/it/2026-12` a month; `?country=fr` picks the country and is always written. The proxy redirects any other spelling of a period to that one address and serves it from the list page. Film pages are `/[locale]/film/[id]?country=fr`.
 - **Styling:** plain CSS, one file per component plus `src/app/globals.css`, element and `[data-part]` selectors only. No CSS classes, no inline styles, no CSS-in-JS.
 
 ## Prerequisites

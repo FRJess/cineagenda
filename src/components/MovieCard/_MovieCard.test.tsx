@@ -32,19 +32,10 @@ describe("MovieCard", () => {
     expect(screen.getByRole("link")).toHaveAttribute("href", "/film/42?country=it");
   });
 
-  it("passes the range of the list to the film page, for its back link", () => {
-    renderWithIntl(
-      <MovieCard
-        country="IT"
-        movie={movie({ id: 42 })}
-        range={{ from: "2026-11-16", to: "2026-11-29" }}
-      />,
-    );
+  it("links to the film page with the country of the list", () => {
+    renderWithIntl(<MovieCard country="IT" movie={movie({ id: 42 })} />);
 
-    expect(screen.getByRole("link")).toHaveAttribute(
-      "href",
-      "/film/42?country=it&from=2026-11-16&to=2026-11-29",
-    );
+    expect(screen.getByRole("link")).toHaveAttribute("href", "/film/42?country=it");
   });
 
   it("renders the title as a level-3 heading", () => {

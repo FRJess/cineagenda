@@ -5,9 +5,6 @@ import { Link } from "@/i18n/navigation";
 import { COUNTRIES, type Country, countryQuery } from "@/lib/country";
 import "./_CountryPicker.css";
 
-/** Raw list range carried by the country links, so switching keeps the weeks on screen. */
-type RangeQuery = { readonly from: string; readonly to: string };
-
 /** Decorative flag next to the country name; the name always carries the meaning. */
 function Flag({ country }: { readonly country: Country }) {
   // SVGs need no resizing, so the optimizer is skipped.
@@ -18,18 +15,18 @@ function Flag({ country }: { readonly country: Country }) {
 
 /**
  * Country of the releases, top right of the navbar: a filled button with flag and name that opens
- * a menu with one plain link per country. The links keep the page and the list range.
- * @param props Chosen country, the path the links point to, and the list range to keep.
+ * a menu with one plain link per country. The links keep the page and its period.
+ * @param props Chosen country, the path the links point to, and the query they keep with it.
  * @returns Disclosure button and, while open, the menu.
  */
 export function CountryPicker({
   country,
   pathname,
-  range,
+  query,
 }: {
   readonly country: Country;
   readonly pathname: string;
-  readonly range?: RangeQuery;
+  readonly query?: Readonly<Record<string, string>>;
 }) {
   const t = useTranslations("Country");
   const locale = useLocale();
@@ -54,7 +51,7 @@ export function CountryPicker({
           {COUNTRIES.map((code) => (
             <li key={code}>
               <Link
-                href={{ pathname, query: { ...countryQuery(code), ...range } }}
+                href={{ pathname, query: { ...countryQuery(code), ...query } }}
                 aria-current={code === country ? "true" : undefined}
               >
                 <Flag country={code} />

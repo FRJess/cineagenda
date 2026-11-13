@@ -2,12 +2,12 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
 test("a country in the URL lists its releases and the week tabs keep it", async ({ page }) => {
-  await page.goto("/it?country=fr&from=2026-11-09&to=2026-11-15");
+  await page.goto("/it/2026-11-09?country=fr");
 
   await expect(page.locator("article").first()).toBeVisible();
   await expect(
     page.getByRole("navigation", { name: "Settimane", exact: true }).getByRole("link").first(),
-  ).toHaveAttribute("href", /^\/it\?country=fr&/);
+  ).toHaveAttribute("href", /^\/it\/\d{4}-\d{2}-\d{2}\?country=fr$/);
 });
 
 test("the last country chosen comes back on a URL without one", async ({ page }) => {
@@ -28,22 +28,22 @@ test("a card opens the film page in the same country", async ({ page }) => {
   await page.goto("/it?country=fr");
   await page.locator("article a").first().click();
 
-  await expect(page).toHaveURL(/\/it\/film\/\d+\?country=fr&/);
+  await expect(page).toHaveURL(/\/it\/film\/\d+\?country=fr$/);
   await expect(page.getByRole("link", { name: "Tutte le uscite" })).toHaveAttribute(
     "href",
-    /^\/it\?country=fr&/,
+    /^\/it\/\d{4}-\d{2}-\d{2}\?country=fr$/,
   );
 });
 
 test("picking a country from the menu keeps the weeks on screen", async ({ page }) => {
-  await page.goto("/it?country=it&from=2026-11-09&to=2026-11-15");
+  await page.goto("/it/2026-11-09");
   await page.locator("[data-part='country-picker'] > button").click();
   await page
     .getByRole("list", { name: "Uscite al cinema in" })
     .getByRole("link", { name: "Francia" })
     .click();
 
-  await expect(page).toHaveURL(/\/it\?country=fr&from=2026-11-09&to=2026-11-15$/);
+  await expect(page).toHaveURL(/\/it\/2026-11-09\?country=fr$/);
   await expect(page.locator("[data-part='country-picker'] > button")).toHaveAccessibleName(
     "Paese delle uscite: Francia",
   );
@@ -96,13 +96,13 @@ test("the French UI keeps the chosen country and dates when switching language",
   page,
 }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.goto("/it?country=us&from=2026-11-09&to=2026-11-15");
+  await page.goto("/it/2026-11-09?country=us");
   await page
     .locator("[data-part='site-footer']")
     .getByRole("link", { name: /Français/ })
     .click();
 
-  await expect(page).toHaveURL(/\/fr\?country=us&from=2026-11-09&to=2026-11-15$/);
+  await expect(page).toHaveURL(/\/fr\/2026-11-09\?country=us$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "fr");
   await expect(page.getByRole("navigation", { name: "Semaines", exact: true })).toBeVisible();
   await expect(page).toHaveTitle("Sorties au cinéma aux États-Unis · Cineagenda");
@@ -114,9 +114,9 @@ test("the French UI keeps the chosen country and dates when switching language",
 
 test("switching country on a film page goes back to the list of that country", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.goto("/it/film/372058?country=it&from=2026-11-23&to=2026-11-29");
+  await page.goto("/it/film/372058?country=it");
   await page.locator("[data-part='country-picker'] > button:visible").click();
   await page.getByRole("link", { name: "Francia" }).click();
 
-  await expect(page).toHaveURL(/\/it\?country=fr&from=2026-11-23&to=2026-11-29$/);
+  await expect(page).toHaveURL(/\/it\?country=fr$/);
 });

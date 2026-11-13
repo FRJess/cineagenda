@@ -54,29 +54,29 @@ test("default view shows only the current week", async ({ page }) => {
 });
 
 test("a later week tab shows only that week", async ({ page }) => {
-  await page.goto("/it?from=2026-11-02&to=2026-11-15");
+  await page.goto("/it/2026-11-02?weeks=2");
   await page
     .getByRole("navigation", { name: "Settimane", exact: true })
     .getByRole("link", { name: /^16 nov/ })
     .click();
 
-  await expect(page).toHaveURL(/from=2026-11-16&to=2026-11-22$/);
+  await expect(page).toHaveURL(/\/2026-11-16\?country=it$/);
   await expect(page.getByRole("region")).toHaveCount(1);
 });
 
 test("the week tabs start at the first week of the range", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.goto("/it?from=2026-11-09&to=2026-11-15");
+  await page.goto("/it/2026-11-09");
   const tabs = page.getByRole("navigation", { name: "Settimane", exact: true });
 
   await expect(tabs.locator(":scope > ul > li > a").first()).toHaveAttribute(
     "href",
-    /from=2026-11-09&to=2026-11-15$/,
+    /\/2026-11-09\?country=it$/,
   );
 });
 
 test("the URL range selects the weeks shown", async ({ page }) => {
-  await page.goto("/it?from=2026-01-05&to=2026-01-18");
+  await page.goto("/it/2026-01-05?weeks=2");
 
   const headings = page.getByRole("region").getByRole("heading", { level: 2 });
   await expect(headings).toHaveCount(2);
@@ -88,7 +88,7 @@ test("the URL range selects the weeks shown", async ({ page }) => {
 });
 
 test("the range can start in the week of 2026-01-01, the first one", async ({ page }) => {
-  await page.goto("/it?from=2025-12-29&to=2026-01-04");
+  await page.goto("/it/2025-12-29");
 
   await expect(
     page.getByRole("navigation", { name: "Settimane", exact: true }).getByRole("link"),
@@ -99,14 +99,14 @@ test("the range can start in the week of 2026-01-01, the first one", async ({ pa
 
 test("the week tabs show and mark every week of a picked range", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.goto("/it?from=2026-11-02&to=2026-11-22");
+  await page.goto("/it/2026-11-02?weeks=3");
   const tabs = page.getByRole("navigation", { name: "Settimane", exact: true });
   const current = tabs.locator("a[aria-current='true']");
 
   await expect(tabs.locator(":scope > ul > li > a")).toHaveCount(4);
   await expect(current).toHaveCount(3);
-  await expect(current.first()).toHaveAttribute("href", /from=2026-11-02&to=2026-11-08$/);
-  await expect(current.last()).toHaveAttribute("href", /from=2026-11-16&to=2026-11-22$/);
+  await expect(current.first()).toHaveAttribute("href", /\/2026-11-02\?country=it$/);
+  await expect(current.last()).toHaveAttribute("href", /\/2026-11-16\?country=it$/);
 });
 
 test("Italian page lists releases grouped by week", async ({ page }) => {
@@ -195,7 +195,7 @@ test.describe("dark mode", () => {
 
 test("the date popover shows the calendar and picks a new range", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
-  await page.goto("/it?from=2026-11-02&to=2026-11-15");
+  await page.goto("/it/2026-11-02?weeks=2");
   await page.getByText("Date", { exact: true }).click();
   const calendar = page.getByLabel("Calendario", { exact: true });
   const dayButton = (isoDate: string) =>
@@ -209,12 +209,12 @@ test("the date popover shows the calendar and picks a new range", async ({ page 
   await expect(page.locator("input[name='to']")).toHaveValue("2026-11-29");
   await page.getByRole("button", { name: "Mostra 3 settimane" }).click();
 
-  await expect(page).toHaveURL(/from=2026-11-09&to=2026-11-29/);
+  await expect(page).toHaveURL(/\/it\/2026-11-09\?country=it&weeks=3$/);
   await expect(page.getByRole("region")).toHaveCount(3);
 });
 
 test("a shortcut chip selects its weeks and leaves the date popover open", async ({ page }) => {
-  await page.goto("/it?from=2026-11-02&to=2026-11-15");
+  await page.goto("/it/2026-11-02?weeks=2");
   await page.getByText("Date", { exact: true }).click();
   const chip = page
     .getByRole("list", { name: "Scorciatoie" })
@@ -226,12 +226,12 @@ test("a shortcut chip selects its weeks and leaves the date popover open", async
     "aria-expanded",
     "true",
   );
-  await expect(page).toHaveURL(/from=2026-11-02&to=2026-11-15/);
+  await expect(page).toHaveURL(/\/2026-11-02\?weeks=2/);
 
   // The chips follow the real date, so only the change of range is checked.
   await page.getByRole("button", { name: "Mostra 1 settimana" }).click();
-  await expect(page).not.toHaveURL(/from=2026-11-02&to=2026-11-15/);
-  await expect(page).toHaveURL(/from=\d{4}-\d{2}-\d{2}&to=\d{4}-\d{2}-\d{2}/);
+  await expect(page).not.toHaveURL(/\/2026-11-02\?weeks=2/);
+  await expect(page).toHaveURL(/\/it\/\d{4}-\d{2}-\d{2}\?country=it$/);
 });
 
 for (const width of [360, 1280]) {
@@ -239,7 +239,7 @@ for (const width of [360, 1280]) {
     page,
   }) => {
     await page.setViewportSize({ width, height: 700 });
-    await page.goto("/it?from=2026-11-09&to=2026-11-22");
+    await page.goto("/it/2026-11-09?weeks=2");
     const heading = page.locator("[data-part='week-section'] > header").first();
     await page.locator("ol article").first().waitFor();
     await page.mouse.wheel(0, 500);
@@ -260,7 +260,7 @@ for (const width of [360, 1280]) {
 
 test("the period button opens the date popover with one month on phones", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/it?from=2026-11-02&to=2026-11-15");
+  await page.goto("/it/2026-11-02?weeks=2");
   await page.locator("[data-part='period']").click();
 
   await expect(page.getByLabel("Calendario", { exact: true }).getByRole("grid")).toHaveCount(1);
@@ -268,7 +268,7 @@ test("the period button opens the date popover with one month on phones", async 
 
 test("on a 360px phone the period bar replaces the week tabs", async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 760 });
-  await page.goto("/it?country=it&from=2026-11-16&to=2026-11-22");
+  await page.goto("/it/2026-11-16");
   const nav = page.getByRole("navigation", { name: "Settimane", exact: true });
 
   await expect(nav.locator(":scope > ul")).toBeHidden();
@@ -276,7 +276,7 @@ test("on a 360px phone the period bar replaces the week tabs", async ({ page }) 
   await expect(nav.locator("[data-part='period']")).toBeVisible();
   await expect(nav.getByRole("link", { name: "Periodo successivo" })).toHaveAttribute(
     "href",
-    /country=it&from=2026-11-23&to=2026-11-29$/,
+    /\/2026-11-23\?country=it$/,
   );
   await expect(page.locator("[data-part='country-picker'] > button")).toHaveAccessibleName(
     "Paese delle uscite: Italia",
@@ -294,12 +294,12 @@ test("from 48rem the week tabs show and the period bar does not", async ({ page 
 
 test("from 48rem a previous-period arrow sits before the week tabs", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.goto("/it?country=it&from=2026-11-09&to=2026-11-15");
+  await page.goto("/it/2026-11-09");
   const nav = page.getByRole("navigation", { name: "Settimane", exact: true });
   const previous = nav.getByRole("link", { name: "Periodo precedente" });
 
   await expect(previous).toBeVisible();
-  await expect(previous).toHaveAttribute("href", /country=it&from=2026-11-02&to=2026-11-08$/);
+  await expect(previous).toHaveAttribute("href", /\/2026-11-02\?country=it$/);
   const arrow = await previous.boundingBox();
   const firstTab = await nav.locator(":scope > ul > li > a").first().boundingBox();
   expect(arrow!.x + arrow!.width).toBeLessThanOrEqual(firstTab!.x);
@@ -307,12 +307,12 @@ test("from 48rem a previous-period arrow sits before the week tabs", async ({ pa
 
 test("from 48rem a next-period arrow follows the week tabs", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.goto("/it?country=it&from=2026-11-09&to=2026-11-15");
+  await page.goto("/it/2026-11-09");
   const nav = page.getByRole("navigation", { name: "Settimane", exact: true });
   const next = nav.getByRole("link", { name: "Periodo successivo" });
 
   await expect(next).toBeVisible();
-  await expect(next).toHaveAttribute("href", /country=it&from=2026-11-16&to=2026-11-22$/);
+  await expect(next).toHaveAttribute("href", /\/2026-11-16\?country=it$/);
   const arrow = await next.boundingBox();
   const lastTab = await nav.locator(":scope > ul > li:visible > a").last().boundingBox();
   expect(arrow!.x).toBeGreaterThanOrEqual(lastTab!.x + lastTab!.width);
@@ -322,7 +322,7 @@ for (const colorScheme of ["light", "dark"] as const) {
   test(`the open date popover has no WCAG 2.2 AA violations (${colorScheme})`, async ({ page }) => {
     await page.emulateMedia({ colorScheme });
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/it?from=2026-11-02&to=2026-11-15");
+    await page.goto("/it/2026-11-02?weeks=2");
     await page.getByText("Date", { exact: true }).click();
     await page.locator("[data-part='week-range'] [role='grid']").first().waitFor();
     const results = await new AxeBuilder({ page })

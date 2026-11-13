@@ -5,6 +5,7 @@ import { Link } from "@/i18n/navigation";
 import { type Country, countryQuery } from "@/lib/country";
 import { formatDateRange } from "@/lib/releases/date-range";
 import { DAY_MONTH_SHORT, isoDateToUtc } from "@/lib/releases/iso-date";
+import { periodHref } from "@/lib/releases/period";
 import {
   addDays,
   maxDate,
@@ -61,7 +62,11 @@ export function WeekTabs({
   const format = useFormatter();
   const locale = useLocale();
   const short = (isoDate: string) => format.dateTime(isoDateToUtc(isoDate), DAY_MONTH_SHORT);
-  const query = (window: ReleaseWindow) => ({ ...countryQuery(country), ...window });
+  const href = (window: ReleaseWindow) => {
+    const { pathname, query } = periodHref(window);
+
+    return { pathname, query: { ...countryQuery(country), ...query } };
+  };
   const weeks = weeksBetween(range).length;
   // The phone bar never shows the year: the week titles below do.
   const period = formatDateRange(locale, range.from, range.to, {
@@ -83,7 +88,7 @@ export function WeekTabs({
     <nav aria-label={t("weekTabs")} data-part="week-tabs">
       {hasPrevious && (
         <Link
-          href={{ pathname: "/", query: query(shiftRange(range, -1)) }}
+          href={href(shiftRange(range, -1))}
           aria-label={t("previousPeriod")}
           data-part="step-previous"
         />
@@ -94,7 +99,7 @@ export function WeekTabs({
           .map((monday) => (
             <li key={monday}>
               <Link
-                href={{ pathname: "/", query: query(pageRange(monday)) }}
+                href={href(pageRange(monday))}
                 // Every week of the range is current; "true", since a set can have several.
                 aria-current={monday >= range.from && monday <= range.to ? "true" : undefined}
               >
@@ -107,11 +112,7 @@ export function WeekTabs({
           ))}
       </ul>
       {next.to <= lastDay && (
-        <Link
-          href={{ pathname: "/", query: query(next) }}
-          aria-label={t("nextPeriod")}
-          data-part="step-next"
-        />
+        <Link href={href(next)} aria-label={t("nextPeriod")} data-part="step-next" />
       )}
       <DatePicker
         summary={
