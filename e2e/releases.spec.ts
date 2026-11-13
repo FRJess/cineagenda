@@ -87,8 +87,8 @@ test("the URL range selects the weeks shown", async ({ page }) => {
   await expect(page.locator("input[name='to']")).toHaveValue("2026-01-18");
 });
 
-test("the range cannot start before the week of 2026-01-01", async ({ page }) => {
-  await page.goto("/it?from=2025-01-01&to=2025-02-01");
+test("the range can start in the week of 2026-01-01, the first one", async ({ page }) => {
+  await page.goto("/it?from=2025-12-29&to=2026-01-04");
 
   await expect(
     page.getByRole("navigation", { name: "Settimane", exact: true }).getByRole("link"),
@@ -243,9 +243,7 @@ for (const width of [360, 1280]) {
     const heading = page.locator("[data-part='week-section'] > header").first();
     await page.locator("ol article").first().waitFor();
     await page.mouse.wheel(0, 500);
-    await expect
-      .poll(() => page.evaluate(() => window.scrollY))
-      .toBeGreaterThan(400);
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(400);
 
     const navbarBottom = await page
       .locator("[data-part='site-header']")

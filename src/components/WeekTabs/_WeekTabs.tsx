@@ -7,6 +7,7 @@ import { formatDateRange } from "@/lib/releases/date-range";
 import { DAY_MONTH_SHORT, isoDateToUtc } from "@/lib/releases/iso-date";
 import {
   addDays,
+  maxDate,
   MIN_DATE,
   mondayOf,
   pageRange,
@@ -75,6 +76,8 @@ export function WeekTabs({
         ? t("periodThisWeek")
         : t("periodFromThisWeek");
   const hasPrevious = range.from > mondayOf(MIN_DATE);
+  const lastDay = maxDate(today);
+  const next = shiftRange(range, 1);
 
   return (
     <nav aria-label={t("weekTabs")} data-part="week-tabs">
@@ -86,26 +89,30 @@ export function WeekTabs({
         />
       )}
       <ul>
-        {tabWeeks(range).map((monday) => (
-          <li key={monday}>
-            <Link
-              href={{ pathname: "/", query: query(pageRange(monday)) }}
-              // Every week of the range is current; "true", since a set can have several.
-              aria-current={monday >= range.from && monday <= range.to ? "true" : undefined}
-            >
-              <b>{short(monday)}</b>
-              <small>
-                {monday === todayMonday ? t("thisWeekShort") : short(addDays(monday, 6))}
-              </small>
-            </Link>
-          </li>
-        ))}
+        {tabWeeks(range)
+          .filter((monday) => monday <= lastDay)
+          .map((monday) => (
+            <li key={monday}>
+              <Link
+                href={{ pathname: "/", query: query(pageRange(monday)) }}
+                // Every week of the range is current; "true", since a set can have several.
+                aria-current={monday >= range.from && monday <= range.to ? "true" : undefined}
+              >
+                <b>{short(monday)}</b>
+                <small>
+                  {monday === todayMonday ? t("thisWeekShort") : short(addDays(monday, 6))}
+                </small>
+              </Link>
+            </li>
+          ))}
       </ul>
-      <Link
-        href={{ pathname: "/", query: query(shiftRange(range, 1)) }}
-        aria-label={t("nextPeriod")}
-        data-part="step-next"
-      />
+      {next.to <= lastDay && (
+        <Link
+          href={{ pathname: "/", query: query(next) }}
+          aria-label={t("nextPeriod")}
+          data-part="step-next"
+        />
+      )}
       <DatePicker
         summary={
           <>

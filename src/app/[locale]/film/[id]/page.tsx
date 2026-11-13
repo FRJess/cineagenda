@@ -9,7 +9,7 @@ import { CountryPicker } from "@/components/CountryPicker";
 import { SiteHeader } from "@/components/SiteHeader";
 import { routing } from "@/i18n/routing";
 import { type Country, DEFAULT_COUNTRY, parseCountry } from "@/lib/country";
-import { parseRange, todayInRome } from "@/lib/releases/window";
+import { isValidIsoDate, parseRange, todayInRome } from "@/lib/releases/window";
 import { getMovieDetails } from "@/lib/tmdb/cached";
 import type { MovieDetails } from "@/lib/tmdb/movie-details";
 import type { UiLocale } from "@/lib/tmdb/to-movie";
@@ -114,7 +114,7 @@ export default async function FilmPage({ params, searchParams }: PageProps<"/[lo
           <CountryPicker
             country={loaded.country}
             pathname="/"
-            range={from && to ? { from, to } : undefined}
+            range={isValidIsoDate(from) && isValidIsoDate(to) ? { from, to } : undefined}
           />
         }
       />

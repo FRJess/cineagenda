@@ -38,6 +38,42 @@ test("an unknown film answers 404 with the film service page", async ({ page }) 
   );
 });
 
+for (const query of [
+  "from=9999-01-01",
+  "from=abc",
+  "from=2025-01-01&to=2025-02-01",
+  "from=2026-11-02&to=9999-01-01",
+]) {
+  test(`dates the calendar cannot reach answer 404: ${query}`, async ({ page }) => {
+    const response = await page.goto(`/it?${query}`);
+
+    expect(response?.status()).toBe(404);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+      "Questa pagina non è in cartellone.",
+    );
+  });
+}
+
+test("the film page answers 404 for dates the calendar cannot reach", async ({ page }) => {
+  const response = await page.goto("/en/film/62?from=9999-01-01");
+
+  expect(response?.status()).toBe(404);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "This page is not in the listings.",
+  );
+});
+
+test("pages send the security headers", async ({ page }) => {
+  const response = await page.goto("/it");
+  const headers = response?.headers() ?? {};
+
+  expect(headers["content-security-policy"]).toContain("frame-ancestors 'none'");
+  expect(headers["x-content-type-options"]).toBe("nosniff");
+  expect(headers["x-frame-options"]).toBe("DENY");
+  expect(headers["referrer-policy"]).toBe("strict-origin-when-cross-origin");
+  expect(headers["x-powered-by"]).toBeUndefined();
+});
+
 for (const colorScheme of ["light", "dark"] as const) {
   test.describe(`${colorScheme} mode`, () => {
     test.use({ colorScheme });
