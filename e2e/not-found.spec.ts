@@ -88,6 +88,25 @@ test("pages send the security headers", async ({ page }) => {
   expect(headers["x-powered-by"]).toBeUndefined();
 });
 
+for (const [width, minPoster] of [
+  [360, 160],
+  [1280, 240],
+] as const) {
+  test(`at ${width}px the poster is at least ${minPoster}px wide and holds its code`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 800 });
+    await page.goto("/fr/introuvable");
+    await page.evaluate(() => document.fonts.ready);
+    const poster = (await page.locator("[data-part='nf-poster']").boundingBox())!;
+    const code = (await page.locator("[data-part='nf-poster'] b").boundingBox())!;
+
+    expect(poster.width).toBeGreaterThanOrEqual(minPoster);
+    expect(code.x).toBeGreaterThanOrEqual(poster.x);
+    expect(code.x + code.width).toBeLessThanOrEqual(poster.x + poster.width);
+  });
+}
+
 for (const colorScheme of ["light", "dark"] as const) {
   test.describe(`${colorScheme} mode`, () => {
     test.use({ colorScheme });
