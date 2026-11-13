@@ -36,18 +36,18 @@
   --foreground: #101018;
   --muted: #5d5e70;
   --border: #d3d3dd;
-  --accent: #e8321a;
-  --accent-soft: #ffb3a6;
-  /* Accent for small text and filled buttons: #e8321a misses WCAG AA on light surfaces (3.6:1);
-     this passes 4.85:1 on --background and 5.7:1 under white text. */
-  --accent-strong: #c42913;
-  /* Genre pills: a label, not a button. Dark red on the card-date pink, 6.2:1. */
-  --chip-fg: #7a1a0b;
-  --chip-bg: #ffb3a6;
+  --accent: #e6544c;
+  --accent-soft: #fcb5b1;
+  /* Accent for small text and filled buttons: --accent (#e6544c) passes only 3:1 on light
+     surfaces (3.1:1); this passes 4.66:1 on --background and 5.48:1 under white text. */
+  --accent-strong: #c03730;
+  /* Genre pills: a label, not a button. Dark grapefruit on the card-date pink, 5.86:1. */
+  --chip-fg: #7f1f1a;
+  --chip-bg: #fcb5b1;
   --on-accent: #ffffff;
   --tab-bg: #101018;
   --tab-fg: #ffffff;
-  --tab-muted: #ff8a73;
+  --tab-muted: #f76b64;
   --font-display: "Syne", system-ui, sans-serif;
   --font-text: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --space-1: 0.25rem;
@@ -69,14 +69,14 @@
     --foreground: #f1f0f5;
     --muted: #9b9bb0;
     --border: #2b2b38;
-    --accent: #ff6a4d;
-    --accent-strong: #ff6a4d;
-    --chip-fg: #ffb3a6;
-    --chip-bg: #4d2c2d;
+    --accent: #f76b64;
+    --accent-strong: #f76b64;
+    --chip-fg: #fcb5b1;
+    --chip-bg: #462b2a;
     --on-accent: #121218;
     --tab-bg: #f1f0f5;
     --tab-fg: #121218;
-    --tab-muted: #c42913;
+    --tab-muted: #c03730;
     --poster-shadow: 0 1px 2px rgb(0 0 0 / 0.5), 0 10px 28px rgb(0 0 0 / 0.55);
   }
 }
@@ -87,14 +87,14 @@
   --foreground: #f1f0f5;
   --muted: #9b9bb0;
   --border: #2b2b38;
-  --accent: #ff6a4d;
-  --accent-strong: #ff6a4d;
-  --chip-fg: #ffb3a6;
-  --chip-bg: #4d2c2d;
+  --accent: #f76b64;
+  --accent-strong: #f76b64;
+  --chip-fg: #fcb5b1;
+  --chip-bg: #462b2a;
   --on-accent: #121218;
   --tab-bg: #f1f0f5;
   --tab-fg: #121218;
-  --tab-muted: #c42913;
+  --tab-muted: #c03730;
   --poster-shadow: 0 1px 2px rgb(0 0 0 / 0.5), 0 10px 28px rgb(0 0 0 / 0.55);
   color-scheme: dark;
 }

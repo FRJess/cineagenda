@@ -87,7 +87,7 @@ describe("text over a film image under the veil", () => {
   // docs/DESIGN.md "Text on images": a black veil of at least 0.7 over a white image.
   const backdrop = veiledWhite(0.7);
 
-  it.each(["#ffffff", "#d9d9e3", "#ffb3a6"])("passes 4.5:1 for %s", (color) => {
+  it.each(["#ffffff", "#d9d9e3", "#fcb5b1"])("passes 4.5:1 for %s", (color) => {
     expect(ratio(color, backdrop)).toBeGreaterThanOrEqual(4.5);
   });
 
