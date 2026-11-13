@@ -117,11 +117,12 @@
 
 /* ─── "Limitata": text at the end of the date line, after a dot ─── */
 
+/* White text, not the date's pink, so the two read apart; the dot keeps the date's pink. */
 [data-part="movie-card"] [data-part="card-text"] [data-release="limited"] {
-  font-size: 0.6rem;
+  font-size: 0.65rem;
   letter-spacing: 0.08em;
   white-space: nowrap;
-  color: #fcb5b1;
+  color: #fff;
 }
 
 [data-part="movie-card"] [data-part="card-text"] [data-release="limited"]::before {
@@ -131,26 +132,19 @@
   margin-right: var(--space-1);
   vertical-align: 1px;
   content: "";
-  background: currentColor;
+  background: var(--accent-soft);
   border-radius: 50%;
 }
 
-/* ─── No poster: the band stays on the surface, in the theme's ink ─── */
+/* ─── No poster: same band as the others, on a solid dark ground since there is nothing to blur ─── */
 
+/* The text colors are the band's own; only the ground differs, and the veil is not needed on it. */
 [data-part="movie-card"]:has([data-part="poster-placeholder"]) [data-part="card-text"] {
-  color: var(--foreground);
+  background: #101018;
 }
 
 [data-part="movie-card"]:has([data-part="poster-placeholder"]) [data-part="card-text"]::after {
   display: none;
-}
-
-[data-part="movie-card"]:has([data-part="poster-placeholder"]) [data-part="card-text"] > p {
-  color: var(--muted);
-}
-
-[data-part="movie-card"]:has([data-part="poster-placeholder"]) [data-release="limited"] {
-  color: var(--accent-strong);
 }
 
 @media (min-width: 48rem) {
