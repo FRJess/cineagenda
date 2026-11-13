@@ -10,10 +10,14 @@ vi.mock("@/i18n/navigation", () => ({
     href,
   }: {
     children: React.ReactNode;
-    href: string | { pathname: string; query: Record<string, string> };
+    href: string | { pathname: string; query?: Record<string, string> };
   }) => (
     <a
-      href={typeof href === "string" ? href : `${href.pathname}?${new URLSearchParams(href.query)}`}
+      href={
+        typeof href === "string"
+          ? href
+          : [href.pathname, String(new URLSearchParams(href.query))].filter(Boolean).join("?")
+      }
     >
       {children}
     </a>
@@ -51,13 +55,12 @@ const TODAY = "2026-11-09";
 
 const renderFilm = (
   overrides: Partial<MovieDetails> = {},
-  extra: { today?: string; range?: { from: string; to: string }; country?: "IT" | "FR" } = {},
+  extra: { today?: string; country?: "IT" | "FR" } = {},
 ) =>
   renderWithIntl(
     <FilmDetail
       film={{ ...film, ...overrides }}
       today={extra.today ?? TODAY}
-      range={extra.range}
       country={extra.country ?? "IT"}
     />,
   );
@@ -156,15 +159,18 @@ describe("FilmDetail", () => {
     expect(container.querySelector("[data-part='film-director']")).toBeNull();
   });
 
-  it("links back to the release list, keeping the range the film was opened from", () => {
-    const withRange = renderFilm({}, { range: { from: "2026-11-16", to: "2026-11-29" } });
+  it("links back to the week the film comes out in", () => {
+    renderFilm();
+
     expect(screen.getByRole("link", { name: "Tutte le uscite" })).toHaveAttribute(
       "href",
-      "/?country=it&from=2026-11-16&to=2026-11-29",
+      "/2026-11-09?country=it",
     );
-    withRange.unmount();
+  });
 
-    renderFilm();
+  it("links back to the bare list for a release beyond the calendar", () => {
+    renderFilm({ releaseDate: "2031-05-01" });
+
     expect(screen.getByRole("link", { name: "Tutte le uscite" })).toHaveAttribute(
       "href",
       "/?country=it",
@@ -176,7 +182,7 @@ describe("FilmDetail", () => {
 
     expect(screen.getByRole("link", { name: "Tutte le uscite" })).toHaveAttribute(
       "href",
-      "/?country=fr",
+      "/2026-11-09?country=fr",
     );
   });
 

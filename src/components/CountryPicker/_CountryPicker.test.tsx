@@ -9,24 +9,26 @@ vi.mock("@/i18n/navigation", () => ({
     href,
     ...rest
   }: Omit<React.ComponentProps<"a">, "href"> & {
-    href: string | { pathname: string; query: Record<string, string> };
+    href: string | { pathname: string; query?: Record<string, string> };
   }) => (
     <a
       {...rest}
-      href={typeof href === "string" ? href : `${href.pathname}?${new URLSearchParams(href.query)}`}
+      href={
+        typeof href === "string"
+          ? href
+          : [href.pathname, String(new URLSearchParams(href.query))].filter(Boolean).join("?")
+      }
     >
       {children}
     </a>
   ),
 }));
 
-const RANGE = { from: "2026-11-09", to: "2026-11-15" };
-
 const openMenu = () => fireEvent.click(screen.getByRole("button", { name: /^Paese delle uscite/ }));
 
 describe("CountryPicker", () => {
   it("names its button after the chosen country, with the flag beside the name", () => {
-    renderWithIntl(<CountryPicker country="FR" pathname="/" range={RANGE} />);
+    renderWithIntl(<CountryPicker country="FR" pathname="/" />);
     const button = screen.getByRole("button", { name: "Paese delle uscite: Francia" });
 
     expect(button).toHaveAttribute("aria-expanded", "false");
@@ -36,7 +38,7 @@ describe("CountryPicker", () => {
   });
 
   it("lists the active countries in order under its title", () => {
-    renderWithIntl(<CountryPicker country="FR" pathname="/" range={RANGE} />);
+    renderWithIntl(<CountryPicker country="FR" pathname="/" />);
     openMenu();
     const list = screen.getByRole("list", { name: "Uscite al cinema in" });
 
@@ -47,13 +49,13 @@ describe("CountryPicker", () => {
     ).toEqual(["Italia", "Francia", "Stati Uniti"]);
   });
 
-  it("links each country to the same page and range, and marks the chosen one", () => {
-    renderWithIntl(<CountryPicker country="FR" pathname="/" range={RANGE} />);
+  it("links each country to the same page and period, and marks the chosen one", () => {
+    renderWithIntl(<CountryPicker country="FR" pathname="/2026-11-09" query={{ weeks: "2" }} />);
     openMenu();
 
     expect(screen.getByRole("link", { name: "Stati Uniti" })).toHaveAttribute(
       "href",
-      "/?country=us&from=2026-11-09&to=2026-11-15",
+      "/2026-11-09?country=us&weeks=2",
     );
     expect(screen.getByRole("link", { name: "Francia" })).toHaveAttribute("aria-current", "true");
     expect(screen.getByRole("link", { name: "Italia" })).not.toHaveAttribute("aria-current");

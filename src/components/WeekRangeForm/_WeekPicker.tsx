@@ -7,7 +7,14 @@ import { useState, useSyncExternalStore } from "react";
 import { formatDateRange } from "@/lib/releases/date-range";
 import { isoDateToUtc } from "@/lib/releases/iso-date";
 import { reachOf, selectWeeks, type WeekRange } from "@/lib/releases/week-range";
-import { addDays, MAX_WEEKS, MIN_DATE, todayInRome, weeksBetween } from "@/lib/releases/window";
+import {
+  addDays,
+  MAX_WEEKS,
+  maxDate,
+  MIN_DATE,
+  todayInRome,
+  weeksBetween,
+} from "@/lib/releases/window";
 
 const LOCALES = { it, en: enGB, fr } as const;
 
@@ -66,6 +73,7 @@ export function WeekPicker({ from, to, releaseDay, today, shortcuts }: Props) {
   };
 
   const weeks = weeksBetween(range).length;
+  const lastDay = isoDateToUtc(maxDate(today));
   const reach = reachOf(range, MAX_WEEKS).map((span) => ({
     from: isoDateToUtc(span.from),
     to: isoDateToUtc(span.to),
@@ -88,7 +96,8 @@ export function WeekPicker({ from, to, releaseDay, today, shortcuts }: Props) {
           timeZone="Europe/Rome"
           weekStartsOn={1}
           startMonth={isoDateToUtc(MIN_DATE)}
-          disabled={{ before: isoDateToUtc(MIN_DATE) }}
+          endMonth={lastDay}
+          disabled={[{ before: isoDateToUtc(MIN_DATE) }, { after: lastDay }]}
           numberOfMonths={wide ? 2 : 1}
           // With one month, a week across two months is still drawn complete.
           showOutsideDays={!wide}

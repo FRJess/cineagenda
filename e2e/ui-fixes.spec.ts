@@ -41,7 +41,7 @@ test.describe("on a 360px phone", () => {
   test("the period has no leading zero and no year, and the caption is centred", async ({
     page,
   }) => {
-    await page.goto("/it?country=it&from=2026-11-09&to=2026-11-15");
+    await page.goto("/it/2026-11-09");
     const range = page.locator("[data-part='period'] b");
 
     await expect(range).toHaveText("9 – 15 nov");
@@ -51,7 +51,7 @@ test.describe("on a 360px phone", () => {
   });
 
   test("the week picker shows one full-width month with both arrows", async ({ page }) => {
-    await page.goto("/it?country=it&from=2026-12-28&to=2027-01-03");
+    await page.goto("/it/2026-12-28");
     await page.locator("[data-part='period']").click();
     const form = page.locator("[data-part='week-range']");
     await form.locator("[role='grid']").first().waitFor();

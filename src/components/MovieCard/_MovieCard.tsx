@@ -5,7 +5,6 @@ import type { Country } from "@/lib/country";
 import { formatCardDate } from "@/lib/releases/card-date";
 import { filmHref } from "@/lib/releases/film-href";
 import type { Movie } from "@/lib/releases/movie";
-import type { ReleaseWindow } from "@/lib/releases/window";
 import "./_MovieCard.css";
 
 const POSTER_BASE = "https://image.tmdb.org/t/p/w342";
@@ -13,19 +12,16 @@ const POSTER_BASE = "https://image.tmdb.org/t/p/w342";
 /**
  * One release in the poster grid: the whole poster, then a band painted with a blurred copy
  * of it that carries the title and the date. Nothing covers the poster.
- * @param props Movie to show; `eager` loads the poster at once when it sits above the fold;
- * `range` is the list range, passed to the film page for its back link.
+ * @param props Movie to show; `eager` loads the poster at once when it sits above the fold.
  * @returns Article with one link.
  */
 export function MovieCard({
   movie,
   eager = false,
-  range,
   country,
 }: {
   readonly movie: Movie;
   readonly eager?: boolean;
-  readonly range?: ReleaseWindow;
   readonly country: Country;
 }) {
   const t = useTranslations("Releases");
@@ -34,7 +30,7 @@ export function MovieCard({
 
   return (
     <article data-part="movie-card">
-      <Link href={filmHref(movie.id, country, range)}>
+      <Link href={filmHref(movie.id, country)}>
         {poster ? (
           <Image src={poster} alt="" width={342} height={513} loading={eager ? "eager" : "lazy"} />
         ) : (

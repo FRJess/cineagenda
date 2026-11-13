@@ -20,12 +20,21 @@ const TAB_COUNT = 4;
 /** Longest range a URL may hold, in days; matches the cap of {@link parseRange}. */
 export const MAX_RANGE_DAYS = MAX_URL_WEEKS * 7;
 
+/** How far ahead the calendar goes; TMDB lists almost no cinema release beyond two years. */
+const MAX_DAYS_AHEAD = 730;
+
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 const romeDate = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Rome" });
 
 const toUtc = (isoDate: string): Date => new Date(`${isoDate}T00:00:00Z`);
 const toIso = (date: Date): string => date.toISOString().slice(0, 10);
-const isValidIsoDate = (value: string | undefined): value is string => {
+
+/**
+ * Whether a value is a real calendar day written as `YYYY-MM-DD`.
+ * @param value Any URL value.
+ * @returns True for a real ISO date.
+ */
+export function isValidIsoDate(value: string | null | undefined): value is string {
   if (!value || !ISO_DATE.test(value)) {
     return false;
   }
@@ -34,7 +43,7 @@ const isValidIsoDate = (value: string | undefined): value is string => {
 
   // "2026-13-45" matches the pattern but is not a real date.
   return !Number.isNaN(date.getTime()) && toIso(date) === value;
-};
+}
 
 /**
  * Shifts an ISO date by whole days.
@@ -77,6 +86,33 @@ export function sundayOf(isoDate: string): string {
 }
 
 /**
+ * Last day the app shows: the Sunday of the week two years after today. Without it a URL could
+ * ask TMDB for any week up to the year 9999.
+ * @param today ISO date in Europe/Rome.
+ * @returns ISO date of a Sunday.
+ */
+export function maxDate(today: string): string {
+  return sundayOf(addDays(today, MAX_DAYS_AHEAD));
+}
+
+/**
+ * Whether the `from` and `to` of a URL are dates the UI can produce: real ISO dates between the
+ * week of {@link MIN_DATE} and {@link maxDate}. The proxy answers 404 for anything else.
+ * @param from `from` query param, null when absent.
+ * @param to `to` query param, null when absent.
+ * @param today ISO date in Europe/Rome.
+ * @returns False when a present param is malformed or out of bounds.
+ */
+export function isRangeAllowed(from: string | null, to: string | null, today: string): boolean {
+  const min = mondayOf(MIN_DATE);
+  const max = maxDate(today);
+
+  return [from, to].every(
+    (value) => value === null || (isValidIsoDate(value) && value >= min && value <= max),
+  );
+}
+
+/**
  * Release window: Monday of the current week to today + 90 days.
  * @param today ISO date in Europe/Rome.
  * @returns Inclusive window.
@@ -97,8 +133,8 @@ export function defaultRange(today: string): ReleaseWindow {
 }
 
 /**
- * Range from URL params: whole weeks, start clamped to the week of {@link MIN_DATE},
- * at most 26 weeks. Invalid input falls back to {@link defaultRange}.
+ * Range from URL params: whole weeks, start clamped to the week of {@link MIN_DATE}, end clamped
+ * to {@link maxDate}, at most 6 weeks. Invalid input falls back to {@link defaultRange}.
  * @param from `from` query param.
  * @param to `to` query param.
  * @param today ISO date in Europe/Rome.
@@ -116,11 +152,13 @@ export function parseRange(
   }
 
   const [low, high] = to && to < from ? [to, from] : [from, to];
-  const start = mondayOf(low < MIN_DATE ? MIN_DATE : low);
+  const max = maxDate(today);
+  const start = mondayOf(low < MIN_DATE ? MIN_DATE : low > max ? max : low);
   const defaultEnd = addDays(start, DEFAULT_WEEKS * 7 - 1);
   // A range entirely before the first week ends before the clamped start: show that week only.
   const wantedEnd = high && sundayOf(high) >= start ? sundayOf(high) : defaultEnd;
-  const maxEnd = addDays(start, MAX_URL_WEEKS * 7 - 1);
+  const urlEnd = addDays(start, MAX_URL_WEEKS * 7 - 1);
+  const maxEnd = urlEnd > max ? max : urlEnd;
 
   return { from: start, to: wantedEnd > maxEnd ? maxEnd : wantedEnd };
 }

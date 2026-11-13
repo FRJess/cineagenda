@@ -32,7 +32,19 @@ const STAGE_SHOW_KEYWORDS: ReadonlySet<number> = new Set([
   284103, // theatre
 ]);
 
-const overviewIn =(details: TmdbMovieDetails, lang: UiLocale): string =>
+// TMDB image paths are one file name, "/abc123.jpg"; anything else must not reach an image URL.
+const IMAGE_PATH = /^\/[\w.-]+$/;
+
+/**
+ * TMDB image path, checked before it is joined to the image host.
+ * @param path `poster_path`, `backdrop_path` or `profile_path`.
+ * @returns The path, or null when it is missing or not a plain file name.
+ */
+export function imagePath(path: string | null | undefined): string | null {
+  return path && IMAGE_PATH.test(path) ? path : null;
+}
+
+const overviewIn = (details: TmdbMovieDetails, lang: UiLocale): string =>
   details.translations.translations
     .find((t) => t.iso_639_1 === lang && t.data.overview?.trim())
     ?.data.overview?.trim() ?? "";
@@ -72,8 +84,8 @@ export function toMovie(
     id: details.id,
     ...buildDisplayTitles(details, country),
     originalTitle: details.original_title,
-    posterPath: details.poster_path,
-    backdropPath: details.backdrop_path ?? null,
+    posterPath: imagePath(details.poster_path),
+    backdropPath: imagePath(details.backdrop_path),
     popularity: details.popularity,
     genres: details.genres.flatMap((genre) => genreNames[genre.id] ?? []),
     releaseDate: release.date,

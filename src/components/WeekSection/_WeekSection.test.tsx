@@ -38,21 +38,13 @@ describe("WeekSection", () => {
     );
   });
 
-  it("hands the list range to every card link", () => {
+  it("hands the country to every card link", () => {
     renderWithIntl(
-      <WeekSection
-        country="IT"
-        today="2026-11-06"
-        group={group}
-        todayMonday="2026-11-02"
-        range={{ from: "2026-11-02", to: "2026-11-15" }}
-      />,
+      <WeekSection country="IT" today="2026-11-06" group={group} todayMonday="2026-11-02" />,
     );
 
     for (const link of screen.getAllByRole("link")) {
-      expect(link.getAttribute("href")).toMatch(
-        /^\/film\/\d+\?country=it&from=2026-11-02&to=2026-11-15$/,
-      );
+      expect(link.getAttribute("href")).toMatch(/^\/film\/\d+\?country=it$/);
     }
   });
 

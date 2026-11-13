@@ -4,6 +4,8 @@ import {
   shiftRange,
   defaultRange,
   getReleaseWindow,
+  isRangeAllowed,
+  maxDate,
   MAX_RANGE_DAYS,
   MAX_WEEKS,
   mondayOf,
@@ -123,6 +125,47 @@ describe("parseRange", () => {
       from: "2026-10-26",
       to: "2026-12-06",
     });
+  });
+});
+
+describe("maxDate", () => {
+  it("is the Sunday of the week two years after today", () => {
+    expect(maxDate("2026-10-30")).toBe("2028-10-29");
+  });
+});
+
+describe("isRangeAllowed", () => {
+  const today = "2026-10-30";
+
+  it("accepts a URL without dates and dates inside the bounds", () => {
+    expect(isRangeAllowed(null, null, today)).toBe(true);
+    expect(isRangeAllowed("2026-11-02", null, today)).toBe(true);
+    expect(isRangeAllowed("2025-12-29", "2026-01-04", today)).toBe(true);
+    expect(isRangeAllowed("2028-10-23", "2028-10-29", today)).toBe(true);
+  });
+
+  it("rejects malformed dates", () => {
+    expect(isRangeAllowed("abc", null, today)).toBe(false);
+    expect(isRangeAllowed("", null, today)).toBe(false);
+    expect(isRangeAllowed("2026-13-45", "2026-01-01", today)).toBe(false);
+    expect(isRangeAllowed("2026-11-02", "tomorrow", today)).toBe(false);
+  });
+
+  it("rejects dates before the first week or after the last one", () => {
+    expect(isRangeAllowed("2025-01-01", "2025-02-01", today)).toBe(false);
+    expect(isRangeAllowed("9999-01-01", null, today)).toBe(false);
+    expect(isRangeAllowed("2026-11-02", "2028-10-30", today)).toBe(false);
+    expect(isRangeAllowed(null, "2028-10-30", today)).toBe(false);
+  });
+});
+
+describe("parseRange upper bound", () => {
+  it("clamps a range past the last week to that week", () => {
+    expect(parseRange("9999-01-01", undefined, "2026-10-30")).toEqual({
+      from: "2028-10-23",
+      to: "2028-10-29",
+    });
+    expect(parseRange("2028-10-09", "2028-11-12", "2026-10-30").to).toBe("2028-10-29");
   });
 });
 

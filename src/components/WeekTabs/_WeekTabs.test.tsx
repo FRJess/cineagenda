@@ -9,11 +9,15 @@ vi.mock("@/i18n/navigation", () => ({
     href,
     ...rest
   }: Omit<React.ComponentProps<"a">, "href"> & {
-    href: string | { pathname: string; query: Record<string, string> };
+    href: string | { pathname: string; query?: Record<string, string> };
   }) => (
     <a
       {...rest}
-      href={typeof href === "string" ? href : `${href.pathname}?${new URLSearchParams(href.query)}`}
+      href={
+        typeof href === "string"
+          ? href
+          : [href.pathname, String(new URLSearchParams(href.query))].filter(Boolean).join("?")
+      }
     >
       {children}
     </a>
@@ -38,7 +42,24 @@ describe("WeekTabs", () => {
       a.getAttribute("href"),
     );
 
-    expect(hrefs.every((href) => href?.startsWith("/?country=fr&"))).toBe(true);
+    expect(hrefs.every((href) => href?.endsWith("?country=fr"))).toBe(true);
+  });
+
+  it("stops at the last week the calendar reaches: no later tab, no next arrow", () => {
+    // Two years after 2026-11-06 is the week ending on Sunday 2028-11-05.
+    renderWithIntl(
+      <WeekTabs
+        country="IT"
+        range={{ from: "2028-10-30", to: "2028-11-05" }}
+        todayMonday="2026-11-02"
+        today={today}
+      />,
+    );
+    const nav = screen.getByRole("navigation", { name: "Settimane" });
+
+    expect(nav.querySelectorAll(":scope > ul > li > a")).toHaveLength(1);
+    expect(nav.querySelector("[data-part='step-next']")).toBeNull();
+    expect(nav.querySelector("[data-part='step-previous']")).not.toBeNull();
   });
 
   it("starts at the range and links four weeks, each to a one-week page", () => {
@@ -49,10 +70,10 @@ describe("WeekTabs", () => {
     );
 
     expect(links).toEqual([
-      "/?country=it&from=2026-11-02&to=2026-11-08",
-      "/?country=it&from=2026-11-09&to=2026-11-15",
-      "/?country=it&from=2026-11-16&to=2026-11-22",
-      "/?country=it&from=2026-11-23&to=2026-11-29",
+      "/2026-11-02?country=it",
+      "/2026-11-09?country=it",
+      "/2026-11-16?country=it",
+      "/2026-11-23?country=it",
     ]);
   });
 
@@ -85,11 +106,11 @@ describe("WeekTabs", () => {
 
     expect(screen.getByRole("link", { name: "Periodo precedente" })).toHaveAttribute(
       "href",
-      "/?country=fr&from=2026-11-02&to=2026-11-08",
+      "/2026-11-02?country=fr",
     );
     expect(screen.getByRole("link", { name: "Periodo successivo" })).toHaveAttribute(
       "href",
-      "/?country=fr&from=2026-11-16&to=2026-11-22",
+      "/2026-11-16?country=fr",
     );
   });
 

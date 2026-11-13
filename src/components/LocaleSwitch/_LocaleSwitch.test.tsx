@@ -6,11 +6,11 @@ import messages from "../../../messages/it.json";
 import { LocaleSwitch } from "./_LocaleSwitch";
 
 vi.mock("next/navigation", () => ({
-  useSearchParams: () => new URLSearchParams("country=fr&from=2026-11-09&to=2026-11-15"),
+  useSearchParams: () => new URLSearchParams("country=fr&weeks=2&utm=x"),
 }));
 
 vi.mock("@/i18n/navigation", () => ({
-  usePathname: () => "/",
+  usePathname: () => "/2026-11-09",
   Link: ({
     children,
     href,
@@ -64,12 +64,12 @@ describe("LocaleSwitch", () => {
     expect(screen.getByRole("link", { name: /Français/ })).not.toHaveAttribute("aria-current");
   });
 
-  it("keeps the country and the dates of the page", () => {
+  it("keeps the country and the dates of the page and drops other params", () => {
     renderSwitch();
 
     expect(screen.getByRole("link", { name: /Français/ })).toHaveAttribute(
       "href",
-      "/fr?country=fr&from=2026-11-09&to=2026-11-15",
+      "/fr/2026-11-09?country=fr&weeks=2",
     );
   });
 });

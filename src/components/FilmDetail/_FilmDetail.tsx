@@ -6,7 +6,9 @@ import { type Country, countryQuery } from "@/lib/country";
 import { daysFromToday } from "@/lib/releases/days-from-today";
 import { parseReleaseNote } from "@/lib/releases/release-note";
 import { isoDateToUtc, WEEKDAY_DAY_MONTH } from "@/lib/releases/iso-date";
-import type { ReleaseWindow } from "@/lib/releases/window";
+import { periodHref } from "@/lib/releases/period";
+import { weekOf } from "@/lib/releases/week-range";
+import { maxDate } from "@/lib/releases/window";
 import type { CastMember, MovieDetails } from "@/lib/tmdb/movie-details";
 import { FilmSpoiler } from "./_FilmSpoiler";
 import { randomSpoilerLine } from "./spoiler-line";
@@ -58,19 +60,17 @@ function CastItem({ member }: { readonly member: CastMember }) {
  * Film page body: backdrop hero with date, title and byline, then a single-column sheet with the
  * limited release note, genres, plot behind a spoiler, details, cast and trailer; from 48rem the
  * poster sits beside the sheet. The TMDB attribution is in the site footer.
- * @param props Film details, today's ISO date in Europe/Rome, and the list range and country the
- * film was opened from, kept on the back link.
+ * @param props Film details, today's ISO date in Europe/Rome and the country of the list; the
+ * back link goes to the week the film comes out in.
  * @returns Main landmark.
  */
 export function FilmDetail({
   film,
   today,
-  range,
   country,
 }: {
   readonly film: MovieDetails;
   readonly today: string;
-  readonly range?: ReleaseWindow;
   readonly country: Country;
 }) {
   const t = useTranslations("Film");
@@ -112,7 +112,12 @@ export function FilmDetail({
         : parsed.kind === "restoration"
           ? t("noteRestoration")
           : t("noteImax");
-  const backHref = { pathname: "/", query: { ...countryQuery(country), ...range } };
+  // A release beyond the calendar has no week page to go back to.
+  const back =
+    film.releaseDate <= maxDate(today)
+      ? periodHref(weekOf(film.releaseDate))
+      : { pathname: "/", query: {} };
+  const backHref = { pathname: back.pathname, query: { ...countryQuery(country), ...back.query } };
 
   return (
     <main data-part="film" data-backdrop={film.backdropPath ? "" : undefined}>
@@ -150,9 +155,7 @@ export function FilmDetail({
                   {/* The separator stays with the name before it, so it never opens a line. */}
                   <span data-part="director">
                     <b>{director}</b>
-                    {index < film.directors.length - 1 && (
-                      <span data-part="director-sep"> /</span>
-                    )}
+                    {index < film.directors.length - 1 && <span data-part="director-sep"> /</span>}
                   </span>{" "}
                 </Fragment>
               ))}

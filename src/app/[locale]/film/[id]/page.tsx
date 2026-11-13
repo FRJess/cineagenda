@@ -9,7 +9,7 @@ import { CountryPicker } from "@/components/CountryPicker";
 import { SiteHeader } from "@/components/SiteHeader";
 import { routing } from "@/i18n/routing";
 import { type Country, DEFAULT_COUNTRY, parseCountry } from "@/lib/country";
-import { parseRange, todayInRome } from "@/lib/releases/window";
+import { todayInRome } from "@/lib/releases/window";
 import { getMovieDetails } from "@/lib/tmdb/cached";
 import type { MovieDetails } from "@/lib/tmdb/movie-details";
 import type { UiLocale } from "@/lib/tmdb/to-movie";
@@ -67,25 +67,12 @@ export async function generateMetadata({
   return { title: t("filmDocumentTitle") };
 }
 
-// Request-time part: the list range and today's date. The film itself is loaded by the page.
-async function Film({
-  film,
-  country,
-  searchParams,
-}: {
-  readonly film: MovieDetails;
-  readonly country: Country;
-  readonly searchParams: SearchParams;
-}) {
-  const query = await searchParams;
+// Request-time part: today's date. The film itself is loaded by the page.
+async function Film({ film, country }: { readonly film: MovieDetails; readonly country: Country }) {
   // The clock is request data: without this Next flags `new Date()` as unstable at prerender.
   await connection();
-  const today = todayInRome(new Date());
-  // The card passes the list range; without it the back link goes to the default list.
-  const from = first(query.from);
-  const range = from ? parseRange(from, first(query.to), today) : undefined;
 
-  return <FilmDetail film={film} today={today} range={range} country={country} />;
+  return <FilmDetail film={film} today={todayInRome(new Date())} country={country} />;
 }
 
 /**
@@ -102,24 +89,17 @@ export default async function FilmPage({ params, searchParams }: PageProps<"/[lo
   }
 
   setRequestLocale(loaded.locale as UiLocale);
-  const query = await searchParams;
-  const from = first(query.from);
-  const to = first(query.to);
 
   return (
     <>
       <SiteHeader
         country={
-          // The film may not open in the other country, so switching goes back to its list.
-          <CountryPicker
-            country={loaded.country}
-            pathname="/"
-            range={from && to ? { from, to } : undefined}
-          />
+          // The film may not be out in the other country, so switching goes to that country's list.
+          <CountryPicker country={loaded.country} pathname="/" />
         }
       />
       <Suspense fallback={<FilmSkeleton />}>
-        <Film film={loaded.film} country={loaded.country} searchParams={searchParams} />
+        <Film film={loaded.film} country={loaded.country} />
       </Suspense>
     </>
   );
