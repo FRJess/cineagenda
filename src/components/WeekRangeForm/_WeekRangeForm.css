@@ -146,6 +146,11 @@
   transform: translateX(-50%);
 }
 
+/* Weeks a click can still add without passing the maximum: a light tint, under the hover one. */
+[data-part="week-range"] .rdp-day_reach {
+  background: color-mix(in srgb, var(--foreground) 4%, transparent);
+}
+
 /* Hovering a day lights its whole week. */
 @media (hover: hover) {
   [data-part="week-range"] .rdp-week:has(.rdp-day_button:hover) .rdp-day {
@@ -200,7 +205,7 @@
   outline-offset: -3px;
 }
 
-/* ─── Shortcuts: pills, the one matching the URL inverted ─── */
+/* ─── Shortcuts: pills, the one matching the selection inverted ─── */
 
 [data-part="shortcuts"] {
   display: flex;
@@ -211,18 +216,18 @@
   list-style: none;
 }
 
-[data-part="shortcuts"] a {
-  display: inline-block;
+[data-part="shortcuts"] button {
+  display: block;
   padding: 0.3125rem 0.5625rem;
   font-size: 0.6875rem;
   font-weight: 600;
   color: var(--foreground);
-  text-decoration: none;
+  background: none;
   border: 1px solid var(--border);
   border-radius: 999px;
 }
 
-[data-part="shortcuts"] a[aria-current="true"] {
+[data-part="shortcuts"] button[aria-pressed="true"] {
   color: var(--tab-fg);
   background: var(--tab-bg);
   border-color: var(--tab-bg);
@@ -259,11 +264,6 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted);
-}
-
-/* At the 26-week cap the count turns accent, so the limit reads as a state. */
-[data-part="picker-footer"] output[data-max] small {
-  color: var(--accent-strong);
 }
 
 [data-part="picker-footer"] button {

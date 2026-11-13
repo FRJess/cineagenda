@@ -143,13 +143,18 @@ a {
 
 /* ─── Home: the week list. Page side padding matches the navbar's. ─── */
 
+/* --site-header-height: where the week headings stick. The navbar is 122px on phones (two rows)
+   and 75px from 48rem; the token is a hair under, so the heading tucks behind the navbar and no
+   gap can show. Update it when the navbar height changes. */
 [data-part="home"] {
+  --site-header-height: 7.5rem;
   padding-block: 6rem;
   padding-inline: var(--space-4);
 }
 
 @media (min-width: 48rem) {
   [data-part="home"] {
+    --site-header-height: 4.625rem;
     padding-inline: var(--space-6);
   }
 }

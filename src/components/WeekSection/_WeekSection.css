@@ -9,13 +9,23 @@
 [data-part="week-section"] {
   display: flex;
   flex-direction: column;
-  gap: 0.625rem;
+  gap: 0.125rem;
 }
 
 /* ─── Week heading row: title and count share the baseline ─── */
 
+/* Sticks under the navbar while its own week scrolls, then the next heading pushes it out.
+   The shadow paints the page color to both screen edges and the clip keeps it in the row, so
+   posters and their shadows pass under a full-width band. */
 [data-part="week-section"] > header {
+  position: sticky;
+  top: var(--site-header-height);
+  z-index: 3;
   display: flex;
+  padding-block: var(--space-2);
+  background: var(--background);
+  box-shadow: 0 0 0 100vmax var(--background);
+  clip-path: inset(0 -100vmax);
   align-items: baseline;
   justify-content: space-between;
   gap: var(--space-2) var(--space-4);

@@ -3,11 +3,11 @@
 import { DayPicker, type DateRange } from "@daypicker/react";
 import { enGB, fr, it } from "@daypicker/react/locale";
 import { useLocale, useTranslations } from "next-intl";
-import { useState, useSyncExternalStore, type ReactNode } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { formatDateRange } from "@/lib/releases/date-range";
 import { isoDateToUtc } from "@/lib/releases/iso-date";
-import { clampWeeks, extendWeeks, type WeekRange } from "@/lib/releases/week-range";
-import { MAX_WEEKS, MIN_DATE, todayInRome, weeksBetween } from "@/lib/releases/window";
+import { reachOf, selectWeeks, type WeekRange } from "@/lib/releases/week-range";
+import { addDays, MAX_WEEKS, MIN_DATE, todayInRome, weeksBetween } from "@/lib/releases/window";
 
 const LOCALES = { it, en: enGB, fr } as const;
 
@@ -25,22 +25,26 @@ const subscribeWide = (onChange: () => void) => {
 // jsdom and the server have no matchMedia: they get the phone layout.
 const isWideScreen = () => window.matchMedia?.(WIDE).matches ?? false;
 
+/** A shortcut pill: its label in the UI language and the weeks it selects. */
+export type Shortcut = { readonly label: string; readonly range: WeekRange };
+
 type Props = {
   readonly from: string; // YYYY-MM-DD, normalized range from the URL (Monday to Sunday)
   readonly to: string;
   readonly releaseDay: number; // usual release weekday of the country, 0 = Sunday
   readonly today: string; // ISO date in Europe/Rome, for the year rule of the footer range
-  readonly children?: ReactNode; // shortcut links, rendered between the calendar and the footer
+  readonly shortcuts: readonly Shortcut[]; // pills between the calendar and the footer
 };
 
 /**
  * Week picker: the only date control of the GET form. Every calendar row is a week; a click
- * selects or extends whole weeks. The calendar renders after hydration; the hidden from/to
- * inputs and the footer submit work without JS.
- * @param props The URL range, the country's release weekday, today's date and the shortcut list.
+ * selects or extends whole weeks, up to {@link MAX_WEEKS}: the days still in reach are tinted,
+ * and a click beyond them starts again from that week. A shortcut pill selects its weeks in the
+ * calendar; only the footer submit changes the list. The calendar renders after hydration.
+ * @param props The URL range, the country's release weekday, today's date and the shortcuts.
  * @returns Hidden inputs, calendar, shortcuts and footer.
  */
-export function WeekPicker({ from, to, releaseDay, today, children }: Props) {
+export function WeekPicker({ from, to, releaseDay, today, shortcuts }: Props) {
   const locale = useLocale() as keyof typeof LOCALES;
   const t = useTranslations("Nav");
   const hydrated = useSyncExternalStore(subscribeNever, isClient, isServer);
@@ -49,14 +53,23 @@ export function WeekPicker({ from, to, releaseDay, today, children }: Props) {
   // DatePicker mounts the form on every opening, so an unsent selection is dropped there.
   const [range, setRange] = useState<WeekRange>({ from, to });
 
-  const handleDayClick = (day: Date) => {
-    const iso = todayInRome(day);
+  const [month, setMonth] = useState(() => isoDateToUtc(from));
 
-    setRange(clampWeeks(extendWeeks(range, iso), MAX_WEEKS, iso));
+  const handleDayClick = (day: Date) => {
+    setRange(selectWeeks(range, todayInRome(day), MAX_WEEKS));
+  };
+
+  const handleShortcut = (shortcut: Shortcut) => {
+    setRange(shortcut.range);
+    // The Sunday of the first week: a month shortcut starts on the last Monday of the month before.
+    setMonth(isoDateToUtc(addDays(shortcut.range.from, 6)));
   };
 
   const weeks = weeksBetween(range).length;
-  const atMax = weeks >= MAX_WEEKS;
+  const reach = reachOf(range, MAX_WEEKS).map((span) => ({
+    from: isoDateToUtc(span.from),
+    to: isoDateToUtc(span.to),
+  }));
   const selected: DateRange = { from: isoDateToUtc(range.from), to: isoDateToUtc(range.to) };
 
   return (
@@ -67,7 +80,8 @@ export function WeekPicker({ from, to, releaseDay, today, children }: Props) {
         <DayPicker
           mode="range"
           selected={selected}
-          defaultMonth={isoDateToUtc(range.from)}
+          month={month}
+          onMonthChange={setMonth}
           // onSelect, not onDayClick: without it DayPicker treats `selected` as initial only and draws its own day range.
           onSelect={(_, day) => handleDayClick(day)}
           locale={LOCALES[locale]}
@@ -84,14 +98,26 @@ export function WeekPicker({ from, to, releaseDay, today, children }: Props) {
             formatWeekdayName: (weekday, _options, dateLib) =>
               dateLib ? dateLib.format(weekday, "EEE") : "",
           }}
-          modifiers={{ release: { dayOfWeek: [releaseDay] } }}
-          modifiersClassNames={{ release: "rdp-day_release" }}
+          modifiers={{ release: { dayOfWeek: [releaseDay] }, reach }}
+          modifiersClassNames={{ release: "rdp-day_release", reach: "rdp-day_reach" }}
           aria-label={t("calendar")}
         />
       )}
-      {children}
+      <ul aria-label={t("shortcuts")} data-part="shortcuts">
+        {shortcuts.map((shortcut) => (
+          <li key={shortcut.label}>
+            <button
+              type="button"
+              aria-pressed={shortcut.range.from === range.from && shortcut.range.to === range.to}
+              onClick={() => handleShortcut(shortcut)}
+            >
+              {shortcut.label}
+            </button>
+          </li>
+        ))}
+      </ul>
       <footer data-part="picker-footer">
-        <output aria-live="polite" data-max={atMax ? "" : undefined}>
+        <output aria-live="polite">
           <b>
             {formatDateRange(locale, range.from, range.to, {
               month: "short",
@@ -99,10 +125,7 @@ export function WeekPicker({ from, to, releaseDay, today, children }: Props) {
               currentYear: today.slice(0, 4),
             })}
           </b>
-          <small>
-            {t("weeksCount", { count: weeks })} ·{" "}
-            {atMax ? t("maxReached") : t("maxWeeks", { max: MAX_WEEKS })}
-          </small>
+          <small>{t("weeksCount", { count: weeks })}</small>
         </output>
         <button type="submit">{t("showWeeks", { count: weeks })}</button>
       </footer>

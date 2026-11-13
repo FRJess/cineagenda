@@ -1,7 +1,7 @@
 /**
  * FILE: _FilmDetail.css
  * USAGE: Film page: hero on the backdrop, sheet with details, poster beside the sheet from 48rem; also the loading, not-found and error shells
- * SCOPE: [data-part="film"], [data-part="film-hero"], [data-part="film-hero-text"], [data-part="film-date"], [data-part="film-subtitle"], [data-part="film-director"], [data-part="film-year"], [data-part="film-columns"], [data-part="film-poster"], [data-part="film-body"], [data-part="limited-note"], [data-part="genres"], [data-part="film-trailer"], [data-part="trailer"], [data-part="film-plot"], [data-part="spoiler"], [data-part="film-facts"], [data-part="facts"], [data-part="film-cast"], [data-part="skeleton-line"]
+ * SCOPE: [data-part="film"], [data-part="film-hero"], [data-part="film-hero-text"], [data-part="film-date"], [data-part="film-subtitle"], [data-part="film-director"], [data-part="director"], [data-part="director-sep"], [data-part="film-year"], [data-part="film-columns"], [data-part="film-poster"], [data-part="film-body"], [data-part="limited-note"], [data-part="genres"], [data-part="film-trailer"], [data-part="trailer"], [data-part="film-plot"], [data-part="spoiler"], [data-part="film-facts"], [data-part="facts"], [data-part="film-cast"], [data-part="skeleton-line"]
  */
 
 /* ─── Page: no side padding, the hero runs edge to edge; space before the footer ─── */
@@ -146,7 +146,7 @@
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #ffb3a6;
+  color: #fcb5b1;
 }
 
 [data-part="film-director"] b {
@@ -155,6 +155,19 @@
   font-weight: 800;
   letter-spacing: -0.02em;
   color: #ffffff;
+}
+
+[data-part="director"] {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4375rem;
+}
+
+/* Between two directors: lighter than the names, so each name reads on its own. */
+[data-part="director-sep"] {
+  font-size: 1rem;
+  font-weight: 400;
+  color: #d9d9e3;
 }
 
 [data-part="film-year"] {
@@ -527,37 +540,51 @@
 /* ─── From 48rem: poster beside the sheet, rising into the hero; the sheet stays one column ─── */
 
 @media (min-width: 48rem) {
-  [data-part="film-hero"] {
-    min-height: 21rem;
-    padding: 1.25rem 1.5rem 2rem;
+  /* The page holds the side padding, so the hero and the sheet share the right edge. */
+  [data-part="film"] {
+    --film-poster: clamp(14rem, 26vw, 18rem);
+    padding-inline: 1.5rem;
   }
 
+  [data-part="film-hero"] {
+    min-height: 21rem;
+    /* Bottom: 2rem plus the 1.125rem the sheet covers. */
+    padding: 1.25rem 1.5rem 3.125rem;
+    border-radius: 1.125rem 1.125rem 0 0;
+  }
+
+  /* Fluid up to 59rem: beside the poster a long word must still fit the hero at 48rem. */
   [data-part="film-hero"] h1 {
-    font-size: 3.25rem;
+    font-size: clamp(2.5rem, 5.5vw, 3.25rem);
   }
 
   [data-part="film-director"] b {
     font-size: 1.5rem;
   }
 
-  /* Aligns the hero text with the sheet column when a poster sits beside the sheet. */
+  /* Aligns the hero text with the sheet text: the hero and the columns start at the same edge,
+     the poster is inset by the hero padding, and 1.5rem gap + 1.75rem sheet padding follow. */
+  [data-part="film-hero-text"] {
+    margin-left: 0.25rem;
+  }
+
   [data-part="film"]:has([data-part="film-poster"]) [data-part="film-hero-text"] {
-    margin-left: 15.5rem;
+    margin-left: calc(var(--film-poster) + 3.25rem);
   }
 
   [data-part="film-columns"] {
     display: flex;
     gap: 1.5rem;
     margin-top: -3.75rem;
-    padding-inline: 1.5rem;
   }
 
   [data-part="film-poster"] {
     position: relative;
     display: block;
-    flex: 0 0 14rem;
+    flex: 0 0 var(--film-poster);
     align-self: flex-start;
-    width: 14rem;
+    margin-left: 1.5rem;
+    width: var(--film-poster);
     height: auto;
     aspect-ratio: 2 / 3;
     object-fit: cover;
@@ -569,7 +596,8 @@
   [data-part="film-body"] {
     flex: 1;
     min-width: 0;
-    margin-top: 3.75rem;
+    /* 1.125rem less than the poster's rise: the sheet's rounded top lies on the hero image. */
+    margin-top: 2.625rem;
     padding: 1.75rem;
     border-radius: 1.125rem;
   }

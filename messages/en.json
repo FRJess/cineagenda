@@ -25,8 +25,6 @@
     "weekTabs": "Weeks",
     "calendar": "Calendar",
     "weeksCount": "{count, plural, one {# week} other {# weeks}}",
-    "maxWeeks": "max {max}",
-    "maxReached": "maximum reached",
     "showWeeks": "Show {count, plural, one {# week} other {# weeks}}",
     "previousPeriod": "Previous period",
     "nextPeriod": "Next period",

@@ -1,4 +1,4 @@
-import { fireEvent, screen } from "@testing-library/react";
+import { fireEvent, screen, within } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import { renderToString } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -15,10 +15,21 @@ const renderPicker = (
 ) =>
   renderWithIntl(
     <form>
-      <WeekPicker from={from} to={to} releaseDay={releaseDay} today="2026-11-06" />
+      <WeekPicker
+        from={from}
+        to={to}
+        releaseDay={releaseDay}
+        today="2026-11-06"
+        shortcuts={shortcuts}
+      />
     </form>,
     locale,
   );
+
+const shortcuts = [
+  { label: "Questa settimana", range: { from: "2026-11-02", to: "2026-11-08" } },
+  { label: "Dicembre", range: { from: "2026-11-30", to: "2027-01-03" } },
+];
 
 const hidden = (container: HTMLElement, name: "from" | "to") =>
   container.querySelector<HTMLInputElement>(`input[name="${name}"]`);
@@ -45,7 +56,13 @@ describe("WeekPicker", () => {
   it("renders no calendar before hydration, but keeps the range in hidden fields", () => {
     const html = renderToString(
       <NextIntlClientProvider locale="it" messages={it_} timeZone="Europe/Rome">
-        <WeekPicker from="2026-11-02" to="2026-11-15" releaseDay={4} today="2026-11-06" />
+        <WeekPicker
+          from="2026-11-02"
+          to="2026-11-15"
+          releaseDay={4}
+          today="2026-11-06"
+          shortcuts={shortcuts}
+        />
       </NextIntlClientProvider>,
     );
     const doc = document.createElement("div");
@@ -142,22 +159,75 @@ describe("WeekPicker", () => {
     expect(container.querySelector("output small")).toHaveTextContent("1 settimana");
   });
 
-  it("caps the selection at 4 weeks, cutting the end far from the click, and flags the footer", () => {
+  it("tints the days a click can still add within 4 weeks, on both sides of the selection", () => {
+    const { container } = renderPicker("2026-11-09", "2026-11-22");
+
+    expect(cell(container, "2026-10-26")).toHaveClass("rdp-day_reach");
+    expect(cell(container, "2026-11-08")).toHaveClass("rdp-day_reach");
+    expect(cell(container, "2026-11-23")).toHaveClass("rdp-day_reach");
+    expect(cell(container, "2026-11-09")).not.toHaveClass("rdp-day_reach");
+    expect(cell(container, "2026-11-22")).not.toHaveClass("rdp-day_reach");
+  });
+
+  it("tints no day when the selection is 4 weeks long", () => {
+    const { container } = renderPicker("2026-11-02", "2026-11-29");
+
+    expect(container.querySelector(".rdp-day_reach")).toBeNull();
+  });
+
+  it("restarts from the clicked week when the day is beyond the 4 weeks in reach", () => {
     const { container } = renderPicker("2026-11-02", "2026-11-22");
 
-    click(container, "2026-12-01");
+    expect(cell(container, "2026-11-30")).not.toHaveClass("rdp-day_reach");
+    click(container, "2026-11-30");
 
-    expect(hidden(container, "from")).toHaveValue("2026-11-09");
+    expect(hidden(container, "from")).toHaveValue("2026-11-30");
     expect(hidden(container, "to")).toHaveValue("2026-12-06");
-    expect(container.querySelector("output")).toHaveAttribute("data-max");
-    expect(container.querySelector("output small")).toHaveTextContent("massimo raggiunto");
+  });
+
+  it("does not write the maximum in the footer", () => {
+    const { container } = renderPicker("2026-11-02", "2026-11-29");
+
+    expect(container.querySelector("output small")).toHaveTextContent(/^4 settimane$/);
+  });
+
+  it("selects the weeks of a shortcut pill in the calendar, without leaving the form", () => {
+    const { container } = renderPicker("2026-11-09", "2026-11-15");
+    const pills = within(screen.getByRole("list", { name: "Scorciatoie" })).getAllByRole("button");
+
+    expect(pills.map((pill) => pill.getAttribute("type"))).toEqual(["button", "button"]);
+    expect(pills[1]).toHaveAttribute("aria-pressed", "false");
+
+    fireEvent.click(pills[1]);
+
+    expect(hidden(container, "from")).toHaveValue("2026-11-30");
+    expect(hidden(container, "to")).toHaveValue("2027-01-03");
+    expect(pills[1]).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByText("dicembre 2026")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Mostra 5 settimane" })).toBeInTheDocument();
+  });
+
+  it("releases the pill when the selection no longer matches it", () => {
+    const { container } = renderPicker("2026-11-02", "2026-11-08");
+    const pill = screen.getByRole("button", { name: "Questa settimana" });
+
+    expect(pill).toHaveAttribute("aria-pressed", "true");
+    click(container, "2026-11-12");
+
+    expect(pill).toHaveAttribute("aria-pressed", "false");
   });
 
   it("drops an unsent selection and returns to the URL range when the popover reopens", () => {
     const { container } = renderWithIntl(
       <DatePicker summary="Date">
         <form>
-          <WeekPicker from="2026-11-09" to="2026-11-22" releaseDay={4} today="2026-11-06" />
+          <WeekPicker
+            from="2026-11-09"
+            to="2026-11-22"
+            releaseDay={4}
+            today="2026-11-06"
+            shortcuts={shortcuts}
+          />
         </form>
       </DatePicker>,
     );
