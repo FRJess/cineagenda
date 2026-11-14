@@ -1,6 +1,6 @@
 /**
  * FILE: _WeekTabs.css
- * USAGE: Styles for WeekTabs: from 48rem the row of week tabs and its Date disclosure, the active tab inverted; below 48rem the period bar (arrows around the same disclosure, whose button shows the period)
+ * USAGE: Styles for WeekTabs: from 62rem the row of week tabs and its Date disclosure, the active tab inverted; below 62rem the period bar (arrows around the same disclosure, whose button shows the period), on its own header row below 48rem
  * SCOPE: [data-part="week-tabs"], [data-part="date-picker"], [data-part="date-label"], [data-part="period"], [data-part="step-previous"], [data-part="step-next"]
  */
 
@@ -31,9 +31,9 @@
   min-width: 0;
 }
 
-/* From 48rem the list takes only its tabs' width, so the next arrow follows the last tab; the
+/* From 62rem the list takes only its tabs' width, so the next arrow follows the last tab; the
    Date disclosure stays at the right end. */
-@media (min-width: 48rem) {
+@media (min-width: 62rem) {
   [data-part="week-tabs"] > ul {
     flex: 0 1 auto;
   }
@@ -44,23 +44,11 @@
 }
 
 /* A mouse wheel cannot scroll the tabs sideways: the tabs that do not fit are not shown.
-   With 6.5rem tabs between the two arrows one fits from 48rem, two from 55rem, three from
-   62rem, four from 69rem, never more (a month shortcut of five or six weeks shows its first
-   four). */
-@media (min-width: 48rem) {
+   With 6.5rem tabs between the two arrows three fit from 62rem and four from 69rem, never more
+   (a month shortcut of five or six weeks shows its first four). Below 62rem one or two tabs
+   would fit, as on an 820px iPad in portrait, so the period bar takes their place. */
+@media (min-width: 62rem) {
   [data-part="week-tabs"] > ul > li:nth-child(n + 5) {
-    display: none;
-  }
-}
-
-@media (min-width: 48rem) and (max-width: 54.99rem) {
-  [data-part="week-tabs"] > ul > li:nth-child(n + 2) {
-    display: none;
-  }
-}
-
-@media (min-width: 55rem) and (max-width: 61.99rem) {
-  [data-part="week-tabs"] > ul > li:nth-child(n + 3) {
     display: none;
   }
 }
@@ -152,7 +140,7 @@
   align-items: center;
 }
 
-/* The period exists only below 48rem. From 48rem the arrows frame the tabs: the tabs start at
+/* The period exists only below 62rem. From 62rem the arrows frame the tabs: the tabs start at
    the range and show no earlier weeks. */
 [data-part="period"] {
   display: none;
@@ -198,9 +186,9 @@
   }
 }
 
-/* ─── Below 48rem: the period bar, previous | period | next, all 2.75rem tall ─── */
+/* ─── Below 62rem: the period bar, previous | period | next, all 2.75rem tall ─── */
 
-@media (max-width: 47.99rem) {
+@media (max-width: 61.99rem) {
   [data-part="week-tabs"] {
     gap: 0.5rem;
   }

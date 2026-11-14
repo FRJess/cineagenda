@@ -52,6 +52,21 @@
   }
 }
 
+/* Between 48rem and 62rem the Date button is the period bar in the middle of the header, so
+   the popover is centered under it; anchored on the right it would run off the left edge. */
+@media (min-width: 48rem) and (max-width: 61.99rem) {
+  [data-part="date-picker"] > [data-part="week-range"] {
+    right: auto;
+    left: 50%;
+    translate: -50% 0;
+  }
+
+  [data-part="date-picker"] > [data-part="week-range"]::before {
+    right: auto;
+    left: calc(50% - 0.3125rem);
+  }
+}
+
 /* ─── Calendar: DayPicker, themed through the project tokens ─── */
 
 [data-part="week-range"] .rdp-root {

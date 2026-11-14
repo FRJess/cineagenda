@@ -94,14 +94,14 @@ describe("FilmDetail", () => {
     expect(screen.queryByRole("link", { name: /Apri su TMDB/ })).not.toBeInTheDocument();
   });
 
-  it("shows date, distance from today, title, subtitle and director in the hero", () => {
+  it("shows date, title, subtitle and director in the hero", () => {
     const { container } = renderFilm();
     const hero = container.querySelector("[data-part='film-hero']");
 
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Il canto della foresta");
     expect(container.querySelector("time")).toHaveAttribute("datetime", "2026-11-12");
     expect(container.querySelector("[data-part='film-date']")).toHaveTextContent(
-      "Al cinema da gio 12 nov · tra 3 giorni",
+      /^Al cinema da gio 12 nov$/,
     );
     expect(hero).toHaveTextContent("Le Chant des forêts");
     expect(container.querySelector("[data-part='film-director']")).toHaveTextContent(
@@ -134,23 +134,15 @@ describe("FilmDetail", () => {
     expect(line).toHaveTextContent(/^Regia di Joel Coen \/ Ethan Coen$/);
   });
 
-  it("says 'da oggi' and 'da ieri' around the release day", () => {
-    const today = renderFilm({}, { today: "2026-11-12" });
-    expect(today.container.querySelector("[data-part='film-date']")).toHaveTextContent("· da oggi");
-    today.unmount();
+  it("shows no distance from today around the release day", () => {
+    for (const today of ["2026-11-11", "2026-11-12", "2026-11-13", "2026-11-14"]) {
+      const { container, unmount } = renderFilm({}, { today });
 
-    const yesterday = renderFilm({}, { today: "2026-11-13" });
-    expect(yesterday.container.querySelector("[data-part='film-date']")).toHaveTextContent(
-      "· da ieri",
-    );
-  });
-
-  it("shows no distance beyond two weeks", () => {
-    const { container } = renderFilm({}, { today: "2026-10-28" });
-
-    expect(container.querySelector("[data-part='film-date']")).toHaveTextContent(
-      /^Al cinema da gio 12 nov$/,
-    );
+      expect(container.querySelector("[data-part='film-date']")).toHaveTextContent(
+        /^Al cinema da gio 12 nov$/,
+      );
+      unmount();
+    }
   });
 
   it("omits the director line when there is no director", () => {

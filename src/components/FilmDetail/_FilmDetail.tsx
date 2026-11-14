@@ -3,7 +3,6 @@ import { useFormatter, useLocale, useTranslations } from "next-intl";
 import { Fragment } from "react";
 import { Link } from "@/i18n/navigation";
 import { type Country, countryQuery } from "@/lib/country";
-import { daysFromToday } from "@/lib/releases/days-from-today";
 import { parseReleaseNote } from "@/lib/releases/release-note";
 import { isoDateToUtc, WEEKDAY_DAY_MONTH } from "@/lib/releases/iso-date";
 import { periodHref } from "@/lib/releases/period";
@@ -16,7 +15,6 @@ import { FilmTrailer } from "./_FilmTrailer";
 import "./_FilmDetail.css";
 
 const IMAGE_BASE = "https://image.tmdb.org/t/p";
-const RELATIVE_MAX_DAYS = 14;
 
 function initials(name: string): string {
   const parts = name.split(/\s+/).slice(0, 2);
@@ -77,18 +75,6 @@ export function FilmDetail({
   const tReleases = useTranslations("Releases");
   const format = useFormatter();
   const locale = useLocale();
-  const days = daysFromToday(film.releaseDate, today);
-  const relative =
-    days === 0
-      ? t("fromToday")
-      : days === -1
-        ? t("fromYesterday")
-        : Math.abs(days) <= RELATIVE_MAX_DAYS
-          ? format.relativeTime(isoDateToUtc(film.releaseDate), {
-              now: isoDateToUtc(today),
-              unit: "day",
-            })
-          : null;
   // The year only tells something for a re-release: a new film's year is the release year.
   const showYear = film.year !== null && String(film.year) !== film.releaseDate.slice(0, 4);
   const countries = film.countries
@@ -143,7 +129,6 @@ export function FilmDetail({
               date: format.dateTime(isoDateToUtc(film.releaseDate), WEEKDAY_DAY_MONTH),
               time: (chunks) => <time dateTime={film.releaseDate}>{chunks}</time>,
             })}
-            {relative && <span> · {relative}</span>}
           </p>
           <h1 id="film-title">{film.title}</h1>
           {film.subtitle && <p data-part="film-subtitle">{film.subtitle}</p>}
