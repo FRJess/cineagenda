@@ -283,7 +283,40 @@ test("on a 360px phone the period bar replaces the week tabs", async ({ page }) 
   );
 });
 
-test("from 48rem the week tabs show and the period bar does not", async ({ page }) => {
+for (const [device, width, height] of [
+  ["iPad Air 11", 820, 1180],
+  ["iPad Pro 11", 834, 1194],
+] as const) {
+  test(`on an ${device} in portrait the period bar sits in the header row`, async ({ page }) => {
+    await page.setViewportSize({ width, height });
+    await page.goto("/it?country=it");
+    const nav = page.getByRole("navigation", { name: "Settimane", exact: true });
+    const period = nav.locator("[data-part='period']");
+
+    await expect(nav.locator(":scope > ul")).toBeHidden();
+    await expect(period).toBeVisible();
+    const brand = (await page.locator("[data-part='brand']").boundingBox())!;
+    const bar = (await period.boundingBox())!;
+    expect(Math.abs(brand.y + brand.height / 2 - (bar.y + bar.height / 2))).toBeLessThan(4);
+
+    // The calendar opens as a popover that stays on screen.
+    await period.click();
+    const popover = (await page.locator("[data-part='week-range']").boundingBox())!;
+    expect(popover.x).toBeGreaterThanOrEqual(0);
+    expect(popover.x + popover.width).toBeLessThanOrEqual(width);
+  });
+}
+
+test("from 62rem the week tabs show at least three weeks", async ({ page }) => {
+  await page.setViewportSize({ width: 992, height: 800 });
+  await page.goto("/it?country=it");
+  const nav = page.getByRole("navigation", { name: "Settimane", exact: true });
+
+  await expect(nav.locator(":scope > ul > li:visible")).toHaveCount(3);
+  await expect(nav.locator("[data-part='period']")).toBeHidden();
+});
+
+test("from 62rem the week tabs show and the period bar does not", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("/it");
   const nav = page.getByRole("navigation", { name: "Settimane", exact: true });
