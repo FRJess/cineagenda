@@ -33,7 +33,9 @@ export async function generateMetadata({
 }: PageProps<"/[locale]">): Promise<Metadata> {
   const { locale } = await params;
   const uiLocale = hasLocale(routing.locales, locale) ? locale : routing.defaultLocale;
+
   const { range, picked, country } = await loadRange(searchParams);
+
   const name = new Intl.DisplayNames([uiLocale], { type: "region" }).of(country) ?? country;
   const t = await getTranslations({ locale: uiLocale, namespace: "Metadata" });
   // The proxy rewrites a period address to `week` and `weeks`: the canonical is the address itself.
