@@ -1,9 +1,11 @@
 /** Countries whose cinema releases can be listed, in menu order. Easy to extend. */
 export const COUNTRIES = [
-  "IT",
+  "BE",
+  "CH",
+  "DE",
   "FR",
+  "IT",
   // Switched off for now (2026-11-10); data, titles and flags are ready.
-  // "DE",
   // "ES",
   // "GB",
   "US",
@@ -26,9 +28,11 @@ type CountryInfo = {
 };
 
 const INFO = {
-  IT: { releaseWeekday: 4, titleLanguage: "it" },
+  BE: { releaseWeekday: 3, titleLanguage: "fr" },
+  CH: { releaseWeekday: 3, titleLanguage: "de" },
+  DE: { releaseWeekday: 4, titleLanguage: "de" },
   FR: { releaseWeekday: 3, titleLanguage: "fr" },
-  // DE: { releaseWeekday: 4, titleLanguage: "de" },
+  IT: { releaseWeekday: 4, titleLanguage: "it" },
   // ES: { releaseWeekday: 5, titleLanguage: "es" },
   // GB: { releaseWeekday: 5, titleLanguage: "en" },
   US: { releaseWeekday: 5, titleLanguage: "en" },
