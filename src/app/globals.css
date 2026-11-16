@@ -1,7 +1,7 @@
 /**
  * FILE: globals.css
  * USAGE: Fonts, tokens, reset and page shell, imported once in the root layout
- * SCOPE: :root, body, main, a, button, [data-part="home"], [data-part="weeks"], [data-part="site-footer"], [data-part="footer-attribution"], [data-part="footer-controls"], [data-part="week-skeleton"], [data-part="sr-only"]
+ * SCOPE: :root, body, main, a, button, [data-part="home"], [data-part="weeks"], [data-part="site-footer"], [data-part="footer-attribution"], [data-part="footer-controls"], [data-part="sr-only"]
  */
 
 /* ─── Fonts: self-hosted latin subsets, SIL OFL 1.1 (public/fonts/README.md) ─── */
@@ -232,28 +232,6 @@ a {
     order: 0;
     margin-left: auto;
   }
-}
-
-/* ─── Loading skeleton: six empty poster slots while the weeks stream in ─── */
-
-/* grid: auto-fill tracks, same wrap as the poster grid of a week */
-[data-part="week-skeleton"] ol {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(9.375rem, 1fr));
-  gap: 1.25rem;
-  list-style: none;
-}
-
-@media (min-width: 48rem) {
-  [data-part="week-skeleton"] ol {
-    grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
-  }
-}
-
-[data-part="week-skeleton"] li {
-  aspect-ratio: 2 / 3;
-  background: var(--surface);
-  border-radius: var(--radius);
 }
 
 /* ─── Buttons ─── */

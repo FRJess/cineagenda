@@ -1,0 +1,56 @@
+/**
+ * FILE: _Loader.css
+ * USAGE: Styles for Loader, the loading state of every page: three film perforations centered in the space the page leaves, pulsing in turn
+ * SCOPE: [data-part="loader"], [data-part="loader-mark"]
+ */
+
+/* ─── Box: fills the page's free space and centers the mark ─── */
+
+[data-part="loader"] {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  min-height: 12rem;
+}
+
+/* ─── Mark: three perforations in ink, 10 by 12px, 8px apart ─── */
+
+[data-part="loader-mark"] {
+  display: flex;
+  gap: var(--space-2);
+}
+
+[data-part="loader-mark"] > span {
+  width: 0.625rem;
+  height: 0.75rem;
+  background: var(--foreground);
+  border-radius: 0.1875rem;
+}
+
+/* ─── Motion: each perforation fades to 20% and back, 0.2s after the one before ─── */
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-part="loader-mark"] > span {
+    animation: loader-pulse 1.2s ease-in-out infinite;
+  }
+
+  [data-part="loader-mark"] > span:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+
+  [data-part="loader-mark"] > span:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+}
+
+@keyframes loader-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.2;
+  }
+}

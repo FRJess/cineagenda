@@ -43,8 +43,7 @@
     "noPoster": "Affiche non disponible",
     "limited": "Sortie limitée",
     "limitedShort": "Limitée",
-    "noReleases": "Aucune sortie",
-    "loading": "Chargement des sorties..."
+    "noReleases": "Aucune sortie"
   },
   "Film": {
     "director": "Réalisation",
@@ -98,6 +97,9 @@
     "filmTitle": "Impossible de charger le film.",
     "text": "TMDB ne répond pas. Réessayez dans quelques secondes.",
     "retry": "Réessayer"
+  },
+  "Loader": {
+    "label": "Chargement..."
   },
   "Footer": {
     "attribution": "This product uses the TMDB API but is not endorsed or certified by TMDB.",

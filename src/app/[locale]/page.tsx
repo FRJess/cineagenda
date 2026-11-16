@@ -5,6 +5,7 @@ import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
 import { CountryPicker } from "@/components/CountryPicker";
+import { Loader } from "@/components/Loader";
 import { SiteHeader } from "@/components/SiteHeader";
 import { WeekSection } from "@/components/WeekSection";
 import { WeekTabs } from "@/components/WeekTabs";
@@ -39,21 +40,6 @@ export async function generateMetadata({
     title: t("countryTitle", { country, name }),
     description: t("countryDescription", { country, name }),
   };
-}
-
-const SKELETON_SLOTS = [1, 2, 3, 4, 5, 6] as const;
-
-// Six empty poster slots while the weeks stream in.
-function WeekSkeleton({ label }: { readonly label: string }) {
-  return (
-    <section aria-busy="true" aria-label={label} data-part="week-skeleton">
-      <ol>
-        {SKELETON_SLOTS.map((slot) => (
-          <li key={slot} />
-        ))}
-      </ol>
-    </section>
-  );
 }
 
 // Request-time: reads searchParams and the clock. The header and the weeks both need them.
@@ -129,7 +115,6 @@ export default async function ReleasesPage({ params, searchParams }: PageProps<"
   }
 
   setRequestLocale(locale);
-  const t = await getTranslations({ locale, namespace: "Releases" });
 
   return (
     <>
@@ -146,7 +131,7 @@ export default async function ReleasesPage({ params, searchParams }: PageProps<"
         </Suspense>
       </SiteHeader>
       <main data-part="home">
-        <Suspense fallback={<WeekSkeleton label={t("loading")} />}>
+        <Suspense fallback={<Loader />}>
           <Weeks locale={locale} searchParams={searchParams} />
         </Suspense>
       </main>

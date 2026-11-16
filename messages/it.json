@@ -43,8 +43,7 @@
     "noPoster": "Locandina non disponibile",
     "limited": "Uscita limitata",
     "limitedShort": "Limitata",
-    "noReleases": "Nessuna uscita",
-    "loading": "Caricamento delle uscite..."
+    "noReleases": "Nessuna uscita"
   },
   "Film": {
     "director": "Regia",
@@ -98,6 +97,9 @@
     "filmTitle": "Non riusciamo a caricare il film.",
     "text": "TMDB non risponde. Riprova tra qualche secondo.",
     "retry": "Riprova"
+  },
+  "Loader": {
+    "label": "Caricamento..."
   },
   "Footer": {
     "attribution": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
