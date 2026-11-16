@@ -34,6 +34,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  outline: none;
 }
 
 /* After the image in paint order, so the veil covers it; text and link sit above with z-index. */
