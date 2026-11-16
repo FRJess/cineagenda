@@ -37,7 +37,7 @@ describe("CountryPicker", () => {
     expect(button.querySelector("img")).toHaveAttribute("alt", "");
   });
 
-  it("lists the active countries in order under its title", () => {
+  it("lists the active countries by name under its title", () => {
     renderWithIntl(<CountryPicker country="FR" pathname="/" />);
     openMenu();
     const list = screen.getByRole("list", { name: "Uscite al cinema in" });
@@ -46,7 +46,7 @@ describe("CountryPicker", () => {
       within(list)
         .getAllByRole("link")
         .map((link) => link.textContent),
-    ).toEqual(["Italia", "Francia", "Stati Uniti"]);
+    ).toEqual(["Belgio", "Francia", "Germania", "Italia", "Stati Uniti", "Svizzera"]);
   });
 
   it("links each country to the same page and period, and marks the chosen one", () => {

@@ -1,4 +1,4 @@
-/** Countries whose cinema releases can be listed, in menu order. Easy to extend. */
+/** Countries whose cinema releases can be listed; the menu sorts them by name. Easy to extend. */
 export const COUNTRIES = [
   "BE",
   "CH",
