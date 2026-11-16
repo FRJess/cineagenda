@@ -4,7 +4,7 @@ import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { LegalHeader, Privacy } from "@/components/LegalPage";
 import { routing } from "@/i18n/routing";
-import { pageMetadata } from "@/lib/seo";
+import { ogImage, pageMetadata } from "@/lib/seo";
 
 /**
  * Title, description and canonical address of the Privacy page.
@@ -23,7 +23,7 @@ export async function generateMetadata({
     path: "/privacy",
     title: t("documentTitle"),
     description: t("lead"),
-    image: { url: "/og-image.png", width: 1200, height: 630 },
+    image: ogImage(uiLocale),
   });
 }
 
