@@ -46,7 +46,7 @@ describe("CountryPicker", () => {
       within(list)
         .getAllByRole("link")
         .map((link) => link.textContent),
-    ).toEqual(["Belgio", "Francia", "Germania", "Italia", "Stati Uniti", "Svizzera"]);
+    ).toEqual(["Francia", "Germania", "Italia", "Stati Uniti"]);
   });
 
   it("links each country to the same page and period, and marks the chosen one", () => {

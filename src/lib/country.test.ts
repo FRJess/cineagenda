@@ -11,7 +11,7 @@ import {
 
 describe("COUNTRIES", () => {
   it("lists the active countries, with Italy as the default", () => {
-    expect(COUNTRIES).toEqual(["BE", "CH", "DE", "FR", "IT", "US"]);
+    expect(COUNTRIES).toEqual(["DE", "FR", "IT", "US"]);
     expect(DEFAULT_COUNTRY).toBe("IT");
   });
 });
@@ -32,8 +32,6 @@ describe("parseCountry", () => {
 
 describe("releaseWeekday", () => {
   it("is the usual cinema release day of each country (0 = Sunday)", () => {
-    expect(releaseWeekday("BE")).toBe(3);
-    expect(releaseWeekday("CH")).toBe(3);
     expect(releaseWeekday("DE")).toBe(4);
     expect(releaseWeekday("FR")).toBe(3);
     expect(releaseWeekday("IT")).toBe(4);
@@ -43,8 +41,6 @@ describe("releaseWeekday", () => {
 
 describe("titleLanguage", () => {
   it("is the language of the titles shown in each country", () => {
-    expect(titleLanguage("BE")).toBe("fr");
-    expect(titleLanguage("CH")).toBe("de");
     expect(titleLanguage("DE")).toBe("de");
     expect(titleLanguage("IT")).toBe("it");
     expect(titleLanguage("FR")).toBe("fr");

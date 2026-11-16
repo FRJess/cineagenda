@@ -1,7 +1,5 @@
 /** Countries whose cinema releases can be listed; the menu sorts them by name. Easy to extend. */
 export const COUNTRIES = [
-  "BE",
-  "CH",
   "DE",
   "FR",
   "IT",
@@ -28,8 +26,6 @@ type CountryInfo = {
 };
 
 const INFO = {
-  BE: { releaseWeekday: 3, titleLanguage: "fr" },
-  CH: { releaseWeekday: 3, titleLanguage: "de" },
   DE: { releaseWeekday: 4, titleLanguage: "de" },
   FR: { releaseWeekday: 3, titleLanguage: "fr" },
   IT: { releaseWeekday: 4, titleLanguage: "it" },
