@@ -7,6 +7,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { LocaleSwitch } from "@/components/LocaleSwitch";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { SITE_URL } from "@/lib/seo";
 import "@daypicker/react/style.css";
 import "../globals.css";
 
@@ -24,7 +25,7 @@ export function generateStaticParams() {
 /**
  * Localized document metadata.
  * @param props Route props.
- * @returns Title and description.
+ * @returns Title, description and the origin that makes page addresses absolute.
  */
 export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Promise<Metadata> {
   const { locale } = await params;
@@ -33,7 +34,7 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
     namespace: "Metadata",
   });
 
-  return { title: t("title"), description: t("description") };
+  return { metadataBase: new URL(SITE_URL), title: t("title"), description: t("description") };
 }
 
 /**

@@ -9,8 +9,9 @@ import { FilmDetail } from "@/components/FilmDetail";
 import { Loader } from "@/components/Loader";
 import { SiteHeader } from "@/components/SiteHeader";
 import { routing } from "@/i18n/routing";
-import { type Country, DEFAULT_COUNTRY, parseCountry } from "@/lib/country";
+import { type Country, countryQuery, DEFAULT_COUNTRY, parseCountry } from "@/lib/country";
 import { todayInRome } from "@/lib/releases/window";
+import { pageMetadata } from "@/lib/seo";
 import { getMovieDetails } from "@/lib/tmdb/cached";
 import type { MovieDetails } from "@/lib/tmdb/movie-details";
 import type { UiLocale } from "@/lib/tmdb/to-movie";
@@ -20,6 +21,8 @@ import type { UiLocale } from "@/lib/tmdb/to-movie";
  * so there is no useful static shell. Data is still cached per id by `getMovieDetails`.
  */
 export const instant = false;
+
+const BACKDROP_BASE = "https://image.tmdb.org/t/p/w1280";
 
 type Params = PageProps<"/[locale]/film/[id]">["params"];
 type SearchParams = PageProps<"/[locale]/film/[id]">["searchParams"];
@@ -42,7 +45,7 @@ async function loadFilm(params: Params, searchParams: SearchParams) {
 }
 
 /**
- * Film title as the document title, or the not-found title.
+ * Film title, plot, canonical address and backdrop for previews, or the not-found title.
  * @param props Route props.
  * @returns Metadata.
  */
@@ -56,14 +59,25 @@ export async function generateMetadata({
   const { locale } = await params;
   const loaded = await loadFilm(params, searchParams);
 
+  const uiLocale = hasLocale(routing.locales, locale) ? locale : routing.defaultLocale;
+
   if (loaded?.film) {
-    return { title: `${loaded.film.title} | Cineagenda` };
+    const { film, country } = loaded;
+    const site = await getTranslations({ locale: uiLocale, namespace: "Metadata" });
+
+    return pageMetadata({
+      locale: loaded.locale,
+      path: `/film/${film.id}`,
+      query: countryQuery(country),
+      title: `${film.title} | Cineagenda`,
+      description: film.overview || site("description"),
+      image: film.backdropPath
+        ? { url: `${BACKDROP_BASE}${film.backdropPath}`, width: 1280, height: 720 }
+        : undefined,
+    });
   }
 
-  const t = await getTranslations({
-    locale: hasLocale(routing.locales, locale) ? locale : routing.defaultLocale,
-    namespace: "NotFound",
-  });
+  const t = await getTranslations({ locale: uiLocale, namespace: "NotFound" });
 
   return { title: t("filmDocumentTitle") };
 }
