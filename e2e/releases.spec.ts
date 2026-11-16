@@ -1,7 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
-const ATTRIBUTION = "This product uses the TMDB API but is not endorsed or certified by TMDB.";
 const WCAG_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
 
 test("root redirects to Italian", async ({ page }) => {
@@ -28,20 +27,18 @@ test("locale switch moves from Italian to English", async ({ page }) => {
   await expect(page).toHaveURL(/\/en$/);
 });
 
-test("footer shows TMDB attribution and logo", async ({ page }) => {
+test("the footer credits TMDB with a link to the About page, without the logo", async ({
+  page,
+}) => {
   await page.goto("/it");
   const footer = page.getByRole("contentinfo");
 
-  await expect(footer).toContainText(ATTRIBUTION);
-  await expect(footer.getByRole("img", { name: "TMDB" })).toBeVisible();
-});
-
-test("the English attribution is marked as English on non-English pages only", async ({ page }) => {
-  await page.goto("/fr");
-  await expect(page.getByText(ATTRIBUTION)).toHaveAttribute("lang", "en");
-
-  await page.goto("/en");
-  await expect(page.getByText(ATTRIBUTION)).not.toHaveAttribute("lang", /.*/);
+  await expect(footer).toContainText("Realizzato da Jessica. Dati e immagini dei film da TMDB.");
+  await expect(footer.getByRole("link", { name: "TMDB" })).toHaveAttribute(
+    "href",
+    "https://www.themoviedb.org",
+  );
+  await expect(footer.getByRole("img", { name: "TMDB" })).toHaveCount(0);
 });
 
 test("default view shows only the current week", async ({ page }) => {

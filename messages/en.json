@@ -101,8 +101,51 @@
   "Loader": {
     "label": "Loading..."
   },
+  "About": {
+    "documentTitle": "About · Cineagenda",
+    "title": "About",
+    "lead": "Cineagenda lists the films coming to cinemas, week by week, with the release date of the country you choose.",
+    "credits": "Credits",
+    "notice": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
+    "data": "All film data and images come from <tmdb>TMDB</tmdb>, The Movie Database. Cineagenda is not affiliated with TMDB, with film distributors or with cinemas. Release dates can change, and the data may be incomplete or not updated in real time: check with your cinema before making plans.",
+    "trailers": "<b>Trailers</b> are played from YouTube.",
+    "typefaces": "<b>Typefaces.</b> Syne and Instrument Sans, under the SIL Open Font License 1.1.",
+    "code": "<b>Code.</b> Open source under the MIT license, © 2026 Jessica Tartaglia, <github>available on GitHub</github>.",
+    "legal": "Legal notice",
+    "whoTitle": "Who runs the site",
+    "who": "Cineagenda is run by Jessica Tartaglia as a personal, non-commercial project, with no advertising. Contact: <mail>hello@cineagenda.app</mail>.",
+    "rightsTitle": "Rights on images",
+    "rights": "Posters, images, titles and trailers belong to their respective owners and are shown through TMDB and YouTube for information only. If you hold rights on an image and want it removed, write to the address above.",
+    "warrantyTitle": "No warranty",
+    "warranty": "The site is provided as it is, without any warranty on the accuracy or completeness of the information.",
+    "privacy": "How the site handles your data is on the <privacy>Privacy</privacy> page."
+  },
+  "Privacy": {
+    "documentTitle": "Privacy · Cineagenda",
+    "title": "Privacy",
+    "updated": "Last updated: <time>16 November 2026</time>",
+    "lead": "Cineagenda has no accounts, no forms, no advertising and no analytics. It asks you for nothing and builds no profile of you. A few technical data are still processed when you use it; this page says which.",
+    "controllerTitle": "Who is responsible",
+    "controller": "Jessica Tartaglia runs this site as a personal, non-commercial project and is the data controller. Contact: <mail>hello@cineagenda.app</mail>.",
+    "visitTitle": "What is processed when you visit",
+    "hosting": "<b>Hosting.</b> The site is hosted by Vercel Inc. Like any web host, its servers receive your IP address, the page you ask for, the date and time and your browser type, and keep them in technical logs for a limited time, to deliver the site and keep it secure. Vercel may process these data in the United States. See <vercel>Vercel's privacy policy</vercel>.",
+    "images": "<b>Film images.</b> Posters, backdrops and cast photos are loaded by your browser straight from the image servers of TMDB (The Movie Database), which therefore receive your IP address and browser type. Film information is requested by our server, not by your browser. See <tmdbp>TMDB's privacy policy</tmdbp>.",
+    "trailers": "<b>Trailers.</b> A trailer is loaded from YouTube's privacy-enhanced address (youtube-nocookie.com) only when you press \"Watch the trailer\"; nothing is sent to YouTube before that. Once it plays, Google receives your IP address and may store data on your device. See <google>Google's privacy policy</google>.",
+    "email": "<b>Email.</b> If you write to the address above, your address and your message are used only to answer you.",
+    "deviceTitle": "What is stored on your device",
+    "country": "<b>Country.</b> The cookie <code>cineagenda-country</code> remembers the last release country you chose, so the site opens on it next time. It lasts one year.",
+    "theme": "<b>Theme.</b> <code>cineagenda-theme</code>, in the browser's local storage, remembers light or dark, and only if you use the switch in the footer. It lasts until you clear it.",
+    "deviceNote": "Both are technical, identify no one and serve a choice you made, which is why the site shows no cookie banner. You can delete them from your browser settings at any time.",
+    "basisTitle": "Why, and on what basis",
+    "basis": "These data are processed only to show you the site and keep it secure, on the basis of legitimate interest (art. 6(1)(f) GDPR). Nothing is sold, used for marketing or used for automated decisions.",
+    "rightsTitle": "Your rights",
+    "rights": "You can ask to access, correct or delete your data, to restrict their processing or to object to it, by writing to the address above. You can also lodge a complaint with the data protection authority of your country (in Italy, the Garante per la protezione dei dati personali)."
+  },
   "Footer": {
-    "attribution": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
+    "links": "Site information",
+    "about": "About",
+    "privacy": "Privacy",
+    "small": "Made by Jessica. Film data and images from <tmdb>TMDB</tmdb>.",
     "theme": "Dark theme"
   }
 }

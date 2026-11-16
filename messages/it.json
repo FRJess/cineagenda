@@ -101,8 +101,51 @@
   "Loader": {
     "label": "Caricamento..."
   },
+  "About": {
+    "documentTitle": "Informazioni · Cineagenda",
+    "title": "Informazioni",
+    "lead": "Cineagenda elenca i film in uscita al cinema, settimana per settimana, con la data di uscita del paese che scegli.",
+    "credits": "Crediti",
+    "notice": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
+    "data": "Tutti i dati e le immagini dei film provengono da <tmdb>TMDB</tmdb>, The Movie Database: questo prodotto usa l'API di TMDB ma non è approvato né certificato da TMDB. Cineagenda non è affiliato a TMDB, ai distributori o ai cinema. Le date di uscita possono cambiare e i dati possono essere incompleti o non aggiornati in tempo reale: verifica con il tuo cinema prima di organizzarti.",
+    "trailers": "<b>I trailer</b> sono riprodotti da YouTube.",
+    "typefaces": "<b>Caratteri.</b> Syne e Instrument Sans, con licenza SIL Open Font License 1.1.",
+    "code": "<b>Codice.</b> Open source con licenza MIT, © 2026 Jessica Tartaglia, <github>disponibile su GitHub</github>.",
+    "legal": "Note legali",
+    "whoTitle": "Chi gestisce il sito",
+    "who": "Cineagenda è gestito da Jessica Tartaglia come progetto personale e non commerciale, senza pubblicità. Contatto: <mail>hello@cineagenda.app</mail>.",
+    "rightsTitle": "Diritti sulle immagini",
+    "rights": "Locandine, immagini, titoli e trailer appartengono ai rispettivi titolari e sono mostrati tramite TMDB e YouTube a solo scopo informativo. Se hai diritti su un'immagine e vuoi che sia rimossa, scrivi all'indirizzo qui sopra.",
+    "warrantyTitle": "Nessuna garanzia",
+    "warranty": "Il sito è fornito così com'è, senza alcuna garanzia sull'esattezza o la completezza delle informazioni.",
+    "privacy": "Come il sito tratta i tuoi dati è spiegato nella pagina <privacy>Privacy</privacy>."
+  },
+  "Privacy": {
+    "documentTitle": "Privacy · Cineagenda",
+    "title": "Privacy",
+    "updated": "Ultimo aggiornamento: <time>16 novembre 2026</time>",
+    "lead": "Cineagenda non ha account, moduli, pubblicità né strumenti di analisi. Non ti chiede nulla e non crea un tuo profilo. Quando lo usi vengono comunque trattati alcuni dati tecnici: questa pagina dice quali.",
+    "controllerTitle": "Chi è il titolare",
+    "controller": "Jessica Tartaglia gestisce questo sito come progetto personale e non commerciale ed è la titolare del trattamento. Contatto: <mail>hello@cineagenda.app</mail>.",
+    "visitTitle": "Cosa viene trattato quando visiti il sito",
+    "hosting": "<b>Hosting.</b> Il sito è ospitato da Vercel Inc. Come ogni servizio di hosting, i suoi server ricevono il tuo indirizzo IP, la pagina richiesta, la data e l'ora e il tipo di browser, e li conservano per un tempo limitato in registri tecnici, per servire il sito e tenerlo sicuro. Vercel può trattare questi dati negli Stati Uniti. Vedi <vercel>l'informativa sulla privacy di Vercel</vercel>.",
+    "images": "<b>Immagini dei film.</b> Locandine, fotogrammi e foto del cast sono caricati dal tuo browser direttamente dai server di immagini di TMDB (The Movie Database), che quindi ricevono il tuo indirizzo IP e il tipo di browser. Le informazioni sui film sono richieste dal nostro server, non dal tuo browser. Vedi <tmdbp>l'informativa sulla privacy di TMDB</tmdbp>.",
+    "trailers": "<b>Trailer.</b> Un trailer viene caricato dall'indirizzo di YouTube con privacy avanzata (youtube-nocookie.com) solo quando premi \"Guarda il trailer\"; prima non viene inviato nulla a YouTube. Quando parte, Google riceve il tuo indirizzo IP e può salvare dati sul tuo dispositivo. Vedi <google>l'informativa sulla privacy di Google</google>.",
+    "email": "<b>Email.</b> Se scrivi all'indirizzo qui sopra, il tuo indirizzo e il tuo messaggio servono solo a risponderti.",
+    "deviceTitle": "Cosa viene salvato sul tuo dispositivo",
+    "country": "<b>Paese.</b> Il cookie <code>cineagenda-country</code> ricorda l'ultimo paese delle uscite che hai scelto, così il sito si riapre su quello. Dura un anno.",
+    "theme": "<b>Tema.</b> <code>cineagenda-theme</code>, nella memoria locale del browser, ricorda il tema chiaro o scuro, e solo se usi l'interruttore nel footer. Resta finché non lo cancelli.",
+    "deviceNote": "Sono entrambi tecnici, non identificano nessuno e servono a una scelta che hai fatto tu: per questo il sito non mostra un banner dei cookie. Puoi cancellarli in ogni momento dalle impostazioni del browser.",
+    "basisTitle": "Perché, e su quale base",
+    "basis": "Questi dati sono trattati solo per mostrarti il sito e tenerlo sicuro, sulla base del legittimo interesse (art. 6, par. 1, lett. f del GDPR). Nulla viene venduto, usato per marketing o per decisioni automatizzate.",
+    "rightsTitle": "I tuoi diritti",
+    "rights": "Puoi chiedere di accedere ai tuoi dati, di correggerli o cancellarli, di limitarne il trattamento o di opporti, scrivendo all'indirizzo qui sopra. Puoi anche presentare un reclamo all'autorità per la protezione dei dati del tuo paese (in Italia, il Garante per la protezione dei dati personali)."
+  },
   "Footer": {
-    "attribution": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
+    "links": "Informazioni sul sito",
+    "about": "Informazioni",
+    "privacy": "Privacy",
+    "small": "Realizzato da Jessica. Dati e immagini dei film da <tmdb>TMDB</tmdb>.",
     "theme": "Tema scuro"
   }
 }

@@ -87,7 +87,7 @@ describe("FilmDetail", () => {
     );
   });
 
-  it("has no TMDB source line in the sheet: the footer carries the attribution", () => {
+  it("has no TMDB source line in the sheet: the About page carries the attribution", () => {
     renderFilm();
 
     expect(screen.queryByText(/Dati e immagini/)).not.toBeInTheDocument();

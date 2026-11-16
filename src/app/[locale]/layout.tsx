@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import Script from "next/script";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
-import { LocaleSwitch } from "@/components/LocaleSwitch";
-import { ThemeToggle } from "@/components/ThemeToggle";
+import { SiteFooter } from "@/components/SiteFooter";
 import { SITE_URL } from "@/lib/seo";
 import "@daypicker/react/style.css";
 import "../globals.css";
@@ -38,7 +36,7 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
 }
 
 /**
- * Root layout per locale: page and footer with the TMDB attribution, the language and the theme.
+ * Root layout per locale: the page and the site footer.
  * Each page renders its own SiteHeader, so the home page can place the week tabs in it.
  * @param props Route props.
  * @returns Document shell.
@@ -51,7 +49,6 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
   }
 
   setRequestLocale(locale);
-  const t = await getTranslations({ locale, namespace: "Footer" });
 
   return (
     // THEME_BOOT_SCRIPT sets data-theme before hydration; the server cannot know the stored theme.
@@ -78,17 +75,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
       <body>
         <NextIntlClientProvider>
           {children}
-          <footer data-part="site-footer">
-            <div data-part="footer-attribution">
-              <Image src="/tmdb-logo.svg" alt="TMDB" width={273} height={36} />
-              {/* TMDB's notice stays in English in every locale. */}
-              <p lang={locale === "en" ? undefined : "en"}>{t("attribution")}</p>
-            </div>
-            <div data-part="footer-controls">
-              <LocaleSwitch />
-              <ThemeToggle />
-            </div>
-          </footer>
+          <SiteFooter />
         </NextIntlClientProvider>
       </body>
     </html>

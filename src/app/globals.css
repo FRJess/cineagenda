@@ -1,7 +1,7 @@
 /**
  * FILE: globals.css
  * USAGE: Fonts, tokens, reset and page shell, imported once in the root layout
- * SCOPE: :root, body, main, a, button, [data-part="home"], [data-part="weeks"], [data-part="site-footer"], [data-part="footer-attribution"], [data-part="footer-controls"], [data-part="sr-only"]
+ * SCOPE: :root, body, main, a, button, [data-part="home"], [data-part="weeks"], [data-part="site-footer"], [data-part="footer-links"], [data-part="footer-controls"], [data-part="footer-small"], [data-part="sr-only"]
  */
 
 /* ─── Fonts: self-hosted latin subsets, SIL OFL 1.1 (public/fonts/README.md) ─── */
@@ -166,13 +166,68 @@ a {
   gap: 5rem;
 }
 
-/* ─── Footer: on phones language and theme on one row, then logo and notice ─── */
+/* ─── Footer: links on the left with language and theme on the right, then the small print ─── */
 
+/* The first row wraps only when the labels do not fit; it fits at 360px in the three languages. */
 [data-part="site-footer"] {
   display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  padding: 0.875rem var(--space-4);
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: auto;
+  padding: var(--space-4) var(--space-4) 1.25rem;
+  font-size: 0.6875rem;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+}
+
+[data-part="footer-links"] {
+  margin-right: auto;
+}
+
+[data-part="footer-links"] ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-4);
+  list-style: none;
+}
+
+[data-part="footer-links"] a {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--foreground);
+  text-decoration: none;
+}
+
+[data-part="footer-links"] a:hover {
+  text-decoration: underline;
+}
+
+[data-part="footer-controls"] {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+[data-part="footer-small"] {
+  flex: 1 0 100%;
+}
+
+[data-part="footer-small"] a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+@media (min-width: 48rem) {
+  [data-part="site-footer"] {
+    padding-inline: max(var(--space-4), calc((100% - 72rem) / 2 + var(--space-4)));
+    font-size: 0.75rem;
+  }
+
+  [data-part="footer-controls"] {
+    gap: var(--space-4);
+  }
 }
 
 [data-part="sr-only"] {
@@ -182,56 +237,6 @@ a {
   overflow: hidden;
   white-space: nowrap;
   clip-path: inset(50%);
-}
-
-[data-part="site-footer"] {
-  margin-top: auto;
-  font-size: 0.6875rem;
-  color: var(--muted);
-  border-top: 1px solid var(--border);
-}
-
-[data-part="footer-attribution"] {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.625rem;
-}
-
-[data-part="footer-attribution"] > img {
-  flex: 0 0 auto;
-  width: auto;
-  height: 0.875rem;
-}
-
-/* Source order is notice, then controls; on phones the controls come first. */
-[data-part="footer-controls"] {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  order: -1;
-}
-
-/* From 48rem: one row, logo and notice on the left, language and theme at the right end. */
-@media (min-width: 48rem) {
-  [data-part="site-footer"] {
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--space-3) var(--space-6);
-    padding: var(--space-4) max(var(--space-4), calc((100% - 72rem) / 2 + var(--space-4)));
-    font-size: 0.75rem;
-  }
-
-  [data-part="footer-attribution"] {
-    align-items: center;
-    gap: var(--space-6);
-  }
-
-  [data-part="footer-controls"] {
-    order: 0;
-    margin-left: auto;
-  }
 }
 
 /* ─── Buttons ─── */

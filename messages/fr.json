@@ -101,8 +101,51 @@
   "Loader": {
     "label": "Chargement..."
   },
+  "About": {
+    "documentTitle": "À propos · Cineagenda",
+    "title": "À propos",
+    "lead": "Cineagenda liste les films qui sortent au cinéma, semaine après semaine, avec la date de sortie du pays que vous choisissez.",
+    "credits": "Crédits",
+    "notice": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
+    "data": "Toutes les données et images des films proviennent de <tmdb>TMDB</tmdb>, The Movie Database : ce produit utilise l'API de TMDB mais n'est ni approuvé ni certifié par TMDB. Cineagenda n'est affilié ni à TMDB, ni aux distributeurs, ni aux cinémas. Les dates de sortie peuvent changer et les données peuvent être incomplètes ou ne pas être mises à jour en temps réel : vérifiez auprès de votre cinéma avant de vous organiser.",
+    "trailers": "<b>Les bandes-annonces</b> sont lues depuis YouTube.",
+    "typefaces": "<b>Polices.</b> Syne et Instrument Sans, sous licence SIL Open Font License 1.1.",
+    "code": "<b>Code.</b> Open source sous licence MIT, © 2026 Jessica Tartaglia, <github>disponible sur GitHub</github>.",
+    "legal": "Mentions légales",
+    "whoTitle": "Qui gère le site",
+    "who": "Cineagenda est géré par Jessica Tartaglia comme un projet personnel et non commercial, sans publicité. Contact : <mail>hello@cineagenda.app</mail>. Hébergeur : Vercel Inc., 440 N Barranca Avenue #4133, Covina, CA 91723, États-Unis.",
+    "rightsTitle": "Droits sur les images",
+    "rights": "Les affiches, images, titres et bandes-annonces appartiennent à leurs titulaires respectifs et sont affichés via TMDB et YouTube à titre d'information uniquement. Si vous détenez des droits sur une image et souhaitez son retrait, écrivez à l'adresse ci-dessus.",
+    "warrantyTitle": "Absence de garantie",
+    "warranty": "Le site est fourni en l'état, sans aucune garantie quant à l'exactitude ou à l'exhaustivité des informations.",
+    "privacy": "La façon dont le site traite vos données est expliquée sur la page <privacy>Confidentialité</privacy>."
+  },
+  "Privacy": {
+    "documentTitle": "Confidentialité · Cineagenda",
+    "title": "Confidentialité",
+    "updated": "Dernière mise à jour : <time>16 novembre 2026</time>",
+    "lead": "Cineagenda n'a ni comptes, ni formulaires, ni publicité, ni outils de mesure d'audience. Il ne vous demande rien et ne crée aucun profil. Quelques données techniques sont tout de même traitées lorsque vous l'utilisez : cette page indique lesquelles.",
+    "controllerTitle": "Qui est responsable",
+    "controller": "Jessica Tartaglia gère ce site comme un projet personnel et non commercial et en est la responsable du traitement. Contact : <mail>hello@cineagenda.app</mail>.",
+    "visitTitle": "Ce qui est traité lors de votre visite",
+    "hosting": "<b>Hébergement.</b> Le site est hébergé par Vercel Inc. Comme tout hébergeur, ses serveurs reçoivent votre adresse IP, la page demandée, la date et l'heure et le type de navigateur, et les conservent pour une durée limitée dans des journaux techniques, afin de servir le site et de le sécuriser. Vercel peut traiter ces données aux États-Unis. Voir la <vercel>politique de confidentialité de Vercel</vercel>.",
+    "images": "<b>Images des films.</b> Les affiches, les images et les photos des acteurs sont chargées par votre navigateur directement depuis les serveurs d'images de TMDB (The Movie Database), qui reçoivent donc votre adresse IP et le type de navigateur. Les informations sur les films sont demandées par notre serveur, pas par votre navigateur. Voir la <tmdbp>politique de confidentialité de TMDB</tmdbp>.",
+    "trailers": "<b>Bandes-annonces.</b> Une bande-annonce est chargée depuis l'adresse de YouTube en mode confidentialité avancée (youtube-nocookie.com) uniquement lorsque vous appuyez sur « Voir la bande-annonce » ; rien n'est envoyé à YouTube avant. Une fois la lecture lancée, Google reçoit votre adresse IP et peut enregistrer des données sur votre appareil. Voir la <google>politique de confidentialité de Google</google>.",
+    "email": "<b>E-mail.</b> Si vous écrivez à l'adresse ci-dessus, votre adresse et votre message servent uniquement à vous répondre.",
+    "deviceTitle": "Ce qui est enregistré sur votre appareil",
+    "country": "<b>Pays.</b> Le cookie <code>cineagenda-country</code> retient le dernier pays de sortie choisi, pour que le site s'ouvre dessus la fois suivante. Il dure un an.",
+    "theme": "<b>Thème.</b> <code>cineagenda-theme</code>, dans le stockage local du navigateur, retient le thème clair ou sombre, et seulement si vous utilisez l'interrupteur du pied de page. Il reste jusqu'à ce que vous l'effaciez.",
+    "deviceNote": "Les deux sont techniques, n'identifient personne et servent un choix que vous avez fait : c'est pourquoi le site n'affiche pas de bandeau de cookies. Vous pouvez les supprimer à tout moment dans les réglages du navigateur.",
+    "basisTitle": "Pourquoi, et sur quelle base",
+    "basis": "Ces données sont traitées uniquement pour vous afficher le site et le sécuriser, sur la base de l'intérêt légitime (art. 6, § 1, f du RGPD). Rien n'est vendu, ni utilisé à des fins de marketing ou de décision automatisée.",
+    "rightsTitle": "Vos droits",
+    "rights": "Vous pouvez demander l'accès à vos données, leur rectification ou leur effacement, la limitation de leur traitement, ou vous y opposer, en écrivant à l'adresse ci-dessus. Vous pouvez aussi introduire une réclamation auprès de l'autorité de protection des données de votre pays (en France, la CNIL ; en Italie, le Garante per la protezione dei dati personali)."
+  },
   "Footer": {
-    "attribution": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
+    "links": "Informations sur le site",
+    "about": "À propos",
+    "privacy": "Confidentialité",
+    "small": "Réalisé par Jessica. Données et images des films : <tmdb>TMDB</tmdb>.",
     "theme": "Thème sombre"
   }
 }
