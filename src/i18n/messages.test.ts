@@ -16,9 +16,9 @@ describe("messages", () => {
     expect(keyPaths(it_).sort()).toEqual(keyPaths(fr).sort());
   });
 
-  it("carry the TMDB attribution verbatim in both locales", () => {
-    expect(it_.Footer.attribution).toBe(ATTRIBUTION);
-    expect(en.Footer.attribution).toBe(ATTRIBUTION);
-    expect(fr.Footer.attribution).toBe(ATTRIBUTION);
+  it("carry the TMDB notice of the About page verbatim in every locale", () => {
+    expect(it_.About.notice).toBe(ATTRIBUTION);
+    expect(en.About.notice).toBe(ATTRIBUTION);
+    expect(fr.About.notice).toBe(ATTRIBUTION);
   });
 });
