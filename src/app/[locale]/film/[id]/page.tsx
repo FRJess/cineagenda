@@ -4,8 +4,9 @@ import { connection } from "next/server";
 import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
-import { FilmDetail, FilmSkeleton } from "@/components/FilmDetail";
 import { CountryPicker } from "@/components/CountryPicker";
+import { FilmDetail } from "@/components/FilmDetail";
+import { Loader } from "@/components/Loader";
 import { SiteHeader } from "@/components/SiteHeader";
 import { routing } from "@/i18n/routing";
 import { type Country, DEFAULT_COUNTRY, parseCountry } from "@/lib/country";
@@ -98,7 +99,13 @@ export default async function FilmPage({ params, searchParams }: PageProps<"/[lo
           <CountryPicker country={loaded.country} pathname="/" />
         }
       />
-      <Suspense fallback={<FilmSkeleton />}>
+      <Suspense
+        fallback={
+          <main aria-busy="true">
+            <Loader />
+          </main>
+        }
+      >
         <Film film={loaded.film} country={loaded.country} />
       </Suspense>
     </>

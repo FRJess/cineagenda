@@ -1,7 +1,7 @@
 /**
  * FILE: _FilmDetail.css
- * USAGE: Film page: hero on the backdrop, sheet with details, poster beside the sheet from 48rem; also the loading, not-found and error shells
- * SCOPE: [data-part="film"], [data-part="film-hero"], [data-part="film-hero-text"], [data-part="film-date"], [data-part="film-subtitle"], [data-part="film-director"], [data-part="director"], [data-part="director-sep"], [data-part="film-year"], [data-part="film-columns"], [data-part="film-poster"], [data-part="film-body"], [data-part="limited-note"], [data-part="genres"], [data-part="film-trailer"], [data-part="trailer"], [data-part="film-plot"], [data-part="spoiler"], [data-part="film-facts"], [data-part="facts"], [data-part="film-cast"], [data-part="skeleton-line"]
+ * USAGE: Film page: hero on the backdrop, sheet with details, poster beside the sheet from 48rem; also the not-found and error shells
+ * SCOPE: [data-part="film"], [data-part="film-hero"], [data-part="film-hero-text"], [data-part="film-date"], [data-part="film-subtitle"], [data-part="film-director"], [data-part="director"], [data-part="director-sep"], [data-part="film-year"], [data-part="film-columns"], [data-part="film-poster"], [data-part="film-body"], [data-part="limited-note"], [data-part="genres"], [data-part="film-trailer"], [data-part="trailer"], [data-part="film-plot"], [data-part="spoiler"], [data-part="film-facts"], [data-part="facts"], [data-part="film-cast"]
  */
 
 /* ─── Page: no side padding, the hero runs edge to edge; space before the footer ─── */
@@ -514,27 +514,6 @@
 [data-part="trailer"] > iframe:focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 2px;
-}
-
-/* ─── Loading shell: three grey lines in the sheet ─── */
-
-[data-part="skeleton-line"] {
-  display: block;
-  height: 0.75rem;
-  background: var(--background);
-  border-radius: 0.25rem;
-}
-
-[data-part="skeleton-line"]:nth-child(1) {
-  width: 60%;
-}
-
-[data-part="skeleton-line"]:nth-child(2) {
-  width: 90%;
-}
-
-[data-part="skeleton-line"]:nth-child(3) {
-  width: 75%;
 }
 
 /* ─── From 48rem: poster beside the sheet, rising into the hero; the sheet stays one column ─── */

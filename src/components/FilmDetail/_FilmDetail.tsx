@@ -224,22 +224,3 @@ export function FilmDetail({
     </main>
   );
 }
-
-/**
- * Loading state of the film page: the hero without text and a sheet with three grey lines.
- * @returns Busy main landmark.
- */
-export function FilmSkeleton() {
-  return (
-    <main data-part="film" aria-busy="true">
-      <header data-part="film-hero" />
-      <div data-part="film-columns">
-        <div data-part="film-body">
-          <span data-part="skeleton-line" />
-          <span data-part="skeleton-line" />
-          <span data-part="skeleton-line" />
-        </div>
-      </div>
-    </main>
-  );
-}

@@ -2,7 +2,7 @@ import { fireEvent, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import type { MovieDetails } from "@/lib/tmdb/movie-details";
 import { renderWithIntl } from "@/test/intl";
-import { FilmDetail, FilmSkeleton } from "./_FilmDetail";
+import { FilmDetail } from "./_FilmDetail";
 
 vi.mock("@/i18n/navigation", () => ({
   Link: ({
@@ -362,14 +362,5 @@ describe("FilmDetail", () => {
     const { container } = renderFilm({ backdropPath: null });
     expect(container.querySelector("[data-part='film']")).not.toHaveAttribute("data-backdrop");
     expect(container.querySelector("[data-part='film-hero'] img")).toBeNull();
-  });
-});
-
-describe("FilmSkeleton", () => {
-  it("is a busy page shell with three placeholder lines", () => {
-    const { container } = renderWithIntl(<FilmSkeleton />);
-
-    expect(container.querySelector("[data-part='film']")).toHaveAttribute("aria-busy", "true");
-    expect(container.querySelectorAll("[data-part='skeleton-line']")).toHaveLength(3);
   });
 });
