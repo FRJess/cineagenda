@@ -10,9 +10,10 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { WeekSection } from "@/components/WeekSection";
 import { WeekTabs } from "@/components/WeekTabs";
 import { routing } from "@/i18n/routing";
-import { DEFAULT_COUNTRY, parseCountry } from "@/lib/country";
+import { countryQuery, DEFAULT_COUNTRY, parseCountry } from "@/lib/country";
 import { parsePeriod, periodHref } from "@/lib/releases/period";
 import { defaultRange, mondayOf, sundayOf, todayInRome, weeksBetween } from "@/lib/releases/window";
+import { pageMetadata } from "@/lib/seo";
 import { getWeekReleases } from "@/lib/tmdb/cached";
 import type { UiLocale } from "@/lib/tmdb/to-movie";
 
@@ -22,7 +23,7 @@ const first = (value: string | string[] | undefined): string | undefined =>
   Array.isArray(value) ? value[0] : value;
 
 /**
- * Title and description that name the country of the list.
+ * Title and description that name the country of the list, with its canonical address.
  * @param props Route props.
  * @returns Metadata.
  */
@@ -32,14 +33,20 @@ export async function generateMetadata({
 }: PageProps<"/[locale]">): Promise<Metadata> {
   const { locale } = await params;
   const uiLocale = hasLocale(routing.locales, locale) ? locale : routing.defaultLocale;
-  const country = parseCountry(first((await searchParams).country)) ?? DEFAULT_COUNTRY;
+  const { range, picked, country } = await loadRange(searchParams);
   const name = new Intl.DisplayNames([uiLocale], { type: "region" }).of(country) ?? country;
   const t = await getTranslations({ locale: uiLocale, namespace: "Metadata" });
+  // The proxy rewrites a period address to `week` and `weeks`: the canonical is the address itself.
+  const href = picked ? periodHref(range) : { pathname: "", query: {} };
 
-  return {
+  return pageMetadata({
+    locale: uiLocale,
+    path: href.pathname,
+    query: { ...countryQuery(country), ...href.query },
     title: t("countryTitle", { country, name }),
     description: t("countryDescription", { country, name }),
-  };
+    image: { url: "/og-image.png", width: 1200, height: 630 },
+  });
 }
 
 // Request-time: reads searchParams and the clock. The header and the weeks both need them.

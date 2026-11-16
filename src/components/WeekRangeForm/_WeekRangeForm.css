@@ -71,6 +71,9 @@
 
 [data-part="week-range"] .rdp-root {
   --rdp-accent-color: var(--accent);
+  /* DayPicker colors today's cell with the accent, 3.35:1 on a reachable week. currentColor
+     keeps the inherited text color and the cell rule's order against the selected band. */
+  --rdp-today-color: currentColor;
   --rdp-accent-background-color: transparent;
   --rdp-range_start-background: transparent;
   --rdp-range_end-background: transparent;

@@ -366,3 +366,21 @@ for (const colorScheme of ["light", "dark"] as const) {
     expect(results.violations).toEqual([]);
   });
 }
+
+test("today's number in the date popover has the color of the other days", async ({ page }) => {
+  await page.emulateMedia({ colorScheme: "light" });
+  await page.setViewportSize({ width: 1280, height: 900 });
+  // Fixed browser clock: today is the Monday after the period, in a week that is not selected.
+  await page.clock.setFixedTime(new Date("2026-11-16T12:00:00+01:00"));
+  await page.goto("/it/2026-11-02?weeks=2");
+  await page.getByText("Date", { exact: true }).click();
+  const color = (selector: string) =>
+    page
+      .locator(`[data-part='week-range'] ${selector}`)
+      .first()
+      .evaluate((el) => getComputedStyle(el).color);
+
+  expect(await color(".rdp-today .rdp-day_button")).toBe(
+    await color("[data-day='2026-11-17'] .rdp-day_button"),
+  );
+});
