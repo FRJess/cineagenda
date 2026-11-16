@@ -38,6 +38,7 @@ export function FeaturedCard({
             height={720}
             sizes="(min-width: 72rem) 36rem, (min-width: 48rem) 60vw, 100vw"
             priority
+            unoptimized
           />
         )}
         <div data-part="card-text">

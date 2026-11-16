@@ -33,6 +33,8 @@ yarn-error.log*
 next-env.d.ts
 # local code index
 .tokensave/
+# local claude and tool config (not committed)
+.claude/**/*.local.json
 # secrets
 !.env.example
 # throwaway spikes

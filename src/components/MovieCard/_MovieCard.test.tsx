@@ -75,7 +75,7 @@ describe("MovieCard", () => {
     const parts = [...(container.querySelector("a")?.children ?? [])];
 
     expect(parts.map((el) => el.tagName)).toEqual(["IMG", "DIV"]);
-    expect(parts[0]?.getAttribute("src")).toContain(POSTER);
+    expect(parts[0]?.getAttribute("src")).toBe("https://image.tmdb.org/t/p/w342/poster.jpg");
     expect(parts[1]).toHaveAttribute("data-part", "card-text");
   });
 
@@ -106,7 +106,7 @@ describe("MovieCard", () => {
     expect(blur?.tagName).toBe("IMG");
     expect(blur).toHaveAttribute("alt", "");
     expect(blur).toHaveAttribute("aria-hidden", "true");
-    expect(blur?.getAttribute("src")).toContain(POSTER);
+    expect(blur?.getAttribute("src")).toBe("https://image.tmdb.org/t/p/w342/poster.jpg");
   });
 
   it("shows no limited label for a theatrical release", () => {

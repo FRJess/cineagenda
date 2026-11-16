@@ -32,7 +32,14 @@ export function MovieCard({
     <article data-part="movie-card">
       <Link href={filmHref(movie.id, country)}>
         {poster ? (
-          <Image src={poster} alt="" width={342} height={513} loading={eager ? "eager" : "lazy"} />
+          <Image
+            src={poster}
+            alt=""
+            width={342}
+            height={513}
+            loading={eager ? "eager" : "lazy"}
+            unoptimized
+          />
         ) : (
           <figure data-part="poster-placeholder">
             <figcaption>{t("noPoster")}</figcaption>
@@ -47,6 +54,7 @@ export function MovieCard({
               width={342}
               height={513}
               data-part="card-blur"
+              unoptimized
             />
           )}
           <h3>{movie.title}</h3>

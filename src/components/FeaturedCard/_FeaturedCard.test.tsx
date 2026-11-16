@@ -56,8 +56,8 @@ describe("FeaturedCard", () => {
   it("renders the TMDB backdrop at 1280px", () => {
     const { container } = renderWithIntl(<FeaturedCard country="IT" movie={movie()} />);
 
-    expect(container.querySelector("img")?.getAttribute("src")).toContain(
-      encodeURIComponent("https://image.tmdb.org/t/p/w1280/backdrop.jpg"),
+    expect(container.querySelector("img")?.getAttribute("src")).toBe(
+      "https://image.tmdb.org/t/p/w1280/backdrop.jpg",
     );
   });
 

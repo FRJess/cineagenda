@@ -44,7 +44,13 @@ function CastItem({ member }: { readonly member: CastMember }) {
   return (
     <li>
       {member.profilePath ? (
-        <Image src={`${IMAGE_BASE}/w185${member.profilePath}`} alt="" width={185} height={278} />
+        <Image
+          src={`${IMAGE_BASE}/w185${member.profilePath}`}
+          alt=""
+          width={185}
+          height={278}
+          unoptimized
+        />
       ) : (
         <span aria-hidden="true">{initials(member.name)}</span>
       )}
@@ -115,6 +121,7 @@ export function FilmDetail({
             width={1280}
             height={720}
             priority
+            unoptimized
           />
         )}
         <nav aria-label={t("backLabel")}>
@@ -163,6 +170,7 @@ export function FilmDetail({
             width={780}
             height={1170}
             sizes="18rem"
+            unoptimized
           />
         )}
         <div data-part="film-body">

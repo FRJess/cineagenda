@@ -363,4 +363,26 @@ describe("FilmDetail", () => {
     expect(container.querySelector("[data-part='film']")).not.toHaveAttribute("data-backdrop");
     expect(container.querySelector("[data-part='film-hero'] img")).toBeNull();
   });
+
+  it("serves TMDB backdrop directly (not via Vercel optimization)", () => {
+    const { container } = renderFilm();
+    expect(container.querySelector("[data-part='film-hero'] > img")).toHaveAttribute(
+      "src",
+      "https://image.tmdb.org/t/p/w1280/back.jpg",
+    );
+  });
+
+  it("serves TMDB poster directly (not via Vercel optimization)", () => {
+    const { container } = renderFilm();
+    expect(container.querySelector("[data-part='film-poster']")).toHaveAttribute(
+      "src",
+      "https://image.tmdb.org/t/p/w780/poster.jpg",
+    );
+  });
+
+  it("serves TMDB cast profile directly (not via Vercel optimization)", () => {
+    const { container } = renderFilm();
+    const castImg = container.querySelector("[data-part='film-cast'] img");
+    expect(castImg).toHaveAttribute("src", "https://image.tmdb.org/t/p/w185/m.jpg");
+  });
 });
