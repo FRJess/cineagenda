@@ -1,0 +1,519 @@
+<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Cineagenda · Pagina film</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: a design spec. Prose column, full-width benches with phone frames in light and dark side by side. */
+  :root {
+    --bg: #f3f2ee; --bg-2: #e9e7e1; --fg: #17181a; --muted: #5f6166; --line: #d4d2cb; --accent: #1f4fd8;
+    --font-body: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --font-display: "Syne", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #161718; --bg-2: #1f2123; --fg: #ecebe6; --muted: #a2a39f; --line: #34363a; --accent: #8fa9ff; color-scheme: dark; }
+  }
+  :root[data-theme="dark"] { --bg: #161718; --bg-2: #1f2123; --fg: #ecebe6; --muted: #a2a39f; --line: #34363a; --accent: #8fa9ff; color-scheme: dark; }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 16px; line-height: 1.55; padding-block: 2.5rem 5rem; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  [data-doc] { display: flex; flex-direction: column; gap: 3.5rem; max-width: 72rem; margin-inline: auto; }
+  [data-prose] { display: flex; flex-direction: column; gap: 1rem; max-width: 68ch; min-width: 0; }
+  h1, h2, h3, h4 { margin: 0; text-wrap: balance; line-height: 1.15; }
+  h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(2.2rem, 1.4rem + 3vw, 3.4rem); letter-spacing: -0.04em; }
+  h2 { font-family: var(--font-display); font-weight: 800; font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2rem); letter-spacing: -0.03em; }
+  h3 { font-size: 1.1rem; font-weight: 700; }
+  h4 { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  p { margin: 0; }
+  a { color: var(--accent); }
+  code { font-family: var(--font-mono); font-size: 0.86em; background: var(--bg-2); padding: 0.05em 0.35em; border-radius: 4px; }
+  pre { margin: 0; padding: 1rem 1.1rem; background: var(--bg-2); border: 1px solid var(--line); border-radius: 8px; overflow-x: auto; font-family: var(--font-mono); font-size: 0.78rem; line-height: 1.5; }
+  pre code { background: none; padding: 0; font-size: inherit; }
+  [data-eyebrow] { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+  [data-lead] { font-size: 1.12rem; color: var(--muted); max-width: 60ch; }
+  section[data-block] { display: flex; flex-direction: column; gap: 1.5rem; padding-top: 2.5rem; border-top: 2px solid var(--fg); }
+
+  [data-bench] { display: flex; gap: 1.5rem; align-items: flex-start; overflow-x: auto; padding: 1.25rem; background: var(--bg-2); border: 1px solid var(--line); border-radius: 14px; }
+  [data-bench] > figure { margin: 0; display: flex; flex-direction: column; gap: 0.6rem; flex: 0 0 auto; }
+  [data-bench] > figure > figcaption { font-size: 0.78rem; color: var(--muted); font-weight: 500; }
+  [data-phone] { width: 360px; height: 720px; border-radius: 26px; overflow: hidden; border: 6px solid #1c1c1e; box-shadow: 0 20px 50px rgb(0 0 0 / 0.25); position: relative; }
+  [data-desktop] { width: 860px; height: 560px; border-radius: 10px; overflow: hidden; border: 1px solid rgb(0 0 0 / 0.25); box-shadow: 0 20px 50px rgb(0 0 0 / 0.2); }
+  [data-screen] { width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden; scrollbar-width: thin; }
+
+  /* Token table */
+  [data-tokens] { display: flex; flex-direction: column; border-top: 1px solid var(--line); max-width: 60rem; font-size: 0.92rem; }
+  [data-tokens] > div { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.25rem; padding: 0.6rem 0; border-bottom: 1px solid var(--line); }
+  [data-tokens] > div > code { flex: 0 0 11rem; background: none; padding: 0; }
+  [data-tokens] > div > span { display: flex; align-items: center; gap: 0.5rem; flex: 0 0 11rem; font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); }
+  [data-tokens] > div > span > i { width: 1.4rem; height: 1.4rem; border-radius: 6px; border: 1px solid rgb(128 128 128 / 0.35); display: block; }
+  [data-tokens] > div > em { flex: 1 1 14rem; min-width: 0; font-style: normal; color: var(--muted); }
+  [data-tokens] > div[data-head] { font-weight: 700; color: var(--muted); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; }
+  [data-tokens] > div[data-head] > * { color: inherit; font-family: var(--font-body); font-size: inherit; }
+
+  [data-notes] { display: flex; flex-wrap: wrap; gap: 1.5rem 2.5rem; }
+  [data-notes] > section { flex: 1 1 18rem; min-width: 0; display: flex; flex-direction: column; gap: 0.6rem; }
+  [data-notes] ul { margin: 0; padding-left: 1.1rem; display: flex; flex-direction: column; gap: 0.45rem; color: var(--muted); }
+  [data-notes] li b { color: var(--fg); font-weight: 600; }
+
+  [data-steps] { display: flex; flex-direction: column; border-top: 1px solid var(--line); max-width: 60rem; }
+  [data-steps] > div { display: flex; flex-wrap: wrap; gap: 0.25rem 1.5rem; padding: 0.9rem 0; border-bottom: 1px solid var(--line); }
+  [data-steps] > div > strong { flex: 0 0 16rem; font-weight: 600; }
+  [data-steps] > div > span { flex: 1 1 22rem; min-width: 0; color: var(--muted); }
+  [data-steps] > div > span b { color: var(--fg); font-weight: 600; }
+
+  /* Shared mock posters */
+  [data-poster] { aspect-ratio: 2 / 3; width: 100%; display: flex; flex-direction: column; border-radius: 10px; overflow: hidden; position: relative; }
+  [data-poster="1"] { background: linear-gradient(160deg, #3a1d5e, #0c0a19 70%); }
+  [data-poster="2"] { background: radial-gradient(circle at 30% 20%, #ffb347, #c2410c 45%, #3b0a0a); }
+  [data-poster="3"] { background: linear-gradient(200deg, #0f3d3e, #052a2b 55%, #000); }
+  [data-poster="4"] { background: linear-gradient(180deg, #8da9c4 0%, #2b4c6f 60%, #10243a); }
+  [data-poster="5"] { background: linear-gradient(135deg, #e5e1d8, #9a9382 60%, #3a372f); }
+  [data-poster="6"] { background: radial-gradient(circle at 70% 80%, #ff3d7f, #4b0f2a 50%, #140508); }
+  [data-poster="7"] { background: linear-gradient(170deg, #f5d142, #b37a00 50%, #2d1e00); }
+  [data-poster="8"] { background: linear-gradient(190deg, #1b2a49, #060a16 80%); }
+
+  /* ================= Cartellone mock: tokens, light then dark via [data-scheme] ================= */
+  [data-mock] {
+    --c-bg: #ececf1; --c-surface: #ffffff; --c-fg: #101018; --c-muted: #5d5e70; --c-line: #d3d3dd;
+    --c-accent: #e6544c; --c-accent-strong: #c03730; --c-chip-bg: #fcb5b1; --c-chip-fg: #7f1f1a; --c-accent-soft: #fcb5b1; --c-tab-bg: #101018; --c-tab-fg: #ffffff; --c-tab-muted: #f76b64;
+    --c-poster-shadow: 0 1px 2px rgb(16 16 24 / 0.12), 0 8px 20px rgb(16 16 24 / 0.14);
+    --c-display: "Syne", system-ui, sans-serif;
+    background: var(--c-bg); color: var(--c-fg); font-family: var(--font-body); font-size: 14px; line-height: 1.4;
+  }
+  [data-mock][data-scheme="dark"] {
+    --c-bg: #121218; --c-surface: #1b1b24; --c-fg: #f1f0f5; --c-muted: #9b9bb0; --c-line: #2b2b38;
+    --c-accent: #f76b64; --c-accent-strong: #f76b64; --c-chip-bg: #462b2a; --c-chip-fg: #fcb5b1; --c-accent-soft: #fcb5b1; --c-tab-bg: #f1f0f5; --c-tab-fg: #121218; --c-tab-muted: #c03730;
+    --c-poster-shadow: 0 1px 2px rgb(0 0 0 / 0.5), 0 10px 28px rgb(0 0 0 / 0.55);
+  }
+  [data-mock] [data-part="site-header"] { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px 6px; }
+  [data-mock] [data-part="brand"] { font-family: var(--c-display); font-weight: 800; font-size: 20px; letter-spacing: -0.03em; }
+  [data-mock] [data-part="brand"] i { font-style: normal; color: var(--c-accent); }
+  [data-mock] [data-part="locale-switch"] { display: flex; gap: 2px; background: var(--c-tab-bg); border-radius: 6px; padding: 2px; font-size: 10.5px; font-weight: 700; }
+  [data-mock] [data-part="locale-switch"] span { padding: 3px 7px; border-radius: 4px; color: var(--c-tab-fg); opacity: 0.6; }
+  [data-mock] [data-part="locale-switch"] span[aria-current] { background: var(--c-bg); color: var(--c-fg); opacity: 1; }
+  [data-mock] [data-part="week-tabs"] { position: sticky; top: 0; z-index: 2; display: flex; gap: 6px; overflow-x: auto; padding: 8px 16px 10px; background: var(--c-bg); scrollbar-width: none; }
+  [data-mock] [data-part="week-tabs"] span { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; line-height: 1.05; padding: 7px 11px; border-radius: 8px; background: var(--c-surface); border: 1px solid var(--c-line); white-space: nowrap; }
+  [data-mock] [data-part="week-tabs"] span b { font-family: var(--c-display); font-weight: 800; font-size: 14px; letter-spacing: -0.02em; }
+  [data-mock] [data-part="week-tabs"] span small { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--c-muted); }
+  [data-mock] [data-part="week-tabs"] span[aria-current] { background: var(--c-tab-bg); color: var(--c-tab-fg); border-color: var(--c-tab-bg); }
+  [data-mock] [data-part="week-tabs"] span[aria-current] small { color: var(--c-tab-muted); }
+  [data-mock] [data-part="week-tabs"] span[data-more] { background: none; border-style: dashed; justify-content: center; }
+  [data-mock] [data-part="week-section"] { display: flex; flex-direction: column; gap: 10px; padding: 8px 16px 22px; }
+  [data-mock] [data-part="week-section"] > header { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+  [data-mock] [data-part="week-section"] h2 { margin: 0; font-family: var(--c-display); font-weight: 800; font-size: 24px; letter-spacing: -0.035em; line-height: 1; }
+  [data-mock] [data-part="week-section"] h2 small { display: block; font-family: var(--font-body); font-weight: 600; font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--c-muted); margin-bottom: 4px; }
+  [data-mock] [data-part="week-section"][data-today] h2 small { color: var(--c-accent-strong); }
+  [data-mock] [data-part="week-section"] > header span { font-size: 11px; color: var(--c-muted); }
+  [data-mock] [data-part="grid"] { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+  [data-mock] [data-part="grid"] > article [data-poster] { box-shadow: var(--c-poster-shadow); }
+  [data-mock] [data-part="grid"] > article [data-poster] > div { margin-top: auto; padding: 40px 10px 10px; background: linear-gradient(transparent, rgb(0 0 0 / 0.88)); display: flex; flex-direction: column; gap: 2px; color: #fff; }
+  [data-mock] [data-part="grid"] h3 { margin: 0; font-family: var(--c-display); font-weight: 700; font-size: 13.5px; line-height: 1.1; letter-spacing: -0.02em; }
+  [data-mock] [data-part="grid"] [data-part="card-meta"] { margin: 0; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--c-accent-soft); }
+  [data-mock] [data-part="grid"] [data-release="limited"] { position: absolute; top: 8px; right: 8px; background: var(--c-accent-strong); color: #fff; font-size: 9px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 7px; border-radius: 999px; }
+  [data-mock] [data-part="week-nav"] { display: flex; justify-content: space-between; padding: 4px 16px 20px; font-size: 12px; font-weight: 700; color: var(--c-fg); }
+  [data-mock] [data-part="week-nav"] span[data-dates] { color: var(--c-accent-strong); }
+  [data-mock] [data-part="site-footer"] { padding: 12px 16px 20px; font-size: 10px; color: var(--c-muted); border-top: 1px solid var(--c-line); }
+  [data-mock] [data-part="site-footer"] b { font-weight: 700; color: #01b4e4; }
+  /* film page */
+  [data-mock] [data-part="film-hero"] { position: relative; height: 300px; background: radial-gradient(circle at 60% 30%, #ff9f47, #c2410c 40%, #2b0909 90%); display: flex; align-items: flex-end; padding: 16px; }
+  [data-mock] [data-part="film-hero"]::before { content: ""; position: absolute; inset: 0; background: linear-gradient(rgb(16 16 24 / 0.3), rgb(16 16 24 / 0.75) 30%, rgb(16 16 24 / 0.94)); }
+  [data-mock] [data-part="film-hero"] nav { position: absolute; top: 12px; left: 12px; z-index: 1; display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 6px 18px 6px 6px; font-size: 15px; font-weight: 700; color: #fff; background: rgb(16 16 24 / 0.6); border: 1px solid rgb(255 255 255 / 0.22); border-radius: 999px; box-shadow: 0 4px 16px rgb(0 0 0 / 0.3); backdrop-filter: blur(10px) saturate(1.4); }
+  [data-mock] [data-part="film-hero"] nav > i { position: relative; flex: 0 0 32px; width: 32px; height: 32px; border-radius: 50%; background: #fff; }
+  [data-mock] [data-part="film-hero"] nav > i::after { content: ""; position: absolute; top: 50%; left: 50%; width: 8px; height: 8px; border-left: 2px solid #101018; border-bottom: 2px solid #101018; transform: translate(-30%, -50%) rotate(45deg); }
+  [data-mock] [data-part="film-hero"] > div { position: relative; display: flex; flex-direction: column; gap: 6px; color: #fff; }
+  [data-mock] [data-part="film-hero"] h1 { margin: 0; font-family: var(--c-display); font-weight: 800; font-size: 34px; line-height: 0.95; letter-spacing: -0.04em; }
+  [data-mock] [data-part="film-hero"] p { margin: 0; font-size: 12px; color: #d9d9e3; }
+  [data-mock] [data-part="film-hero"] [data-part="card-meta"] { margin: 0; font-size: 11px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--c-accent-soft); }
+  [data-mock] [data-part="film-body"] { display: flex; flex-direction: column; gap: 14px; padding: 16px 16px 24px; background: var(--c-surface); border-radius: 18px 18px 0 0; margin-top: -14px; position: relative; }
+  [data-mock] [data-part="facts"] { display: flex; flex-wrap: wrap; gap: 6px; }
+  [data-mock] [data-part="facts"] span { font-size: 11px; font-weight: 700; padding: 5px 10px; background: var(--c-chip-bg); border-radius: 999px; color: var(--c-chip-fg); }
+  
+  [data-mock] [data-part="film-body"] dl { margin: 0; display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 11.5px; }
+  [data-mock] [data-part="film-body"] dl > div { display: flex; flex-direction: column; flex: 1 1 40%; min-width: 0; }
+  [data-mock] [data-part="film-body"] dt { font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--c-muted); font-weight: 700; }
+  [data-mock] [data-part="film-body"] dd { margin: 0; }
+  [data-mock] [data-part="film-plot"] p { margin: 0; font-size: 13.5px; line-height: 1.55; }
+  [data-mock] [data-part="film-body"] h2 { margin: 0 0 6px; font-family: var(--c-display); font-weight: 800; font-size: 15px; letter-spacing: -0.02em; }
+  [data-mock] [data-part="film-cast"] ul { list-style: none; margin: 0; padding: 0; display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
+  [data-mock] [data-part="film-cast"] li { flex: 0 0 66px; display: flex; flex-direction: column; gap: 4px; font-size: 10.5px; font-weight: 600; }
+  [data-mock] [data-part="film-cast"] li i { display: block; aspect-ratio: 1; border-radius: 10px; background: var(--c-bg); }
+  [data-mock] [data-part="film-cast"] li small { color: var(--c-muted); font-weight: 400; }
+  [data-mock] [data-part="trailer"] { aspect-ratio: 16 / 9; border-radius: 12px; background: #101018; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; font-weight: 700; gap: 8px; border: 1px solid var(--c-line); }
+  [data-mock] [data-part="trailer"] { flex-direction: column; } [data-mock] [data-part="trailer"] small { font-size: 10px; font-weight: 600; color: #9b9bb0; letter-spacing: 0.04em; }
+  [data-mock] [data-part="trailer"] i { width: 44px; height: 44px; border-radius: 50%; background: var(--c-accent); display: flex; align-items: center; justify-content: center; }
+  [data-mock] [data-part="trailer"] i::after { content: ""; border-left: 12px solid #fff; border-top: 7px solid transparent; border-bottom: 7px solid transparent; margin-left: 3px; }
+  /* desktop film page: poster beside sheet */
+  [data-mock] [data-part="film-columns"] { display: flex; gap: 24px; padding: 0 24px; margin-top: -60px; position: relative; }
+  [data-mock] [data-part="film-columns"] > [data-poster] { flex: 0 0 180px; align-self: flex-start; width: 180px; aspect-ratio: 2 / 3; box-shadow: var(--c-poster-shadow); border: 3px solid var(--c-surface); }
+  [data-mock] [data-part="film-columns"] > [data-part="film-body"] { flex: 1; margin-top: 60px; border-radius: 18px; }
+
+  /* ================= Navbar detail ================= */
+  [data-navframe] { width: 860px; max-width: 100%; border-radius: 10px; overflow: visible; border: 1px solid rgb(128 128 128 / 0.3); box-shadow: 0 12px 32px rgb(0 0 0 / 0.15); position: relative; }
+  [data-navframe][data-w="phone"] { width: 360px; }
+  [data-mock] [data-part="navbar"] { display: flex; align-items: center; gap: 16px; padding: 10px 20px; background: var(--c-bg); border-bottom: 1px solid var(--c-line); position: relative; }
+  [data-mock] [data-part="navbar"] > [data-part="brand"] { flex: 0 0 auto; display: flex; align-items: center; gap: 8px; font-size: 22px; }
+  [data-mock] [data-part="brand"] > i[data-mark] { width: 22px; height: 22px; border-radius: 6px; background: var(--c-accent); display: inline-flex; align-items: center; justify-content: center; }
+  [data-mock] [data-part="brand"] > i[data-mark]::before { content: ""; width: 10px; height: 14px; border-left: 2px dotted #fff; border-right: 2px dotted #fff; }
+  [data-mock] [data-part="navbar"] > [data-part="week-tabs"] { position: static; flex: 1 1 auto; padding: 0; background: none; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+  [data-mock] [data-part="navbar"] > details[data-part="date-picker"] { flex: 0 0 auto; }
+  [data-mock] [data-part="navbar"] > [data-part="locale-switch"] { flex: 0 0 auto; margin-left: auto; }
+  [data-mock] [data-part="week-tabs"] span[data-hover] { border-color: var(--c-fg); }
+  [data-mock] [data-part="week-tabs"] span[data-focus] { outline: 3px solid var(--c-accent); outline-offset: 2px; }
+  /* date popover built with details/summary, no JS */
+  [data-mock] details[data-part="date-picker"] { position: relative; flex: 0 0 auto; }
+  [data-mock] details[data-part="date-picker"] > summary { list-style: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; line-height: 1.05; padding: 7px 11px; border-radius: 8px; background: none; border: 1px dashed var(--c-line); color: var(--c-fg); white-space: nowrap; }
+  [data-mock] details[data-part="date-picker"] > summary::-webkit-details-marker { display: none; }
+  [data-mock] details[data-part="date-picker"] > summary b { font-family: var(--c-display); font-weight: 800; font-size: 14px; letter-spacing: -0.02em; }
+  [data-mock] details[data-part="date-picker"] > summary small { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--c-muted); }
+  [data-mock] details[data-part="date-picker"][open] > summary { border-style: solid; border-color: var(--c-fg); }
+  [data-mock] details[data-part="date-picker"] > form { position: absolute; top: calc(100% + 8px); right: 0; z-index: 5; width: 300px; display: flex; flex-direction: column; gap: 12px; padding: 16px; background: var(--c-surface); border: 1px solid var(--c-line); border-radius: 14px; box-shadow: 0 16px 40px rgb(0 0 0 / 0.25); }
+  [data-mock] details[data-part="date-picker"] > form[data-two] { width: 576px; }
+  [data-mock] details[data-part="date-picker"] > form::before { content: ""; position: absolute; top: -6px; right: 28px; width: 10px; height: 10px; background: var(--c-surface); border-left: 1px solid var(--c-line); border-top: 1px solid var(--c-line); transform: rotate(45deg); }
+  [data-mock] details[data-part="date-picker"] h3 { margin: 0; font-family: var(--c-display); font-weight: 800; font-size: 15px; letter-spacing: -0.02em; }
+  [data-mock] details[data-part="date-picker"] > form > p { margin: 0; font-size: 11px; color: var(--c-muted); }
+  [data-mock] [data-part="date-fields"] { display: flex; gap: 10px; }
+  [data-mock] [data-part="date-fields"] > label { flex: 1; display: flex; flex-direction: column; gap: 4px; font-size: 9.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--c-muted); }
+  [data-mock] [data-part="date-fields"] > label > span { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border: 1px solid var(--c-line); border-radius: 8px; background: var(--c-bg); color: var(--c-fg); font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: 0; text-transform: none; }
+  [data-mock] [data-part="date-fields"] > label > span::after { content: ""; width: 7px; height: 7px; border-right: 1.5px solid var(--c-muted); border-bottom: 1.5px solid var(--c-muted); transform: rotate(45deg); margin-top: -3px; }
+  [data-mock] [data-part="range-summary"] { margin: 0; display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding: 9px 12px; background: var(--c-bg); border-radius: 8px; font-size: 13px; }
+  [data-mock] [data-part="range-summary"] > b { font-family: var(--c-display); font-weight: 800; font-size: 15px; letter-spacing: -0.02em; }
+  [data-mock] [data-part="range-summary"] > span { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--c-muted); }
+  [data-mock] [data-part="quick-ranges"] { display: flex; flex-wrap: wrap; gap: 6px; }
+  [data-mock] [data-part="quick-ranges"] > span { font-size: 11px; font-weight: 600; padding: 5px 9px; border-radius: 999px; border: 1px solid var(--c-line); color: var(--c-fg); }
+  [data-mock] [data-part="quick-ranges"] > span[aria-pressed="true"] { background: var(--c-tab-bg); color: var(--c-tab-fg); border-color: var(--c-tab-bg); }
+  [data-mock] [data-part="date-actions"] { display: flex; align-items: center; gap: 10px; }
+  [data-mock] [data-part="date-actions"] > span:first-child { flex: 1; text-align: center; padding: 10px; border-radius: 10px; background: var(--c-accent-strong); color: var(--c-tab-fg); font-weight: 700; font-size: 13px; }
+  [data-mock] [data-part="date-actions"] > span + span { font-size: 12px; font-weight: 600; color: var(--c-muted); text-decoration: underline; text-underline-offset: 3px; }
+  /* mobile navbar: two rows */
+  [data-mock] [data-part="navbar"][data-stack] { flex-wrap: wrap; gap: 10px 8px; padding: 12px 16px 10px; position: static; }
+  [data-mock] [data-part="navbar"][data-stack] > [data-part="week-tabs"] { flex: 1 1 200px; order: 3; overflow-x: auto; scrollbar-width: none; }
+  [data-mock] [data-part="navbar"][data-stack] > details[data-part="date-picker"] { order: 4; position: static; }
+  [data-mock] [data-part="navbar"][data-stack] details[data-part="date-picker"] > form { position: absolute; inset: auto 0 0 0; width: auto; border-radius: 18px 18px 0 0; padding-bottom: 24px; }
+  [data-mock] [data-part="scrim"] { z-index: 3; }
+  [data-mock] [data-part="navbar"][data-stack] details[data-part="date-picker"] > form::before { display: none; }
+  [data-mock] [data-part="navbar"][data-stack] details[data-part="date-picker"] > form > i[data-grip] { align-self: center; width: 36px; height: 4px; border-radius: 2px; background: var(--c-line); margin-top: -6px; }
+  [data-mock] [data-part="scrim"] { position: absolute; inset: 0; background: rgb(0 0 0 / 0.45); }
+  [data-anatomy] { display: flex; flex-wrap: wrap; gap: 1rem; }
+  [data-anatomy] > div { flex: 1 1 14rem; min-width: 0; display: flex; flex-direction: column; gap: 0.35rem; padding: 1rem 1.1rem; border: 1px solid var(--line); border-radius: 10px; background: var(--bg-2); font-size: 0.92rem; }
+  [data-anatomy] > div > b { font-family: var(--font-display); font-weight: 800; letter-spacing: -0.02em; }
+  [data-anatomy] > div > span { color: var(--muted); }
+  [data-anatomy] code { font-size: 0.8em; }
+
+  /* ================= Card revision ================= */
+  [data-cardbench] { display: flex; flex-direction: column; gap: 1rem; padding: 1.25rem; border-radius: 14px; background: var(--c-bg); color: var(--c-fg); font-family: var(--font-body); font-size: 14px; }
+  [data-cardbench] > p { margin: 0; font-size: 0.78rem; color: var(--c-muted); font-weight: 500; }
+  [data-cardrow] { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+  /* fake poster with its own title artwork at the bottom, to show what an overlay covers */
+  [data-pm] { aspect-ratio: 2 / 3; width: 100%; position: relative; border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding: 0 8px 7%; text-align: center; color: #fff; }
+  [data-pm] > b { font-family: var(--c-display); font-weight: 800; font-size: 15px; line-height: 1; letter-spacing: -0.02em; text-transform: uppercase; }
+  [data-pm] > small { font-size: 5px; letter-spacing: 0.05em; opacity: 0.8; margin-top: 5px; white-space: nowrap; overflow: hidden; max-width: 100%; }
+  [data-pm] > em { position: absolute; top: 7px; right: 7px; font-style: normal; font-size: 6px; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 5px; border: 1px solid rgb(255 255 255 / 0.6); border-radius: 2px; }
+  [data-pm="1"] { background: linear-gradient(160deg, #3a1d5e, #0c0a19 70%); }
+  [data-pm="2"] { background: radial-gradient(circle at 30% 20%, #ffb347, #c2410c 45%, #3b0a0a); }
+  [data-pm="3"] { background: linear-gradient(200deg, #0f3d3e, #052a2b 55%, #000); }
+  [data-pm="4"] { background: linear-gradient(180deg, #8da9c4 0%, #2b4c6f 60%, #10243a); }
+  [data-pm="5"] { background: linear-gradient(135deg, #e5e1d8, #9a9382 60%, #3a372f); color: #1a1a1a; }
+  [data-pm="6"] { background: radial-gradient(circle at 70% 80%, #ff3d7f, #4b0f2a 50%, #140508); }
+  /* current: overlay */
+  [data-card="now"] { position: relative; border-radius: 10px; overflow: hidden; box-shadow: var(--c-poster-shadow); }
+  [data-card="now"] > div:last-child { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; gap: 2px; padding: 40px 10px 10px; background: linear-gradient(transparent 50%, rgb(0 0 0 / 0.88)); color: #fff; }
+  [data-card="now"] h3 { margin: 0; font-family: var(--c-display); font-weight: 700; font-size: 13.5px; line-height: 1.1; letter-spacing: -0.02em; }
+  [data-card="now"] p { margin: 0; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--c-accent-soft); }
+  [data-card="now"] > span { position: absolute; top: 8px; right: 8px; background: var(--c-accent-strong); color: #fff; font-size: 9px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 7px; border-radius: 999px; }
+  /* A: caption on surface */
+  [data-card="a"], [data-card="b"] { display: flex; flex-direction: column; border-radius: 10px; overflow: hidden; background: var(--c-surface); box-shadow: var(--c-poster-shadow); }
+  [data-card="a"] [data-pm], [data-card="b"] [data-pm] { border-radius: 0; }
+  [data-card="a"] > div:last-child, [data-card="b"] > div:last-child { position: relative; display: flex; flex-direction: column; gap: 4px; padding: 8px 10px 9px; }
+  [data-card="a"] h3, [data-card="b"] h3, [data-card="c"] h3 { margin: 0; font-family: var(--c-display); font-weight: 700; font-size: 13px; line-height: 1.15; letter-spacing: -0.02em; height: 2.3em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  [data-card="a"] p, [data-card="b"] p, [data-card="c"] p { margin: 0; display: flex; align-items: center; justify-content: space-between; gap: 6px; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--c-muted); }
+  [data-card="a"] p > span, [data-card="b"] p > span, [data-card="c"] p > span { color: var(--c-accent-strong); font-size: 8.5px; letter-spacing: 0.08em; }
+  [data-card="a"] p > span::before, [data-card="b"] p > span::before, [data-card="c"] p > span::before { content: ""; display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: currentColor; margin-right: 4px; vertical-align: 1px; }
+  /* B: caption on a blurred continuation of the poster */
+  [data-card="b"] > div:last-child { color: #fff; overflow: hidden; }
+  [data-card="b"] > div:last-child > i { position: absolute; inset: -30px -20px; z-index: 0; filter: blur(18px) saturate(1.2); opacity: 0.9; }
+  [data-card="b"] > div:last-child > i::after { content: ""; position: absolute; inset: 0; background: rgb(0 0 0 / 0.7); }
+  [data-card="b"] > div:last-child > * { position: relative; z-index: 1; }
+  [data-card="b"] p { color: rgb(255 255 255 / 0.75); }
+  [data-card="b"] p > span { color: var(--c-accent-soft); }
+  [data-card="b"] > div > i[data-pm="1"] { background: linear-gradient(160deg, #3a1d5e, #0c0a19 70%); }
+  [data-card="b"] > div > i[data-pm="2"] { background: radial-gradient(circle at 30% 20%, #ffb347, #c2410c 45%, #3b0a0a); }
+  [data-card="b"] > div > i[data-pm="3"] { background: linear-gradient(200deg, #0f3d3e, #052a2b 55%, #000); }
+  [data-card="b"] > div > i[data-pm="4"] { background: linear-gradient(180deg, #8da9c4 0%, #2b4c6f 60%, #10243a); }
+  [data-card="b"] > div > i[data-pm="5"] { background: linear-gradient(135deg, #e5e1d8, #9a9382 60%, #3a372f); }
+  [data-card="b"] > div > i[data-pm="6"] { background: radial-gradient(circle at 70% 80%, #ff3d7f, #4b0f2a 50%, #140508); }
+  [data-card="b"] > div:last-child > i { aspect-ratio: auto; border-radius: 0; padding: 0; display: block; }
+  /* C: compact overlay, fixed height, chip in the date line */
+  [data-card="c"] { position: relative; border-radius: 10px; overflow: hidden; box-shadow: var(--c-poster-shadow); }
+  [data-card="c"] > div:last-child { position: absolute; inset: auto 0 0 0; display: flex; flex-direction: column; gap: 3px; padding: 28px 10px 9px; background: linear-gradient(transparent, rgb(0 0 0 / 0.55) 35%, rgb(0 0 0 / 0.9)); color: #fff; }
+  [data-card="c"] p { color: rgb(255 255 255 / 0.8); }
+  [data-card="c"] p > span { color: var(--c-accent-soft); }
+  /* featured */
+  [data-card="hero"] { grid-column: span 3; position: relative; border-radius: 10px; overflow: hidden; box-shadow: var(--c-poster-shadow); min-height: 100%; background: radial-gradient(circle at 70% 30%, #ff9f47, #c2410c 40%, #2b0909 90%); display: flex; align-items: flex-end; }
+  [data-card="hero"]::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgb(0 0 0 / 0.6), transparent 75%), linear-gradient(transparent 30%, rgb(0 0 0 / 0.7) 60%, rgb(0 0 0 / 0.9)); }
+  [data-card="hero"] > div { position: relative; display: flex; align-items: flex-end; padding: 14px; width: 100%; }
+  [data-phone] [data-card="hero"] { grid-column: span 2; aspect-ratio: 16 / 10; min-height: 0; }
+  [data-card="hero"] [data-pm] { flex: 0 0 64px; border-radius: 6px; box-shadow: 0 6px 16px rgb(0 0 0 / 0.5); padding-bottom: 5%; }
+  [data-card="hero"] [data-pm] > b { font-size: 8px; }
+  [data-card="hero"] [data-pm] > small { display: none; }
+  [data-card="hero"] > div > div { display: flex; flex-direction: column; gap: 3px; min-width: 0; color: #fff; }
+  [data-card="hero"] small[data-eye] { font-size: 9px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--c-accent-soft); }
+  [data-card="hero"] h3 { margin: 0; font-family: var(--c-display); font-weight: 800; font-size: 20px; line-height: 0.98; letter-spacing: -0.035em; }
+  [data-card="hero"] p { margin: 0; font-size: 10px; color: rgb(255 255 255 / 0.8); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+  [data-card="hero"] p b { color: #fff; }
+
+
+  /* ================= Date picker (DayPicker look) ================= */
+  [data-popover] { width: 300px; max-width: 100%; display: flex; flex-direction: column; gap: 12px; padding: 16px; background: var(--c-surface); border: 1px solid var(--c-line); border-radius: 14px; box-shadow: 0 16px 40px rgb(0 0 0 / 0.25); color: var(--c-fg); font-family: var(--font-body); font-size: 13px; }
+  [data-popover][data-two] { width: 576px; }
+  [data-popover] > h3 { margin: 0; font-family: var(--c-display); font-weight: 800; font-size: 15px; letter-spacing: -0.02em; }
+  [data-popover] > p { margin: 0; font-size: 11px; color: var(--c-muted); }
+  [data-cal] { position: relative; display: flex; gap: 24px; justify-content: center; padding-top: 2px; }
+  [data-cal] > button[data-nav] { position: absolute; top: 0; width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--c-line); background: var(--c-surface); color: var(--c-fg); font-size: 18px; line-height: 1; cursor: pointer; }
+  [data-cal] > button[data-nav]:first-child { left: 0; }
+  [data-cal] > button[data-nav]:last-child { right: 0; }
+  [data-cal-month] { display: flex; flex-direction: column; gap: 8px; }
+  [data-cal-caption] { height: 32px; display: flex; align-items: center; justify-content: center; font-family: var(--c-display); font-weight: 800; font-size: 15px; letter-spacing: -0.02em; text-transform: capitalize; }
+  [data-cal] table { border-collapse: collapse; }
+  [data-cal] th { width: 36px; height: 28px; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--c-muted); }
+  [data-cal] td { width: 36px; height: 36px; padding: 0; text-align: center; }
+  [data-cal] td > button { position: relative; width: 36px; height: 36px; border: 0; border-radius: 8px; background: none; color: inherit; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; }
+  [data-cal] td[data-out] > button { opacity: 0.35; }
+  [data-cal] td[data-thu] > button::after { content: ""; position: absolute; bottom: 4px; left: 50%; width: 4px; height: 4px; border-radius: 50%; background: var(--c-accent-soft); transform: translateX(-50%); }
+  [data-cal] td[data-today] > button { outline: 1px solid var(--c-accent); outline-offset: -1px; color: var(--c-accent-strong); font-weight: 700; }
+  [data-cal] td[data-mid] { background: color-mix(in srgb, var(--c-accent) 16%, transparent); }
+  [data-cal] td[data-mid] > button { border-radius: 0; }
+  [data-cal] td[data-start], [data-cal] td[data-end] { background: linear-gradient(90deg, transparent 50%, color-mix(in srgb, var(--c-accent) 16%, transparent) 50%); }
+  [data-cal] td[data-end] { background: linear-gradient(90deg, color-mix(in srgb, var(--c-accent) 16%, transparent) 50%, transparent 50%); }
+  [data-cal] td[data-start] > button, [data-cal] td[data-end] > button { background: var(--c-accent-strong); color: #fff; font-weight: 700; }
+  [data-cal] td[data-start] > button::after, [data-cal] td[data-end] > button::after { background: #fff; }
+  [data-mock][data-scheme="dark"] [data-cal] td[data-start] > button, [data-mock][data-scheme="dark"] [data-cal] td[data-end] > button { color: #121218; }
+  [data-mock][data-scheme="dark"] [data-cal] td[data-start] > button::after, [data-mock][data-scheme="dark"] [data-cal] td[data-end] > button::after { background: #121218; }
+  [data-cal] td > button:hover { box-shadow: inset 0 0 0 1px var(--c-fg); }
+  [data-pickerbench] { display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: flex-start; padding: 1.25rem; background: var(--bg-2); border: 1px solid var(--line); border-radius: 14px; }
+  [data-pickerbench] > figure { margin: 0; display: flex; flex-direction: column; gap: 0.6rem; }
+  [data-pickerbench] > figure > figcaption { font-size: 0.78rem; color: var(--muted); font-weight: 500; }
+  [data-popover] [data-part="date-fields"] > label > span { font-family: var(--font-body); }
+
+
+  /* ================= Date picker v2: week-based ================= */
+  [data-popover][data-v2] { gap: 14px; padding: 14px 16px 16px; }
+  [data-cal2] { position: relative; display: flex; gap: 28px; justify-content: center; }
+  [data-cal2] > button[data-nav] { position: absolute; top: 0; width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--c-line); background: var(--c-surface); color: var(--c-fg); font-size: 18px; line-height: 1; cursor: pointer; }
+  [data-cal2] > button[data-nav]:first-child { left: 0; }
+  [data-cal2] > button[data-nav]:last-child { right: 0; }
+  [data-cal2] [data-cal-month] { display: flex; flex-direction: column; gap: 6px; }
+  [data-cal2] [data-cal-caption] { height: 32px; display: flex; align-items: center; justify-content: center; font-family: var(--c-display); font-weight: 800; font-size: 15px; letter-spacing: -0.02em; text-transform: capitalize; }
+  [data-cal2] table { border-collapse: separate; border-spacing: 0 3px; }
+  [data-cal2] th { width: 36px; height: 26px; font-size: 9.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c-muted); }
+  [data-cal2] th[data-thu] { color: var(--c-accent-strong); }
+  [data-cal2] td { width: 36px; height: 34px; padding: 0; text-align: center; }
+  [data-cal2] td > button { position: relative; width: 36px; height: 34px; border: 0; background: none; color: inherit; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; }
+  [data-cal2] td[data-out] > button { color: var(--c-muted); }
+  [data-cal2] td[data-thu] > button { font-weight: 700; }
+  [data-cal2] td[data-today] > button::after { content: ""; position: absolute; bottom: 3px; left: 50%; width: 4px; height: 4px; border-radius: 50%; background: var(--c-accent); transform: translateX(-50%); }
+  [data-cal2] tr[data-selected] td { background: var(--c-tab-bg); color: var(--c-tab-fg); }
+  [data-cal2] tr[data-selected] td:first-child { border-radius: 8px 0 0 8px; }
+  [data-cal2] tr[data-selected] td:last-child { border-radius: 0 8px 8px 0; }
+  [data-cal2] tr[data-selected] td[data-out] > button { color: inherit; opacity: 0.7; }
+  [data-cal2] tr[data-selected] td[data-thu] > button { color: var(--c-tab-muted); }
+  [data-cal2] tr[data-selected] td[data-today] > button::after { background: var(--c-tab-muted); }
+  [data-cal2] tr[data-hover] td, [data-cal2] tr:not([data-selected]):hover td { background: color-mix(in srgb, var(--c-fg) 9%, transparent); }
+  [data-cal2] tr[data-hover] td:first-child, [data-cal2] tr:not([data-selected]):hover td:first-child { border-radius: 8px 0 0 8px; }
+  [data-cal2] tr[data-hover] td:last-child, [data-cal2] tr:not([data-selected]):hover td:last-child { border-radius: 0 8px 8px 0; }
+  [data-mock] [data-part="date-actions2"] { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 12px; border-top: 1px solid var(--c-line); }
+  [data-mock] [data-part="date-actions2"] > span:first-child { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  [data-mock] [data-part="date-actions2"] b { font-family: var(--c-display); font-weight: 800; font-size: 14px; letter-spacing: -0.02em; }
+  [data-mock] [data-part="date-actions2"] small { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c-muted); }
+  [data-mock] [data-part="date-actions2"] > span:last-child { flex: 0 0 auto; padding: 10px 16px; border-radius: 10px; background: var(--c-accent-strong); color: var(--c-tab-fg); font-weight: 700; font-size: 13px; white-space: nowrap; }
+  [data-popover][data-v2] [data-part="quick-ranges"] > span { font-size: 11px; }
+
+  [data-mock] [data-part="limited-note"] { margin: 0; padding: 8px 12px; background: var(--c-bg); border-radius: 8px; font-size: 12px; color: var(--c-fg); display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: baseline; }
+  [data-mock] [data-part="limited-note"] > span { font-size: 10px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--c-accent-strong); }
+  [data-mock] [data-part="limited-note"] > span::before { content: ""; display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: currentColor; margin-right: 5px; vertical-align: 1px; }
+  [data-mock] [data-part="film-source"] { margin: 0; font-size: 10px; color: var(--c-muted); }
+  [data-mock] [data-part="film-source"] > span { color: var(--c-fg); text-decoration: underline; text-underline-offset: 2px; }
+  [data-mock] [data-part="film-two"] { display: flex; gap: 20px; align-items: flex-start; }
+  [data-mock] [data-part="film-two"] > section { flex: 1; min-width: 0; }
+  [data-mock] [data-part="film"] [data-part="navbar"] + * { }
+
+  [data-mock] [data-part="film-hero"] > [data-part="hero-play"] { position: absolute; right: 24px; top: 50%; transform: translateY(-50%); z-index: 1; display: flex; flex-direction: row; gap: 12px; max-width: none; align-items: center; gap: 12px; padding: 10px 18px 10px 10px; background: rgb(0 0 0 / 0.5); border: 1px solid rgb(255 255 255 / 0.2); border-radius: 999px; color: #fff; font-size: 13px; font-weight: 700; backdrop-filter: blur(8px); }
+  [data-mock] [data-part="hero-play"] > i { width: 44px; height: 44px; border-radius: 50%; background: var(--c-accent); display: flex; align-items: center; justify-content: center; }
+  [data-mock] [data-part="hero-play"] > i::after { content: ""; border-left: 14px solid #fff; border-top: 8px solid transparent; border-bottom: 8px solid transparent; margin-left: 4px; }
+  [data-mock] [data-part="hero-play"] small { display: block; font-size: 10px; font-weight: 600; color: #d9d9e3; letter-spacing: 0.08em; }
+  [data-mock] [data-part="film-side"] { display: flex; flex-direction: row-reverse; gap: 24px; align-items: flex-start; }
+  [data-mock] [data-part="film-side"] > div:first-child { flex: 0 0 44%; display: flex; flex-direction: column; gap: 14px; position: sticky; top: 12px; }
+  [data-mock] [data-part="film-side"] > div:last-child { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+  [data-mock] [data-part="trailer-band"] { display: flex; gap: 20px; align-items: center; margin: 14px 24px; padding: 14px; background: var(--c-tab-bg); color: var(--c-tab-fg); border-radius: 18px; }
+  [data-mock] [data-part="trailer-band"] > [data-part="trailer"] { flex: 0 0 60%; border: 0; }
+  [data-mock] [data-part="trailer-band"] small { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--c-tab-muted); }
+  [data-mock] [data-part="trailer-band"] p { margin: 4px 0 0; font-size: 12px; opacity: 0.8; }
+  [data-mock] [data-part="film-body"][data-flat] { border-radius: 18px; }
+  [data-trailerbench] { display: flex; flex-direction: column; gap: 2rem; padding: 1.25rem; background: var(--bg-2); border: 1px solid var(--line); border-radius: 14px; }
+  [data-trailerbench] > figure { margin: 0; display: flex; flex-direction: column; gap: 0.6rem; max-width: 100%; overflow-x: auto; }
+  [data-trailerbench] > figure > figcaption { font-size: 0.85rem; color: var(--muted); max-width: 70ch; }
+  [data-trailerbench] > figure > figcaption b { color: var(--fg); }
+
+  /* ================= 404 / error ================= */
+  [data-mock] [data-part="not-found"] { display: flex; flex-direction: column; align-items: center; gap: 22px; padding: 28px 24px 32px; text-align: center; }
+  [data-mock] [data-part="nf-poster"] { width: 150px; aspect-ratio: 2 / 3; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border: 1.5px dashed var(--c-line); border-radius: 10px; background: var(--c-surface); color: var(--c-muted); }
+  [data-mock] [data-part="nf-poster"] > b { font-family: var(--c-display); font-weight: 800; font-size: 44px; letter-spacing: -0.05em; line-height: 1; color: var(--c-fg); }
+  [data-mock] [data-part="nf-poster"] > small { font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; }
+  [data-mock] [data-part="nf-text"] { display: flex; flex-direction: column; gap: 8px; max-width: 30ch; align-items: center; }
+  [data-mock] [data-part="nf-eyebrow"] { margin: 0; font-size: 10.5px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--c-accent-strong); }
+  [data-mock] [data-part="nf-text"] h1 { margin: 0; font-family: var(--c-display); font-weight: 800; font-size: 24px; line-height: 1.05; letter-spacing: -0.035em; text-wrap: balance; }
+  [data-mock] [data-part="nf-text"] > p:not([data-part]) { margin: 0; font-size: 13px; color: var(--c-muted); line-height: 1.5; }
+  [data-mock] [data-part="nf-actions"] { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 6px; align-items: center; }
+  [data-mock] [data-part="nf-primary"] { padding: 10px 16px; border-radius: 10px; background: var(--c-accent-strong); color: var(--c-tab-fg); font-weight: 700; font-size: 13px; }
+  [data-mock] [data-part="nf-secondary"] { font-size: 12px; font-weight: 600; color: var(--c-fg); text-decoration: underline; text-underline-offset: 3px; }
+  [data-desktop] [data-mock] [data-part="not-found"] { flex-direction: row; justify-content: center; text-align: left; gap: 40px; padding: 60px 24px; }
+  [data-desktop] [data-mock] [data-part="nf-poster"] { width: 180px; }
+  [data-desktop] [data-mock] [data-part="nf-text"] { align-items: flex-start; max-width: 36ch; }
+  [data-desktop] [data-mock] [data-part="nf-text"] h1 { font-size: 32px; }
+  [data-desktop] [data-mock] [data-part="nf-actions"] { justify-content: flex-start; }
+
+  [data-mock] [data-part="film-plot"] { position: relative; }
+  [data-mock] [data-part="film-plot"] p, [data-mock] [data-part="spoiler-copy"] { margin: 0; font-size: 13.5px; line-height: 1.55; }
+  [data-mock] details[data-part="spoiler"] > summary { display: block; list-style: none; cursor: pointer; }
+  [data-mock] details[data-part="spoiler"]:not([open]) > summary { position: relative; border-radius: 12px; }
+  [data-mock] details[data-part="spoiler"] > summary::-webkit-details-marker { display: none; }
+  [data-mock] [data-part="spoiler-copy"] { display: block; filter: blur(6px); user-select: none; }
+  [data-mock] [data-part="spoiler-cta"] { position: absolute; inset: -6px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; background: color-mix(in srgb, var(--c-surface) 35%, transparent); border-radius: 12px; }
+  [data-mock] [data-part="spoiler-cta"] b { display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; font-size: 13px; font-weight: 700; color: var(--c-tab-fg); background: var(--c-tab-bg); border-radius: 999px; box-shadow: 0 4px 14px rgb(0 0 0 / 0.18); }
+  [data-mock] [data-part="spoiler-cta"] small { padding: 3px 10px; font-size: 11.5px; font-style: italic; font-weight: 500; color: var(--c-muted); background: var(--c-surface); border-radius: 999px; }
+  [data-mock] [data-part="spoiler-hide"] { display: none; }
+  [data-mock] details[data-part="spoiler"][open] > summary { position: absolute; top: -4px; right: 0; }
+  [data-mock] details[data-part="spoiler"][open] [data-part="spoiler-copy"], [data-mock] details[data-part="spoiler"][open] [data-part="spoiler-cta"] { display: none; }
+  [data-mock] details[data-part="spoiler"][open] [data-part="spoiler-hide"] { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; font-size: 12px; font-weight: 600; color: var(--c-fg); background: var(--c-bg); border-radius: 999px; }
+  [data-mock] [data-part="film-facts"] { display: flex; flex-direction: column; }
+
+  /* ================= Back button options ================= */
+  [data-mock] [data-part="film-hero"] > [data-part="back-pill"] { position: absolute; top: 12px; left: 12px; z-index: 1; display: flex; align-items: center; gap: 8px; padding: 6px 14px 6px 6px; background: #ffffff; color: #101018; border-radius: 999px; font-size: 13px; font-weight: 700; box-shadow: 0 4px 14px rgb(0 0 0 / 0.4); backdrop-filter: none; }
+  [data-mock] [data-part="back-pill"] small { font-size: 11px; font-weight: 600; color: #5d5e70; }
+  [data-mock] [data-part="back-pill"] > i { background: #101018 !important; }
+  [data-mock] [data-part="back-pill"] > i::after { border-color: #ffffff !important; }
+  [data-mock] [data-part="back-pill"] > i, [data-mock] [data-part="back-bar"] i, [data-mock] [data-part="back-tab"] > i { position: relative; flex: 0 0 auto; width: 24px; height: 24px; border-radius: 50%; background: var(--c-tab-bg); }
+  [data-mock] [data-part="back-pill"] > i::after, [data-mock] [data-part="back-bar"] i::after, [data-mock] [data-part="back-tab"] > i::after { content: ""; position: absolute; top: 50%; left: 50%; width: 7px; height: 7px; border-left: 2px solid var(--c-tab-fg); border-bottom: 2px solid var(--c-tab-fg); transform: translate(-30%, -50%) rotate(45deg); }
+  [data-mock] [data-part="back-bar"] { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 16px; background: var(--c-bg); border-bottom: 1px solid var(--c-line); }
+  [data-mock] [data-part="back-bar"] > span { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; }
+  [data-mock] [data-part="back-bar"] > small { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c-muted); }
+  [data-mock] [data-part="back-row"] { order: 3; flex: 1 1 100%; display: flex; }
+  [data-mock] [data-part="back-tab"] { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px 6px 7px; background: var(--c-surface); border: 1px solid var(--c-line); border-radius: 8px; white-space: nowrap; }
+  [data-mock] [data-part="back-tab"] > span { display: flex; flex-direction: column; line-height: 1.05; }
+  [data-mock] [data-part="back-tab"] b { font-family: var(--c-display); font-weight: 800; font-size: 14px; letter-spacing: -0.02em; }
+  [data-mock] [data-part="back-tab"] small { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--c-muted); margin-top: 2px; }
+  [data-mock] [data-part="navbar"] > [data-part="back-tab"] { margin-left: 8px; }
+  [data-mock] [data-part="back-tab"][data-hover] { border-color: var(--c-fg); }
+
+  @media (max-width: 640px) { [data-phone] { width: 320px; height: 640px; } [data-desktop] { width: 720px; height: 480px; } }
+</style></head><body>
+<div data-doc>
+  <header data-prose>
+    <p data-eyebrow>Cineagenda · design · 10 novembre 2026</p>
+    <h1>Pagina film</h1>
+    <p data-lead>Mockup e specifiche della pagina di dettaglio. Token, font e navbar sono in <code>docs/DESIGN.md</code>; le specifiche in forma di istruzioni sono in <code>docs/FILM-PAGE.md</code>. Le dimensioni di testo, poster e cast sono state ingrandite nel progetto: dove i mockup differiscono, vale <code>DESIGN.md</code>.</p>
+  </header>
+  <!-- ================================================================ film -->
+  <section data-block id="pagina-film">
+    <div data-prose>
+      <h2>Pagina film</h2>
+      <p>La navbar qui è ridotta a brand e lingua (i tab delle settimane hanno senso solo sulla lista). Sotto, il backdrop a tutta larghezza fa da copertina: sopra il gradiente stanno la data, con la distanza da oggi ("tra 3 giorni"), il titolo e la riga regia · anno. Poi un foglio con gli angoli arrotondati scorre sopra l'immagine e contiene, in quest'ordine: la nota di uscita limitata quando c'è, i generi come pillole rosate, tutte uguali, la trama coperta da un velo anti-spoiler che si toglie con un click, i cinque dettagli in due colonne sotto il titolo "Dettagli" (sceneggiatura, paese, lingua originale, produzione, durata), il cast a scorrimento orizzontale, e per ultimo il trailer a tutta larghezza del foglio, che si carica solo al click, chiuso dalla riga di attribuzione TMDB. Si legge prima, si guarda dopo: il trailer è il finale della scheda, non un riquadro accanto al testo. Da 48rem il poster 2:3 compare a sinistra del foglio, sovrapposto all'hero; il foglio resta a una colonna, così il trailer arriva a circa 36rem di larghezza.</p>
+    </div>
+    <div data-bench>
+      <figure><div data-phone><div data-screen data-mock>
+          <nav data-part="navbar" data-stack style="padding:12px 16px"><span data-part="brand"><i data-mark></i>cine<i>agenda</i></span><nav data-part="locale-switch" aria-label="Lingua"><span aria-current="page">IT</span><span>EN</span></nav></nav>
+          <main data-part="film">
+            <header data-part="film-hero" ><nav><i></i>Tutte le uscite</nav><div><p data-part="card-meta">Al cinema da gio 5 nov · tra 3 giorni</p><h1>Frankenstein</h1><p>Guillermo del Toro · 2025</p></div></header>
+            <div data-part="film-body">
+              
+              <div data-part="facts"><span>Horror</span><span>Drammatico</span><span>Fantasy</span></div>
+              <section data-part="film-plot"><h2>Trama</h2><details data-part="spoiler"><summary><span data-part="spoiler-copy" aria-hidden="true">Lo scienziato Victor Frankenstein, brillante ma egocentrico, dà vita a una creatura in un esperimento mostruoso che condurrà alla rovina sia il creatore che la sua tragica creazione.</span><span data-part="spoiler-cta"><b><svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Mostra la trama</b><small>Niente spoiler prima dei popcorn</small></span><span data-part="spoiler-hide"><svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 5.1A10.7 10.7 0 0 1 12 5c6.5 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.2"/><path d="M6.6 6.6C3.7 8.4 2 12 2 12s3.5 7 10 7a10.5 10.5 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>Nascondi</span></summary><p>Lo scienziato Victor Frankenstein, brillante ma egocentrico, dà vita a una creatura in un esperimento mostruoso che condurrà alla rovina sia il creatore che la sua tragica creazione.</p></details></section>
+              <section data-part="film-facts"><h2>Dettagli</h2><dl><div><dt>Sceneggiatura</dt><dd>Guillermo del Toro</dd></div><div><dt>Paese</dt><dd>Stati Uniti, Messico</dd></div><div><dt>Lingua originale</dt><dd>Inglese</dd></div><div><dt>Produzione</dt><dd>Netflix, Double Dare You</dd></div><div><dt>Durata</dt><dd>149 min</dd></div></dl></section>
+              <section data-part="film-cast"><h2>Cast</h2><ul><li><i></i>Oscar Isaac<small>Victor</small></li><li><i></i>Jacob Elordi<small>La Creatura</small></li><li><i></i>Mia Goth<small>Elizabeth</small></li><li><i></i>C. Waltz<small>Harlander</small></li><li><i></i>F. Kammerer<small>William</small></li></ul></section>
+              <section data-part="film-trailer"><h2>Trailer</h2><div data-part="trailer"><i></i>Guarda il trailer</div></section>
+              <p data-part="film-source">Dati e immagini: TMDB · <span>Apri su TMDB ↗</span></p>
+            </div>
+          </main>
+        </div></div><figcaption>Telefono, tema chiaro: trama velata. Clicca il velo per scoprirla.</figcaption></figure>
+      <figure><div data-phone><div data-screen data-mock data-scheme="dark">
+          <nav data-part="navbar" data-stack style="padding:12px 16px"><span data-part="brand"><i data-mark></i>cine<i>agenda</i></span><nav data-part="locale-switch" aria-label="Lingua"><span aria-current="page">IT</span><span>EN</span></nav></nav>
+          <main data-part="film">
+            <header data-part="film-hero" style="background:radial-gradient(ellipse at 72% 35%,#5b4a43,#2a211d 45%,#120e0c 85%)"><nav><i></i>Tutte le uscite</nav><div><p data-part="card-meta">Al cinema da gio 5 nov · tra 3 giorni</p><h1>Nosferatu</h1><p>Robert Eggers · 2024</p></div></header>
+            <div data-part="film-body">
+              <p data-part="limited-note"><span>Uscita limitata</span> Riedizione 4K restaurata, Lucky Red</p>
+              <div data-part="facts"><span>Horror</span><span>Fantasy</span></div>
+              <section data-part="film-plot"><h2>Trama</h2><details data-part="spoiler" open><summary><span data-part="spoiler-copy" aria-hidden="true">Un giovane agente immobiliare si reca in Transilvania per incontrare il conte Orlok, ignaro che la sua ossessione per la moglie Ellen scatenerà un orrore indicibile.</span><span data-part="spoiler-cta"><b><svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Mostra la trama</b><small>Il regista preferirebbe di no</small></span><span data-part="spoiler-hide"><svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 5.1A10.7 10.7 0 0 1 12 5c6.5 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.2"/><path d="M6.6 6.6C3.7 8.4 2 12 2 12s3.5 7 10 7a10.5 10.5 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>Nascondi</span></summary><p>Un giovane agente immobiliare si reca in Transilvania per incontrare il conte Orlok, ignaro che la sua ossessione per la moglie Ellen scatenerà un orrore indicibile.</p></details></section>
+              <section data-part="film-facts"><h2>Dettagli</h2><dl><div><dt>Sceneggiatura</dt><dd>Robert Eggers</dd></div><div><dt>Paese</dt><dd>Stati Uniti, Regno Unito</dd></div><div><dt>Lingua originale</dt><dd>Inglese</dd></div><div><dt>Produzione</dt><dd>Focus Features</dd></div><div><dt>Durata</dt><dd>132 min</dd></div></dl></section>
+              <section data-part="film-cast"><h2>Cast</h2><ul><li><i></i>Lily-Rose Depp<small>Ellen</small></li><li><i></i>Nicholas Hoult<small>Thomas</small></li><li><i></i>Bill Skarsgård<small>Orlok</small></li><li><i></i>W. Dafoe<small>Von Franz</small></li></ul></section>
+              <section data-part="film-trailer"><h2>Trailer</h2><div data-part="trailer"><i></i>Guarda il trailer</div></section>
+              <p data-part="film-source">Dati e immagini: TMDB · <span>Apri su TMDB ↗</span></p>
+            </div>
+          </main>
+        </div></div><figcaption>Telefono, tema scuro, uscita limitata: la nota con la dicitura TMDB sta in testa al foglio; trama già scoperta; scorrendo, cast e poi trailer.</figcaption></figure>
+      <figure><div data-desktop style="height:980px"><div data-screen data-mock data-scheme="dark">
+          <nav data-part="navbar" style="padding:10px 24px"><span data-part="brand"><i data-mark></i>cine<i>agenda</i></span><nav data-part="locale-switch" aria-label="Lingua" style="margin-left:auto"><span aria-current="page">IT</span><span>EN</span></nav></nav>
+          <main data-part="film">
+            <header data-part="film-hero" style="height:280px;padding:16px 24px"><nav style="left:20px;top:20px"><i></i>Tutte le uscite</nav><div style="margin-left:204px;max-width:520px"><p data-part="card-meta">Al cinema da gio 5 nov · tra 3 giorni</p><h1 style="font-size:44px">Frankenstein</h1><p>Guillermo del Toro · 2025</p></div></header>
+            <div data-part="film-columns">
+              <div data-poster="1"></div>
+              <div data-part="film-body">
+                <div data-part="facts"><span>Horror</span><span>Drammatico</span><span>Fantasy</span></div>
+                <section data-part="film-plot"><h2>Trama</h2><details data-part="spoiler"><summary><span data-part="spoiler-copy" aria-hidden="true">Lo scienziato Victor Frankenstein, brillante ma egocentrico, dà vita a una creatura in un esperimento mostruoso che condurrà alla rovina sia il creatore che la sua tragica creazione.</span><span data-part="spoiler-cta"><b><svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Mostra la trama</b><small>Niente spoiler prima dei popcorn</small></span><span data-part="spoiler-hide"><svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 5.1A10.7 10.7 0 0 1 12 5c6.5 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.2"/><path d="M6.6 6.6C3.7 8.4 2 12 2 12s3.5 7 10 7a10.5 10.5 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>Nascondi</span></summary><p>Lo scienziato Victor Frankenstein, brillante ma egocentrico, dà vita a una creatura in un esperimento mostruoso che condurrà alla rovina sia il creatore che la sua tragica creazione.</p></details></section>
+                <section data-part="film-facts"><h2>Dettagli</h2><dl><div><dt>Sceneggiatura</dt><dd>Guillermo del Toro</dd></div><div><dt>Paese</dt><dd>Stati Uniti, Messico</dd></div><div><dt>Lingua originale</dt><dd>Inglese</dd></div><div><dt>Produzione</dt><dd>Netflix, Double Dare You</dd></div><div><dt>Durata</dt><dd>149 min</dd></div></dl></section>
+                <section data-part="film-cast"><h2>Cast</h2><ul><li><i></i>Oscar Isaac<small>Victor</small></li><li><i></i>Jacob Elordi<small>La Creatura</small></li><li><i></i>Mia Goth<small>Elizabeth</small></li><li><i></i>C. Waltz<small>Harlander</small></li><li><i></i>F. Kammerer<small>William</small></li><li><i></i>L. Pugh<small>Harlander</small></li></ul></section>
+                <section data-part="film-trailer"><h2>Trailer</h2><div data-part="trailer"><i></i>Guarda il trailer<small>Trailer ufficiale · 2:31</small></div></section>
+                <p data-part="film-source">Dati e immagini: TMDB · <span>Apri su TMDB ↗</span></p>
+              </div>
+            </div>
+          </main>
+        </div></div><figcaption>Desktop, tema scuro: poster a sinistra, foglio a una colonna, trailer a tutta larghezza in fondo.</figcaption></figure>
+    </div>
+    <div data-tokens>
+      <div data-head><code>Pagina film</code><span>font</span><span>taglia / peso</span><em>colore, spaziatura, note</em></div>
+      <div><code>Navbar</code><span>—</span><span>—</span><em>solo brand e switch lingua, stessa altezza della home (44px); nessun tab settimana</em></div>
+      <div><code>Hero</code><span>—</span><span>—</span><em>backdrop TMDB <code>w1280</code>, <code>object-fit: cover</code>, altezza 18.75rem (17.5rem ≥ 48rem); sopra <code>linear-gradient(transparent 20%, rgb(16 16 24 / 0.92))</code>; senza backdrop: fondo <code>--tab-bg</code> pieno, stesso testo</em></div>
+      <div><code>Ritorno "Tutte le uscite"</code><span>Instrument Sans</span><span>1rem · 700</span><em>pillola di vetro scuro, uguale nei due temi perché sta sull'immagine: #fff su <code>rgb(16 16 24 / 0.6)</code>, <code>backdrop-filter: blur(10px)</code>, bordo 1px <code>rgb(255 255 255 / 0.22)</code>, ombra; raggio 999px; altezza minima 2.75rem; a sinistra un cerchio bianco 2rem con la freccia scura; nessuna data nell'etichetta; in alto a sinistra, offset 0.75rem (1.25rem da 48rem); il link conserva <code>?from&amp;to</code> della lista</em></div>
+      <div><code>Riga data</code><span>Instrument Sans</span><span>0.6875rem · 800</span><em>#fcb5b1; uppercase; ls 0.14em; "Al cinema da gio 5 nov" + " · tra 3 giorni" / "da oggi" / "da ieri" con <code>Intl.RelativeTimeFormat</code> (solo entro ±14 giorni)</em></div>
+      <div><code>Titolo</code><span>Syne</span><span>2.125rem · 800 (2.75rem ≥ 48rem)</span><em>#ffffff; lh 0.95; ls -0.04em; <code>text-wrap: balance</code>; max 3 righe</em></div>
+      <div><code>Riga regia</code><span>Instrument Sans</span><span>0.75rem · 500</span><em>#d9d9e3; "Regia · anno" separati da " · "; la durata non sta più qui</em></div>
+      <div><code>Foglio</code><span>—</span><span>—</span><em><code>--surface</code>, raggio 1.125rem in alto, sovrapposto all'hero di 0.875rem; padding 1rem (1.5rem ≥ 48rem); gap 0.875rem; ombra solo nel tema chiaro <code>0 -8px 24px rgb(16 16 24 / 0.08)</code></em></div>
+      <div><code>Nota uscita limitata</code><span>Instrument Sans</span><span>0.75rem · 500</span><em>testo <code>--foreground</code>; etichetta "Uscita limitata" 0.625rem · 800 uppercase ls 0.1em <code>--accent</code> con punto; segue la nota TMDB (<code>releaseNote</code>); fondo <code>--background</code>, padding 0.5rem 0.75rem, raggio 0.5rem; solo se <code>releaseType === "limited"</code></em></div>
+      <div><code>Generi (chip)</code><span>Instrument Sans</span><span>0.6875rem · 600</span><em>tutti uguali: <code>--chip-fg</code> su <code>--chip-bg</code> (il rosa della data "Al cinema da…": nel chiaro fondo #fcb5b1 con testo #7f1f1a, 6.2:1; nello scuro testo #fcb5b1 su #462b2a, 7.2:1); peso 700; padding 0.3125rem 0.625rem; raggio 999px; gap 0.375rem; è un <code>ul</code></em></div>
+      <div><code>Trailer</code><span>Instrument Sans</span><span>0.75rem · 700</span><em>ultima sezione del foglio, con titolo "Trailer" come le altre; <code>&lt;details&gt;</code> a tutta larghezza (circa 36rem su desktop): il <code>summary</code> è un riquadro 16:9 nero (#101018) con bordo 1px <code>--border</code>, play 2.75rem su <code>--accent</code>, "Guarda il trailer" in #fff e sotto "Trailer ufficiale · 2:31" 0.625rem <code>--muted</code>; aperto, l'<code>iframe</code> youtube-nocookie prende il posto del riquadro. Nessuna richiesta a YouTube prima del click. Se non c'è trailer, la sezione non esiste</em></div>
+      <div><code>Titoli di sezione</code><span>Syne</span><span>0.9375rem · 800</span><em><code>--foreground</code>; ls -0.02em; margin-bottom 0.375rem; "Trama", "Dettagli", "Cast", "Trailer"</em></div>
+      <div><code>Trama</code><span>Instrument Sans</span><span>0.875rem · 400</span><em><code>--foreground</code>; lh 1.55; max-width 65ch; coperta da un velo finché non si clicca; "Trama non disponibile." in <code>--muted</code>, senza velo, quando manca</em></div>
+<div><code>Velo anti-spoiler</code><span>Instrument Sans</span><span>pill 0.875rem · 700 / frase 0.75rem · 500 corsivo</span><em><code>&lt;details&gt;</code>: il <code>summary</code> contiene la copia sfocata della trama con <b>le stesse misure del testo vero</b> (stessa taglia, interlinea, larghezza, nessun padding, nessun taglio a 4 righe), così al click il testo compare esattamente dove stava la sfocatura e la pagina non salta. Sopra, al centro: pill "Mostra la trama" con l'icona di un occhio e sotto una frase scherzosa su fondo pieno <code>--surface</code></em></div>
+<div><code>Frasi del velo</code><span>—</span><span>—</span><em>cinque frasi, una per film scelta con <code>film.id % 5</code> (stabile tra server e client): "Niente spoiler prima dei popcorn", "Il regista preferirebbe di no", "Meglio scoprirlo al buio, in sala", "Leggi a tuo rischio e pericolo", "Ultimo avviso prima dei titoli di testa"</em></div>
+<div><code>"Nascondi"</code><span>Instrument Sans</span><span>0.8125rem · 600</span><em>aperta la trama, il <code>summary</code> diventa un bottone "Nascondi" con l'occhio barrato, <b>sulla stessa riga del titolo "Trama", a destra</b> (la sezione è <code>position: relative</code>, il bottone <code>position: absolute; top: 0; right: 0</code>); <code>--foreground</code> su <code>--background</code>, raggio 999px. Prima era una pillola sopra il testo che sembrava un'etichetta</em></div>
+      <div><code>Dettagli (dl)</code><span>Instrument Sans</span><span>dt 0.6rem · 700 / dd 0.75rem · 500</span><em><code>dt</code> uppercase ls 0.1em <code>--muted</code>; <code>dd</code> <code>--foreground</code>; due colonne con <code>flex-wrap</code>, ogni coppia <code>flex: 1 1 40%</code>; gap 0.5rem 1rem; ordine fisso: Sceneggiatura, Paese, Lingua originale, Produzione, Durata; una voce senza dato non si mostra. Paesi e lingua tradotti nella lingua dell'interfaccia ("Francia, Italia", "Francese"). Niente titolo originale</em></div>
+      <div><code>Cast</code><span>Instrument Sans</span><span>nome 0.6875rem · 600 / ruolo 0.625rem · 400</span><em>riga a scorrimento orizzontale con <code>scroll-snap</code>, tessere 4.125rem; foto 1:1 raggio 0.625rem (<code>w185</code>), senza foto iniziali in Syne su <code>--background</code>; ruolo <code>--muted</code>; massimo 10</em></div>
+      <div><code>Attribuzione</code><span>Instrument Sans</span><span>0.625rem · 500</span><em><code>--muted</code>; "Dati e immagini: TMDB" + link "Apri su TMDB ↗" in <code>--foreground</code> sottolineato; è l'unico link esterno della pagina (niente IMDb, sito ufficiale o social); chiude il foglio</em></div>
+      <div><code>Desktop ≥ 48rem</code><span>—</span><span>—</span><em>poster <code>w500</code> 11.25rem a sinistra del foglio, bordo 3px <code>--surface</code>, raggio 0.625rem, sovrapposto all'hero di 3.75rem; il foglio resta a una colonna (trama a 65ch, fatti su due colonne, cast in riga, trailer a tutta larghezza); il titolo nell'hero è allineato alla colonna del foglio</em></div>
+      <div><code>Stati</code><span>—</span><span>—</span><em>caricamento: hero in <code>--tab-bg</code> e foglio con tre righe grigie (<code>aria-busy</code>); non trovato: hero vuoto, titolo "Film non trovato", link "← Uscite"; errore TMDB: stesso layout con "Riprova"</em></div>
+    </div>
+    <div data-notes>
+      <section>
+        <h4>Scelte</h4>
+        <ul>
+          <li><b>La regia sta nell'hero</b>, non nei dettagli: è la seconda cosa che uno cerca dopo il titolo. La durata sta solo nei dettagli. I dettagli sono cinque, in due colonne: sceneggiatura, paese, lingua originale, produzione, durata.</li>
+          <li><b>La distanza da oggi</b> ("tra 3 giorni", "da oggi", "da ieri") risponde alla domanda per cui la pagina esiste; oltre due settimane non si mostra perché non aggiunge nulla.</li>
+          <li><b>Il trailer chiude la scheda</b>, a tutta larghezza: prima si legge, poi si guarda. È un <code>details</code>: zero richieste a YouTube finché non lo apri, axe smette di escludere l'iframe, e chiude il TODO.</li>
+          <li><b>La nota di uscita limitata</b> è la prima cosa nel foglio, perché cambia dove e per quanto puoi vedere il film.</li>
+        </ul>
+      </section>
+      <section>
+        <h4>V2, posto riservato</h4>
+        <ul>
+          <li>"Mi interessa": bottone nell'hero in alto a destra, simmetrico a "← Uscite", stesso stile vetro; nella card sta nella fascia.</li>
+          <li>Verifica esterna: link accanto all'attribuzione, in fondo.</li>
+        </ul>
+      </section>
+      <section>
+        <h4>Nel codice</h4>
+        <ul>
+          <li><code>FilmDetail</code> resta un server component; il trailer <code>details</code> non ha JS. La riga "tra N giorni" è una funzione pura <code>daysFromToday(release, today)</code> in <code>src/lib/releases/</code> con test, formattata con <code>useFormatter().relativeTime</code>.</li>
+          <li>Il link "← Uscite" legge <code>from</code>/<code>to</code> dal referrer? No: la card passa la query nel link (<code>/film/123?from=&amp;to=</code>) e la pagina la rimette nel link di ritorno. Senza query torna a <code>/</code>.</li>
+          <li><code>_FilmDetail.css</code>: <code>film-hero</code>, <code>film-body</code>, <code>limited-note</code>, <code>facts</code>, <code>trailer</code>, <code>film-plot</code>, <code>film-cast</code>, <code>film-trailer</code>, <code>film-source</code>; sopra i 48rem solo <code>film-columns</code>.</li>
+        </ul>
+      </section>
+    </div>
+  </section>
+
+</div>
+</body></html>
