@@ -13,7 +13,7 @@ import { routing } from "@/i18n/routing";
 import { countryQuery, DEFAULT_COUNTRY, parseCountry } from "@/lib/country";
 import { parsePeriod, periodHref } from "@/lib/releases/period";
 import { defaultRange, mondayOf, sundayOf, todayInRome, weeksBetween } from "@/lib/releases/window";
-import { pageMetadata } from "@/lib/seo";
+import { ogImage, pageMetadata } from "@/lib/seo";
 import { getWeekReleases } from "@/lib/tmdb/cached";
 import type { UiLocale } from "@/lib/tmdb/to-movie";
 
@@ -47,7 +47,7 @@ export async function generateMetadata({
     query: { ...countryQuery(country), ...href.query },
     title: t("countryTitle", { country, name }),
     description: t("countryDescription", { country, name }),
-    image: { url: "/og-image.png", width: 1200, height: 630 },
+    image: ogImage(uiLocale),
   });
 }
 

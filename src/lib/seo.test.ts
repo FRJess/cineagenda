@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { pageMetadata } from "./seo";
+import { ogImage, pageMetadata } from "./seo";
 
 describe("pageMetadata", () => {
   it("sets the canonical and the Open Graph address under the locale", () => {
@@ -63,5 +63,11 @@ describe("pageMetadata", () => {
 
     expect(pageMetadata({ ...base, image }).openGraph).toMatchObject({ images: [image] });
     expect(pageMetadata(base).openGraph).not.toHaveProperty("images");
+  });
+
+  it("gives each locale its own preview image", () => {
+    expect(ogImage("it")).toEqual({ url: "/og-image-it.png", width: 1200, height: 630 });
+    expect(ogImage("en").url).toBe("/og-image-en.png");
+    expect(ogImage("fr").url).toBe("/og-image-fr.png");
   });
 });
