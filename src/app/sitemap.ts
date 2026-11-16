@@ -1,59 +1,33 @@
 import type { MetadataRoute } from "next";
-import { SITE_URL } from "@/lib/seo";
 import { routing } from "@/i18n/routing";
+import { SITE_URL } from "@/lib/seo";
 
-type Page = "home" | "about" | "privacy";
+const PAGES = [
+  { path: "", changeFrequency: "weekly", priority: 1 },
+  { path: "/about", changeFrequency: "yearly", priority: 0.5 },
+  { path: "/privacy", changeFrequency: "yearly", priority: 0.5 },
+] as const;
 
-/** Build URL for a page in a specific locale. */
-const pageUrl = (locale: string, page: Page): string => {
-  const baseUrl = new URL(SITE_URL);
+const pageUrl = (locale: string, path: string): string =>
+  new URL(`/${locale}${path}`, SITE_URL).href;
 
-  if (page === "home") {
-    return new URL(`/${locale}`, baseUrl).href;
-  }
-
-  return new URL(`/${locale}/${page}`, baseUrl).href;
-};
-
-/** Static sitemap: home, about, privacy in all locales with hreflang. */
+/**
+ * Static sitemap: home, about and privacy in every locale. Each entry names the same page in
+ * the other languages (hreflang), with the default locale as `x-default`.
+ * @returns Sitemap entries.
+ */
 export default function sitemap(): MetadataRoute.Sitemap {
-  const pages: MetadataRoute.Sitemap = [];
+  return PAGES.flatMap(({ path, changeFrequency, priority }) => {
+    const languages = {
+      ...Object.fromEntries(routing.locales.map((locale) => [locale, pageUrl(locale, path)])),
+      "x-default": pageUrl(routing.defaultLocale, path),
+    };
 
-  for (const locale of routing.locales) {
-    // Build alternates object for hreflang
-    const alternates: Record<string, string> = {};
-
-    for (const alt of routing.locales) {
-      alternates[alt] = pageUrl(alt, locale as Page);
-    }
-
-    // x-default points to the default locale (Italian)
-    alternates["x-default"] = pageUrl("it", locale as Page);
-
-    // Home
-    pages.push({
-      url: pageUrl(locale, "home"),
-      changeFrequency: "weekly",
-      priority: 1,
-      alternates: { languages: alternates },
-    });
-
-    // About
-    pages.push({
-      url: pageUrl(locale, "about"),
-      changeFrequency: "yearly",
-      priority: 0.5,
-      alternates: { languages: alternates },
-    });
-
-    // Privacy
-    pages.push({
-      url: pageUrl(locale, "privacy"),
-      changeFrequency: "yearly",
-      priority: 0.5,
-      alternates: { languages: alternates },
-    });
-  }
-
-  return pages;
+    return routing.locales.map((locale) => ({
+      url: pageUrl(locale, path),
+      changeFrequency,
+      priority,
+      alternates: { languages },
+    }));
+  });
 }
