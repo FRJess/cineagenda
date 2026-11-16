@@ -1,23 +1,34 @@
 # Cineagenda
 
-A personal, mobile-first web app that lists the films coming to Italian cinemas, week by week, with the Italian release date. One page replaces checking several Italian sites by hand.
+A personal, mobile-first web app that lists the films coming to cinemas, week by week, with each country's own release date. One page replaces checking several local sites by hand.
 
-- **Italian dates only.** Every date comes from TMDB's Italian release entries, never from the worldwide one. Limited and festival runs are shown with a visible label; festival screenings and events are dropped.
-- **Week by week.** The current week and the next one by default; pick any range from 1 January 2026 onward, or page back and forward two weeks at a time.
-- **Film pages.** Plot, director, cast, country, production company, running time and the trailer when TMDB has one.
-- **Italian and English UI**, switchable, with the same Italian release data.
-- **Cross-check.** Each week links to the same week on ComingSoon for a manual comparison.
+- **Three countries.** Italy, France and the United States, each with its own release dates and titles. The last country picked is remembered for the next visit, and every link names its country, so a shared link opens the same list.
+- **Local dates only.** Every date comes from the TMDB release entries of the chosen country, never from the worldwide one. Limited runs carry a visible label; festival screenings, premieres and one-off events are dropped, and so are shorts and stage shows.
+- **Week by week.** The current week by default. A calendar picks up to four whole weeks, shortcuts pick this or next week or a whole month, and arrows move the period by its own length. Any week from 1 January 2026 to two years ahead.
+- **Film pages.** Plot behind a spoiler veil, director, cast, screenplay, country, original language, production companies, running time, and the trailer when TMDB has one.
+- **Italian, English and French UI**, with a light and a dark theme.
 
 ---
 
 ## Architecture
 
-A single Next.js 16 App Router app with Cache Components. There is no database and no backend of its own.
+A single Next.js 16 App Router app with Cache Components. There is no database and no backend of its own: server components call TMDB and cache the results.
 
-- **Data source:** The Movie Database (TMDB) API v3, called only from the server with a v4 read token. Per week: one `discover/movie` query filtered on `region=IT`, then one details call per film with its release dates and translations. Per film page: one details call with credits and videos.
-- **Data rules** (`src/lib/tmdb`, `src/lib/releases`): the Italian date is the type 3 (theatrical) entry inside the week, else type 2 (limited); other types never show. Festival and event entries are dropped. The display title is the Italian title with the original in parentheses, or the original with the English title when there is no Italian one. Weeks run Monday to Sunday in Europe/Rome.
+- **Data source:** The Movie Database (TMDB) API v3, called only from the server with a v4 read token. Per week and country: one `discover/movie` query filtered on `region`, then one details call per film with its release dates, translations and keywords. Per film page: one details call with credits and videos.
+- **Data rules** (`src/lib/tmdb`, `src/lib/releases`): a film's date is the country's type 3 (theatrical) entry inside the week, else its type 2 (limited) entry, unless that one is a preview run up to eight weeks before the theatrical date. The card title is the title in the country's language, with the original as the film page subtitle; a film in the country's language keeps its original title. Weeks run Monday to Sunday in Europe/Rome.
 - **Caching:** each week and each film page is a `"use cache"` function with a daily lifetime (weekly for past weeks), so TMDB is called at most once a day per week or film.
-- **Routing:** `/it` and `/en` via next-intl; `/` redirects to `/it`. The list period lives in the path: `/it/2026-11-09` is the week of that Monday (`?weeks=3` for several weeks) and `/it/2026-12` a month; `?country=fr` picks the country and is always written. The proxy redirects any other spelling of a period to that one address and serves it from the list page. Film pages are `/[locale]/film/[id]?country=fr`.
+- **Routing:** `/it`, `/en` and `/fr` via next-intl; `/` redirects to `/it`. The period lives in the path and the country in the query, always written:
+
+  | Address | Shows |
+  | --- | --- |
+  | `/it?country=fr` | the current week in France |
+  | `/it/2026-11-09?country=fr` | the week of that Monday |
+  | `/it/2026-11-09?country=fr&weeks=3` | three weeks from that Monday |
+  | `/it/2026-12?country=fr` | the weeks of a calendar month |
+  | `/it/film/62?country=fr` | a film page |
+
+  The proxy (`src/proxy.ts`) redirects any other spelling of a period to its one address, answers 404 for periods out of reach, and serves the period addresses from the list page.
+- **Security:** a static Content-Security-Policy and the usual security headers on every response (`next.config.ts`). TMDB fields that end up in a URL (image paths, trailer keys) are checked before use.
 - **Styling:** plain CSS, one file per component plus `src/app/globals.css`, element and `[data-part]` selectors only. No CSS classes, no inline styles, no CSS-in-JS.
 
 ## Prerequisites
@@ -56,6 +67,8 @@ Open <http://localhost:3000>. It redirects to `/it`.
 
 Tests are written before the code they cover. Dependencies are pinned to exact versions. jsdom stays on 29.x until Node is upgraded to 22.19 or newer, because jsdom 30 depends on undici 8.
 
+To add a country: list its code in `COUNTRIES` and its release weekday and title language in `INFO` (`src/lib/country.ts`), add its flag to `public/flags/`, and check how the country titles in `messages/` phrase its name.
+
 ## Seed policy
 
 No seeding. All data is read live from TMDB and cached by Next.js.
@@ -67,12 +80,6 @@ Not used. The app runs with `pnpm dev` locally and on Vercel in production.
 ## Deployment
 
 Vercel Hobby, linked to this GitHub repository, auto-deploys `main`. Set `TMDB_ACCESS_TOKEN` in the Vercel project environment before the first deploy.
-
-## Documentation
-
-- Design spec: `docs/superpowers/specs/2026-10-30-cineagenda-design.md` (decisions, data rules, TMDB findings)
-- Implementation plans: `docs/superpowers/plans/`
-- Open items: `docs/TODO.md`
 
 ## Attribution
 
