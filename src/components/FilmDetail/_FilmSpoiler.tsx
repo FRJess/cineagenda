@@ -3,7 +3,6 @@
 import { useTranslations } from "next-intl";
 import { useEffect, useId, useState } from "react";
 
-/** Eye icon for the reveal pill; decorative, the label carries the meaning. */
 function EyeIcon() {
   return (
     <svg
@@ -21,7 +20,6 @@ function EyeIcon() {
   );
 }
 
-/** Crossed-eye icon for the hide control; decorative. */
 function EyeOffIcon() {
   return (
     <svg
@@ -39,13 +37,6 @@ function EyeOffIcon() {
   );
 }
 
-/**
- * Plot behind a spoiler veil: a disclosure button showing a blurred copy with "Mostra la trama"
- * until clicked, then a "Nascondi la trama" control that veils the text again. Every visit
- * starts veiled.
- * @param props Plot text and the playful hint line picked on the server.
- * @returns Disclosure button and the plot it controls.
- */
 export function FilmSpoiler({
   overview,
   hint,

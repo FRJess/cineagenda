@@ -64,12 +64,6 @@ async function mapLimited<T, R>(
   return results;
 }
 
-/**
- * Details of every film TMDB lists as a theatrical release of the country in the window.
- * @param window Release window.
- * @param country Country of the releases; Italy by default.
- * @returns Details with release dates and translations, in discover order.
- */
 export async function fetchReleaseDetails(
   window: ReleaseWindow,
   country: Country = DEFAULT_COUNTRY,
@@ -83,11 +77,6 @@ export async function fetchReleaseDetails(
   );
 }
 
-/**
- * Localized genre names.
- * @param locale UI locale.
- * @returns Genre id to name.
- */
 export async function fetchGenreNames(locale: UiLocale): Promise<GenreNames> {
   const list = await tmdbGet<TmdbGenreList>("/genre/movie/list", {
     language: TMDB_LANGUAGE[locale],
@@ -98,9 +87,6 @@ export async function fetchGenreNames(locale: UiLocale): Promise<GenreNames> {
 
 /**
  * Full details of one film for the film page.
- * @param id TMDB movie id.
- * @returns Details with credits, release dates, translations and videos in the UI languages,
- * untagged and in the original language.
  * @throws {TmdbError} With status 404 when the id does not exist.
  */
 export async function fetchMovieDetails(id: number): Promise<TmdbMovieDetails> {

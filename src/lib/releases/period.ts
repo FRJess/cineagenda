@@ -13,7 +13,6 @@ import {
 const MONTH = /^(\d{4})-(0[1-9]|1[0-2])$/;
 const WEEKS = /^[1-9]$/;
 
-/** Where a range lives in the URL: the path after the locale and, for several weeks, `weeks`. */
 export type PeriodHref = {
   readonly pathname: string;
   readonly query: { readonly weeks?: string };
@@ -22,8 +21,6 @@ export type PeriodHref = {
 /**
  * URL of a range of whole weeks: `/2026-11-09` for one week, `/2026-11-09` with `weeks=3` for
  * several, `/2026-12` when the weeks are exactly those of a calendar month.
- * @param range Monday-to-Sunday range.
- * @returns Path and query, without the country.
  */
 export function periodHref(range: ReleaseWindow): PeriodHref {
   // The first Sunday is always inside the month a month range stands for.
@@ -39,14 +36,6 @@ export function periodHref(range: ReleaseWindow): PeriodHref {
   return { pathname: `/${range.from}`, query: weeks > 1 ? { weeks: String(weeks) } : {} };
 }
 
-/**
- * Range named by a URL: a day (`2026-11-09`, read as its week, with an optional number of weeks)
- * or a month (`2026-12`). It must lie between the week of {@link MIN_DATE} and {@link maxDate}.
- * @param period Path segment after the locale.
- * @param weeks `weeks` query param, null when absent; ignored for a month.
- * @param today ISO date in Europe/Rome.
- * @returns The range, or null when the URL names none the calendar can reach.
- */
 export function parsePeriod(
   period: string,
   weeks: string | null,

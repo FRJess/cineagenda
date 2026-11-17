@@ -11,13 +11,6 @@ import "./_WeekSection.css";
 // On wide screens the featured card spans 3 of 5 columns, so 2 posters share the first row.
 const EAGER_POSTERS = 2;
 
-/**
- * One release week: labeled heading with the date range ("Nessuna uscita" beside it when the
- * week is empty), then a grid that opens with the week's featured film and holds the others.
- * @param props Week group, the Monday of the current week, today (for the year rule of the title), `eager` for the week shown above
- * the fold, and the country the cards pass to the film page.
- * @returns Section labeled by its heading.
- */
 export function WeekSection({
   group,
   todayMonday,

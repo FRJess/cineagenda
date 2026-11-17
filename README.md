@@ -63,7 +63,6 @@ Open <http://localhost:3000>. It redirects to `/it`.
 | `pnpm lint` | ESLint (`next/core-web-vitals`, `next/typescript`, Prettier compatibility) |
 | `pnpm format` | Prettier check (`pnpm exec prettier --write .` to fix) |
 | `pnpm typecheck` | Next route types plus `tsc --noEmit` |
-| `pnpm check` | webidoo guardrails over the repository |
 
 Tests are written before the code they cover. Dependencies are pinned to exact versions. jsdom stays on 29.x until Node is upgraded to 22.19 or newer, because jsdom 30 depends on undici 8.
 

@@ -9,7 +9,6 @@ const LIGHT_BLOCK = css.slice(css.indexOf(":root {"), css.indexOf("}", css.index
 const DARK_START = css.indexOf(':root:not([data-theme="light"]) {');
 const DARK_BLOCK = css.slice(DARK_START, css.indexOf("}", DARK_START));
 
-/** Hex tokens of one block, e.g. `--muted: #5d5e70;`. */
 function tokens(block: string): Record<string, string> {
   return Object.fromEntries(
     [...block.matchAll(/--([\w-]+):\s*(#[0-9a-f]{6})\b/gi)].map((m) => [m[1], m[2]]),
@@ -19,7 +18,6 @@ function tokens(block: string): Record<string, string> {
 const LIGHT = tokens(LIGHT_BLOCK);
 const DARK = { ...LIGHT, ...tokens(DARK_BLOCK) };
 
-/** WCAG relative luminance of a hex colour. */
 function luminance(hex: string): number {
   const [r, g, b] = [1, 3, 5].map((i) => {
     const c = Number.parseInt(hex.slice(i, i + 2), 16) / 255;
@@ -30,7 +28,6 @@ function luminance(hex: string): number {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
-/** WCAG contrast ratio between two hex colours. */
 function ratio(a: string, b: string): number {
   const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
 
@@ -92,7 +89,6 @@ describe("text over a film image under the veil", () => {
   });
 
   it("passes 4.5:1 for white at 75% opacity", () => {
-    // White at 75% over the veiled grey.
     const blended = Math.round(255 * 0.75 + 0.25 * Number.parseInt(backdrop.slice(1, 3), 16));
     const v = blended.toString(16).padStart(2, "0");
 

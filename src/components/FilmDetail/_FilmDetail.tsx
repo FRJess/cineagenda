@@ -25,7 +25,6 @@ function initials(name: string): string {
     .toUpperCase();
 }
 
-/** Capitalized name in the UI locale; empty for codes it cannot name, like TMDB's "xx". */
 function displayName(code: string, type: "language" | "region", locale: string): string {
   const name = code ? new Intl.DisplayNames([locale], { type, fallback: "none" }).of(code) : "";
 
@@ -60,14 +59,6 @@ function CastItem({ member }: { readonly member: CastMember }) {
   );
 }
 
-/**
- * Film page body: backdrop hero with date, title and byline, then a single-column sheet with the
- * limited release note, genres, plot behind a spoiler, details, cast and trailer; from 48rem the
- * poster sits beside the sheet. The TMDB attribution is on the About page.
- * @param props Film details, today's ISO date in Europe/Rome and the country of the list; the
- * back link goes to the week the film comes out in.
- * @returns Main landmark.
- */
 export function FilmDetail({
   film,
   today,

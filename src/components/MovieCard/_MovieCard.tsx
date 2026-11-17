@@ -11,12 +11,6 @@ const POSTER_BASE = "https://image.tmdb.org/t/p/w342";
 // Two posters per row on phones, tiles of 13rem at most from 48rem.
 const POSTER_SIZES = "(min-width: 48rem) 13rem, 50vw";
 
-/**
- * One release in the poster grid: the whole poster, then a band painted with a blurred copy
- * of it that carries the title and the date. Nothing covers the poster.
- * @param props Movie to show; `eager` loads the poster at once when it sits above the fold.
- * @returns Article with one link.
- */
 export function MovieCard({
   movie,
   eager = false,

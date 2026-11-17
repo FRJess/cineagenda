@@ -7,9 +7,6 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
  * mounted only while open, so every opening starts from the URL state. It closes on Escape
  * (focus back on the button), on a press outside the button and panel, and on a link inside it
  * (a country), since client navigation keeps the layout mounted.
- * @param props Button content, its accessible name when the visible text is not enough, the
- * panel content and the `data-part` of the wrapper.
- * @returns Button and, while open, the panel.
  */
 export function DatePicker({
   summary,

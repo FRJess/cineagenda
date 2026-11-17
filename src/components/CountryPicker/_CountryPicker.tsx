@@ -5,7 +5,6 @@ import { Link } from "@/i18n/navigation";
 import { COUNTRIES, type Country, countryQuery } from "@/lib/country";
 import "./_CountryPicker.css";
 
-/** Decorative flag next to the country name; the name always carries the meaning. */
 function Flag({ country }: { readonly country: Country }) {
   // SVGs need no resizing, so the optimizer is skipped.
   return (
@@ -13,13 +12,6 @@ function Flag({ country }: { readonly country: Country }) {
   );
 }
 
-/**
- * Country of the releases, top right of the navbar: a filled button with flag and name that opens
- * a menu with one plain link per country, sorted by name in the page language. The links keep
- * the page and its period.
- * @param props Chosen country, the path the links point to, and the query they keep with it.
- * @returns Disclosure button and, while open, the menu.
- */
 export function CountryPicker({
   country,
   pathname,

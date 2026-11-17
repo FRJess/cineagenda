@@ -9,8 +9,6 @@ const WIDTHS = [185, 300, 342, 500, 780, 1280] as const;
  * rounded up to a size TMDB serves, so nothing goes through the Vercel optimizer. The size in
  * the address is the ceiling: a 3x phone would otherwise fetch a poster twice as heavy as the
  * design needs.
- * @param props Address of the image, with its largest size, and the width asked for.
- * @returns TMDB address in that width; any other address unchanged.
  */
 export default function imageLoader({ src, width }: Pick<ImageLoaderProps, "src" | "width">) {
   const match = TMDB_IMAGE.exec(src);

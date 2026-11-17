@@ -3,7 +3,6 @@ import type { ReleaseType } from "@/lib/releases/movie";
 import type { ReleaseWindow } from "@/lib/releases/window";
 import type { TmdbMovieDetails, TmdbReleaseDate } from "./types";
 
-/** Cinema release of one country picked for a window. */
 export type Release = {
   readonly date: string;
   readonly type: ReleaseType;
@@ -31,10 +30,6 @@ const daysApart = (a: string, b: string): number =>
  * event word in the note, or a premiere (type 1) within a week of the limited date. So are
  * limited entries up to eight weeks before a theatrical one: the film has one date, the theatrical.
  * Premieres, digital, physical and TV entries never count.
- * @param details Movie details with `release_dates`.
- * @param window Inclusive window.
- * @param country Country whose release dates count; Italy by default.
- * @returns The release, or null when no cinema entry falls in the window.
  */
 export function pickRelease(
   details: TmdbMovieDetails,

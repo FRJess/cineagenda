@@ -1,11 +1,8 @@
 import { isoDateToUtc } from "./iso-date";
 
-/** How a range is written: month length, and whether the year may appear. */
 export type DateRangeStyle = {
   readonly month: "short" | "long";
-  /** "never" for the phone period bar; "auto" adds it only when needed. */
   readonly year: "never" | "auto";
-  /** Current year, "2026": with "auto", a range in it shows no year. */
   readonly currentYear: string;
 };
 
@@ -17,11 +14,6 @@ const SEPARATOR = " – ";
  * locale's own day/month order: "9 – 15 nov", "Nov 9 – 15", "28 dic – 3 gen". With
  * `year: "auto"` the year goes on both ends when they are in different years, and once at the
  * end when the range is not in the current year.
- * @param locale UI locale.
- * @param from First day, ISO date.
- * @param to Last day, ISO date.
- * @param style Month length and year rule.
- * @returns The range, e.g. "28 dicembre 2026 – 3 gennaio 2027".
  */
 export function formatDateRange(
   locale: string,

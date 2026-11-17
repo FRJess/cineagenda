@@ -22,8 +22,6 @@ const ONE_YEAR_S = 60 * 60 * 24 * 365;
  * week from the query; the date form (`from`, `to`) and any other spelling of a period redirect
  * to that one address. Dates out of reach answer 404 here: the list streams, so it cannot set
  * the status itself.
- * @param request Incoming request.
- * @returns Redirect, rewrite or the next-intl response.
  */
 export default function proxy(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl;
@@ -149,7 +147,6 @@ function isSameAddress(href: PeriodHref, segment: string | undefined, params: UR
   return href.pathname === `/${segment}` && (href.query.weeks ?? null) === params.get("weeks");
 }
 
-/** Skip API routes, Next internals and files with an extension. */
 export const config = {
   matcher: "/((?!api|_next|_vercel|.*\\..*).*)",
 };

@@ -2,16 +2,6 @@ import type { ReactNode } from "react";
 import { Link } from "@/i18n/navigation";
 import "./_SiteHeader.css";
 
-/**
- * Site header: film-reel mark and wordmark, a slot for the week tabs and, at the end, a slot for
- * the country of the releases. The language lives in the footer. On the home page the brand
- * link is the page's only h1.
- * Both slots stream in after the brand; the styles keep their room (`data-home` marks the
- * taller home header), so the page under the header never moves.
- * @param props `home` makes the brand the page heading; `children` fill the tabs slot and
- * `country` the country slot.
- * @returns Header landmark.
- */
 export function SiteHeader({
   home = false,
   children,

@@ -5,7 +5,6 @@ import { pickRelease } from "./release-date";
 import { buildDisplayTitles } from "./title";
 import type { GenreNames, TmdbMovieDetails } from "./types";
 
-/** UI locales; overviews come from the matching translation. */
 export type UiLocale = "it" | "en" | "fr";
 
 /** Films shorter than this are shorts and are not listed; unknown running times pass. */
@@ -35,11 +34,6 @@ const STAGE_SHOW_KEYWORDS: ReadonlySet<number> = new Set([
 // TMDB image paths are one file name, "/abc123.jpg"; anything else must not reach an image URL.
 const IMAGE_PATH = /^\/[\w.-]+$/;
 
-/**
- * TMDB image path, checked before it is joined to the image host.
- * @param path `poster_path`, `backdrop_path` or `profile_path`.
- * @returns The path, or null when it is missing or not a plain file name.
- */
 export function imagePath(path: string | null | undefined): string | null {
   return path && IMAGE_PATH.test(path) ? path : null;
 }
@@ -49,19 +43,8 @@ const overviewIn = (details: TmdbMovieDetails, lang: UiLocale): string =>
     .find((t) => t.iso_639_1 === lang && t.data.overview?.trim())
     ?.data.overview?.trim() ?? "";
 
-// UI language first, then English, then Italian.
 const overviewOrder = (locale: UiLocale): readonly UiLocale[] => [locale, "en", "it"];
 
-/**
- * Maps TMDB details to a Movie for one UI locale.
- * @param details Movie details with `release_dates` and `translations`.
- * @param window Release window.
- * @param locale UI locale for the overview.
- * @param genreNames Localized genre names.
- * @param country Country whose release date and title are shown; Italy by default.
- * @returns Movie, or null when it has no cinema release in that country in the window, is a
- * short, or is a stage show.
- */
 export function toMovie(
   details: TmdbMovieDetails,
   window: ReleaseWindow,

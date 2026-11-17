@@ -13,7 +13,6 @@ test("a card opens the film page with its facts", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(title ?? "");
   await expect(page.locator("dl")).toBeVisible();
   await expect(page.getByRole("heading", { level: 2, name: "Trama" })).toBeVisible();
-  // The back link goes to the week the film comes out in.
   await expect(page.getByRole("link", { name: "Tutte le uscite" })).toHaveAttribute(
     "href",
     /^\/it\/\d{4}-\d{2}-\d{2}\?country=it$/,
@@ -52,7 +51,6 @@ test("from 48rem the sheet lies on the hero and the poster is inset from its edg
     expect((await box("[data-part='film-poster']")).left).toBe(hero.left + 24);
   }
 
-  // The title starts where the sheet text starts.
   expect((await box("#film-title")).left).toBe((await box("[data-part='film-body'] h2")).left);
 });
 

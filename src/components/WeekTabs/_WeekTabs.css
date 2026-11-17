@@ -1,11 +1,3 @@
-/**
- * FILE: _WeekTabs.css
- * USAGE: Styles for WeekTabs: from 62rem the row of week tabs and its Date disclosure, the active tab inverted; below 62rem the period bar (arrows around the same disclosure, whose button shows the period), on its own header row below 48rem
- * SCOPE: [data-part="week-tabs"], [data-part="date-picker"], [data-part="date-label"], [data-part="period"], [data-part="step-previous"], [data-part="step-next"]
- */
-
-/* ─── Row: the list scrolls, the disclosure stays put beside it ─── */
-
 [data-part="week-tabs"] {
   display: flex;
   align-items: center;
@@ -58,8 +50,6 @@
     display: none;
   }
 }
-
-/* ─── Tabs and the Date button share one pill ─── */
 
 [data-part="week-tabs"] > ul > li > a,
 [data-part="date-picker"] > button {
@@ -116,8 +106,6 @@
 [data-part="week-tabs"] > ul > li > a[aria-current="true"] > small {
   color: var(--tab-muted);
 }
-
-/* ─── Date disclosure: dashed pill, solid while open ─── */
 
 [data-part="date-picker"] {
   position: relative;
@@ -185,8 +173,6 @@
     border-color: var(--foreground);
   }
 }
-
-/* ─── Below 62rem: the period bar, previous | period | next, all 2.75rem tall ─── */
 
 @media (max-width: 61.99rem) {
   [data-part="week-tabs"] {
@@ -290,7 +276,6 @@
   }
 }
 
-/* Below 48rem the form is a bottom sheet; this scrim dims the page behind it. */
 @media (max-width: 47.99rem) {
   [data-part="date-picker"]:has(> button[aria-expanded="true"])::before {
     position: fixed;

@@ -1,6 +1,5 @@
 <!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head><body>
 <title>Cineagenda Cartellone</title>
-<meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
   /* Layout: a design spec. Prose column, full-width benches with phone frames in light and dark side by side. */
@@ -563,7 +562,7 @@
   <header data-prose>
     <p data-eyebrow>Cineagenda · design definitivo · 6 novembre 2026</p>
     <h1>Cartellone, versione definitiva</h1>
-    <p data-lead>Direzione "Cartellone": tema chiaro e scuro con la stessa struttura, card con poster intero e fascia di continuazione, un film in evidenza nella settimana corrente, perimetro V1 ridotto a lista, dettaglio e IT/EN. Le funzioni V2 (verifica esterna, "mi interessa", calendario personale) hanno già un posto previsto nel layout, ma non compaiono. Le stesse regole, in forma di istruzioni per Claude Code, sono in <code>docs/DESIGN.md</code>.</p>
+    <p data-lead>Direzione "Cartellone": tema chiaro e scuro con la stessa struttura, card con poster intero e fascia di continuazione, un film in evidenza nella settimana corrente, perimetro V1 ridotto a lista, dettaglio e IT/EN. Le funzioni V2 (verifica esterna, "mi interessa", calendario personale) hanno già un posto previsto nel layout, ma non compaiono. Le stesse regole, in forma di istruzioni per chi sviluppa, sono in <code>docs/DESIGN.md</code>.</p>
   </header>
 
   <!-- ================================================================ tokens -->
@@ -1269,7 +1268,7 @@
   <section data-block>
     <div data-prose>
       <h2>Piano di implementazione</h2>
-      <p>In ordine di commit, ognuno piccolo, test prima del codice, tutto dentro le regole webidoo (nessuna classe, nessun inline style, un CSS per componente con intestazione, flex prima della grid, nessuna dipendenza nuova).</p>
+      <p>In ordine di commit, ognuno piccolo, test prima del codice, tutto dentro le regole del progetto (nessuna classe, nessun inline style, un CSS per componente con intestazione, flex prima della grid, nessuna dipendenza nuova).</p>
     </div>
     <div data-steps>
       <div><strong>1 · Token e font</strong><span><code>globals.css</code>: nuova palette su <code>:root</code> e nel blocco <code>prefers-color-scheme: dark</code>, aggiunti <code>--accent-soft</code>, <code>--tab-bg</code>, <code>--tab-fg</code>. <code>layout.tsx</code>: <code>&lt;link rel="preconnect"&gt;</code> + <code>&lt;link&gt;</code> Google Fonts dentro <code>&lt;html&gt;</code>; <code>--font-display: "Syne"</code>, <code>--font-text: "Instrument Sans"</code>. Niente <code>next/font</code>.</span></div>

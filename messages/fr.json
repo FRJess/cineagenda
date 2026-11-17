@@ -1,9 +1,9 @@
 {
   "Metadata": {
     "title": "Cineagenda",
-    "description": "Les films qui sortent dans les cinémas italiens, semaine après semaine.",
+    "description": "Découvrez tout de suite les films qui sortent au cinéma, semaine après semaine. Sans publicité, sans inscription.",
     "countryTitle": "Sorties au cinéma {country, select, GB {au Royaume-Uni} US {aux États-Unis} other {en {name}}} · Cineagenda",
-    "countryDescription": "Les films qui sortent au cinéma {country, select, GB {au Royaume-Uni} US {aux États-Unis} other {en {name}}}, semaine après semaine."
+    "countryDescription": "Découvrez tout de suite les films qui sortent au cinéma {country, select, GB {au Royaume-Uni} US {aux États-Unis} other {en {name}}}, semaine après semaine. Sans publicité, sans inscription."
   },
   "Header": {
     "language": "Langue",
@@ -145,7 +145,7 @@
     "links": "Informations sur le site",
     "about": "À propos",
     "privacy": "Confidentialité",
-    "small": "Réalisé par Jessica. Données et images des films : <tmdb>TMDB</tmdb>.",
+    "small": "Made by Jessica. Données et images des films : <tmdb>TMDB</tmdb>.",
     "theme": "Thème sombre"
   }
 }

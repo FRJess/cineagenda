@@ -33,7 +33,7 @@ test("the footer credits TMDB with a link to the About page, without the logo", 
   await page.goto("/it");
   const footer = page.getByRole("contentinfo");
 
-  await expect(footer).toContainText("Realizzato da Jessica. Dati e immagini dei film da TMDB.");
+  await expect(footer).toContainText("Made by Jessica. Dati e immagini dei film da TMDB.");
   await expect(footer.getByRole("link", { name: "TMDB" })).toHaveAttribute(
     "href",
     "https://www.themoviedb.org",
@@ -248,7 +248,6 @@ for (const width of [360, 1280]) {
     const bar = await heading.evaluate((el) => el.getBoundingClientRect().top);
     const text = await heading.locator("h2").evaluate((el) => el.getBoundingClientRect().top);
 
-    // No gap above the bar, and the text is not under the navbar.
     expect(bar).toBeLessThanOrEqual(navbarBottom);
     expect(text).toBeGreaterThanOrEqual(navbarBottom);
     expect(text - navbarBottom).toBeLessThan(16);
@@ -296,7 +295,6 @@ for (const [device, width, height] of [
     const bar = (await period.boundingBox())!;
     expect(Math.abs(brand.y + brand.height / 2 - (bar.y + bar.height / 2))).toBeLessThan(4);
 
-    // The calendar opens as a popover that stays on screen.
     await period.click();
     const popover = (await page.locator("[data-part='week-range']").boundingBox())!;
     expect(popover.x).toBeGreaterThanOrEqual(0);

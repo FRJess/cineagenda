@@ -32,7 +32,6 @@ const subscribeWide = (onChange: () => void) => {
 // jsdom and the server have no matchMedia: they get the phone layout.
 const isWideScreen = () => window.matchMedia?.(WIDE).matches ?? false;
 
-/** A shortcut pill: its label in the UI language and the weeks it selects. */
 export type Shortcut = { readonly label: string; readonly range: WeekRange };
 
 type Props = {
@@ -40,17 +39,9 @@ type Props = {
   readonly to: string;
   readonly releaseDay: number; // usual release weekday of the country, 0 = Sunday
   readonly today: string; // ISO date in Europe/Rome, for the year rule of the footer range
-  readonly shortcuts: readonly Shortcut[]; // pills between the calendar and the footer
+  readonly shortcuts: readonly Shortcut[];
 };
 
-/**
- * Week picker: the only date control of the GET form. Every calendar row is a week; a click
- * selects or extends whole weeks, up to {@link MAX_WEEKS}: the days still in reach are tinted,
- * and a click beyond them starts again from that week. A shortcut pill selects its weeks in the
- * calendar; only the footer submit changes the list. The calendar renders after hydration.
- * @param props The URL range, the country's release weekday, today's date and the shortcuts.
- * @returns Hidden inputs, calendar, shortcuts and footer.
- */
 export function WeekPicker({ from, to, releaseDay, today, shortcuts }: Props) {
   const locale = useLocale() as keyof typeof LOCALES;
   const t = useTranslations("Nav");

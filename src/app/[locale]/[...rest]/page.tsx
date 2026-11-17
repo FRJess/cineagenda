@@ -7,11 +7,6 @@ import { routing } from "@/i18n/routing";
 /** Unknown addresses have nothing to prerender; the page only answers 404. */
 export const instant = false;
 
-/**
- * Document title of the 404 page.
- * @param props Route props.
- * @returns Metadata.
- */
 export async function generateMetadata({
   params,
 }: PageProps<"/[locale]/[...rest]">): Promise<Metadata> {
@@ -27,7 +22,6 @@ export async function generateMetadata({
 /**
  * Catch-all for unknown addresses under a locale: Next only renders `[locale]/not-found.tsx`
  * for a matched route that calls `notFound()`, so this route gives it one.
- * @returns Never; always throws the 404.
  */
 export default function UnknownPage(): never {
   notFound();

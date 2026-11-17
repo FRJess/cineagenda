@@ -1,18 +1,8 @@
-/**
- * FILE: _WeekSection.css
- * USAGE: Styles for WeekSection: the week title with its eyebrow and count, then the featured card and the poster grid
- * SCOPE: [data-part="week-section"]
- */
-
-/* ─── Layout ─── */
-
 [data-part="week-section"] {
   display: flex;
   flex-direction: column;
   gap: 0.125rem;
 }
-
-/* ─── Week heading row: title and count share the baseline ─── */
 
 /* Sticks under the navbar while its own week scrolls, then the next heading pushes it out.
    The shadow paints the page color to both screen edges and the clip keeps it in the row, so
@@ -62,9 +52,6 @@
   color: var(--muted);
 }
 
-/* ─── Poster grid ─── */
-
-/* grid: auto-fill tracks, poster tiles fill the row and wrap by width */
 [data-part="week-section"] ol {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(9.375rem, 1fr));
@@ -74,7 +61,6 @@
   list-style: none;
 }
 
-/* grid: explicit placement; the featured film takes a whole row on phones, whatever the column count. */
 [data-part="week-section"] ol > li[data-featured] {
   grid-column: 1 / -1;
 }

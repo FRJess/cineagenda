@@ -2,7 +2,6 @@ import "server-only";
 
 const BASE_URL = "https://api.themoviedb.org/3";
 
-/** TMDB request failure; `status` is null when the request was never sent. */
 export class TmdbError extends Error {
   readonly status: number | null;
 
@@ -15,9 +14,6 @@ export class TmdbError extends Error {
 
 /**
  * GET a TMDB v3 endpoint with the server-only v4 read token.
- * @param path Path after `/3`, e.g. `/discover/movie`.
- * @param params Query parameters.
- * @returns Parsed JSON body.
  * @throws {TmdbError} When the token is missing or the response is not OK.
  */
 export async function tmdbGet<T>(

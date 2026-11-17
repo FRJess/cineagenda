@@ -4,11 +4,6 @@ import { LocaleSwitch } from "@/components/LocaleSwitch";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Link } from "@/i18n/navigation";
 
-/**
- * Site footer: the links to the About and Privacy pages, the language and the theme, then one
- * line of small print. TMDB's logo and notice are on the About page; the credit here links there.
- * @returns Footer landmark.
- */
 export function SiteFooter() {
   const t = useTranslations("Footer");
 
