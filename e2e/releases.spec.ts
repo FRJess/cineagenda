@@ -398,3 +398,34 @@ test("TMDB images come from TMDB in several widths, the featured one first", asy
   );
   await expect(page.locator("img[src*='/_next/image']")).toHaveCount(0);
 });
+
+for (const viewport of [
+  { width: 390, height: 844 },
+  { width: 1350, height: 940 },
+]) {
+  test(`nothing moves while the header and the weeks stream in (${viewport.width}px)`, async ({
+    page,
+  }) => {
+    await page.setViewportSize(viewport);
+    await page.addInitScript(() => {
+      const shifts: number[] = [];
+
+      new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          shifts.push((entry as PerformanceEntry & { value: number }).value);
+        }
+      }).observe({ type: "layout-shift", buffered: true });
+      Object.assign(window, { layoutShifts: shifts });
+    });
+    await page.goto("/it?country=it");
+    await expect(page.locator("[data-part='week-section']").first()).toBeVisible();
+    await expect(page.locator("[data-part='site-header'] > [data-part='week-tabs']")).toBeVisible();
+
+    const total = await page.evaluate(() =>
+      (window as unknown as { layoutShifts: number[] }).layoutShifts.reduce((a, b) => a + b, 0),
+    );
+
+    // 0.1 is the "good" limit of Cumulative Layout Shift; the page should stay well under it.
+    expect(total).toBeLessThan(0.05);
+  });
+}

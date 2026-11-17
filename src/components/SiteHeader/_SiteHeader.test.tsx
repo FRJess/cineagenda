@@ -21,6 +21,16 @@ describe("SiteHeader", () => {
     );
   });
 
+  it("marks the home header, which keeps room for the week tabs", () => {
+    const { container, unmount } = renderWithIntl(<SiteHeader home />);
+    expect(container.querySelector("header")).toHaveAttribute("data-home");
+    unmount();
+
+    expect(renderWithIntl(<SiteHeader />).container.querySelector("header")).not.toHaveAttribute(
+      "data-home",
+    );
+  });
+
   it("keeps the brand a plain link on the other pages", () => {
     renderWithIntl(<SiteHeader />);
 
