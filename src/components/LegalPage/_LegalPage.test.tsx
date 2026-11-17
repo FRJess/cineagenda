@@ -73,7 +73,7 @@ describe("About", () => {
 
     for (const [name, href] of [
       ["TMDB", "https://www.themoviedb.org"],
-      ["available on GitHub", "https://github.com/FRJess/cineagenda"],
+      ["Visible on GitHub", "https://github.com/FRJess/cineagenda"],
     ]) {
       const link = screen.getByRole("link", { name });
 
