@@ -394,7 +394,7 @@ test("TMDB images come from TMDB in several widths, the featured one first", asy
   );
   await expect(poster).toHaveAttribute(
     "srcset",
-    /^https:\/\/image\.tmdb\.org\/t\/p\/w185\/\S+ 185w, /,
+    /^https:\/\/image\.tmdb\.org\/t\/p\/w185\/\S+ 185w, .*\/w342\/\S+ 1280w$/,
   );
   await expect(page.locator("img[src*='/_next/image']")).toHaveCount(0);
 });

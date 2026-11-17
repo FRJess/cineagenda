@@ -4,7 +4,7 @@ import imageLoader from "./image-loader";
 const load = (src: string, width: number): string => imageLoader({ src, width });
 
 describe("imageLoader", () => {
-  it("asks TMDB for the requested width, whatever the size in the address", () => {
+  it("asks TMDB for the requested width when it is under the size in the address", () => {
     expect(load("https://image.tmdb.org/t/p/w1280/back.jpg", 780)).toBe(
       "https://image.tmdb.org/t/p/w780/back.jpg",
     );
@@ -13,8 +13,14 @@ describe("imageLoader", () => {
     );
   });
 
-  it("rounds up to the next size TMDB serves, 1280px at most", () => {
-    expect(load("https://image.tmdb.org/t/p/w342/poster.jpg", 320)).toBe(
+  it("rounds up to the next size TMDB serves", () => {
+    expect(load("https://image.tmdb.org/t/p/w1280/back.jpg", 400)).toBe(
+      "https://image.tmdb.org/t/p/w500/back.jpg",
+    );
+  });
+
+  it("never goes over the size in the address", () => {
+    expect(load("https://image.tmdb.org/t/p/w342/poster.jpg", 780)).toBe(
       "https://image.tmdb.org/t/p/w342/poster.jpg",
     );
     expect(load("https://image.tmdb.org/t/p/w1280/back.jpg", 3840)).toBe(
