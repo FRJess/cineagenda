@@ -16,6 +16,18 @@
   background: var(--background);
 }
 
+/* The slots stream in after the brand. The brand row is as tall as the country button and the
+   home header as tall as with its week tabs, so the page below does not move when they arrive. */
+[data-part="site-header"] > :first-child {
+  min-height: 2.25rem;
+}
+
+/* 7.625rem: 1rem + the 2.25rem row + 0.625rem gap + the 3.25rem period bar + 0.5rem. */
+[data-part="site-header"][data-home] {
+  align-content: flex-start;
+  min-height: 7.625rem;
+}
+
 /* Only the home page renders the week tabs, so only its header sticks. */
 [data-part="site-header"]:has([data-part="week-tabs"]) {
   position: sticky;
@@ -86,6 +98,15 @@
 
   [data-part="site-header"] {
     flex-wrap: nowrap;
+  }
+
+  [data-part="site-header"] > :first-child {
+    min-height: 2.5rem;
+  }
+
+  /* 4.7rem: 1rem + the 3.2rem week tabs + 0.5rem. */
+  [data-part="site-header"][data-home] {
+    min-height: 4.7rem;
   }
 
   /* Same side padding as the home list, see [data-part="home"] in globals.css. */
