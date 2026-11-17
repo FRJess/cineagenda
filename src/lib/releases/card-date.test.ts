@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { formatCardDate } from "./card-date";
 
-/** Minimal stand-in for next-intl's formatter: the same Intl call, no provider needed. */
 const formatterFor = (locale: string) => ({
   dateTime: (date: Date, options: Intl.DateTimeFormatOptions) =>
     new Intl.DateTimeFormat(locale, options).format(date),

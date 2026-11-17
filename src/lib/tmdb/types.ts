@@ -1,4 +1,3 @@
-/** One page of `GET /discover/movie`, only fields the app reads. */
 export type TmdbDiscoverPage = {
   readonly page: number;
   readonly total_pages: number;
@@ -19,7 +18,6 @@ export type TmdbTranslation = {
   readonly data: { readonly title?: string; readonly overview?: string };
 };
 
-/** One cast credit. */
 export type TmdbCastMember = {
   readonly id: number;
   readonly name: string;
@@ -28,14 +26,12 @@ export type TmdbCastMember = {
   readonly order: number;
 };
 
-/** One crew credit; `job` is "Director" for directors. */
 export type TmdbCrewMember = {
   readonly id: number;
   readonly name: string;
   readonly job: string;
 };
 
-/** One entry of `videos.results`. */
 export type TmdbVideo = {
   readonly key: string;
   readonly name: string;
@@ -57,10 +53,8 @@ export type TmdbMovieDetails = {
   readonly original_language: string;
   readonly poster_path: string | null;
   readonly backdrop_path?: string | null;
-  /** TMDB trending score, global; picks the featured film of the week. */
   readonly popularity: number;
   readonly runtime?: number | null;
-  /** Primary (world) release, ISO date; empty when unknown. */
   readonly release_date?: string;
   readonly genres: readonly { readonly id: number }[];
   readonly production_countries?: readonly { readonly iso_3166_1: string; readonly name: string }[];
@@ -87,10 +81,8 @@ export type TmdbMovieDetails = {
   };
 };
 
-/** `GET /genre/movie/list`. */
 export type TmdbGenreList = {
   readonly genres: readonly { readonly id: number; readonly name: string }[];
 };
 
-/** Genre id to localized name. */
 export type GenreNames = Readonly<Record<number, string>>;

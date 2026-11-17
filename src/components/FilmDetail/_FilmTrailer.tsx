@@ -6,8 +6,6 @@ import { useEffect, useRef, useState } from "react";
 /**
  * Trailer: a play button that, once pressed, is replaced by the YouTube player, so nothing loads
  * or plays before the click. Focus moves to the player, since the button is gone.
- * @param props YouTube video key.
- * @returns Play button, or the player.
  */
 export function FilmTrailer({ trailerKey }: { readonly trailerKey: string }) {
   const t = useTranslations("Film");

@@ -10,12 +10,6 @@ import "./_FeaturedCard.css";
 const BACKDROP_BASE = "https://image.tmdb.org/t/p/w1280";
 const MAX_GENRES = 2;
 
-/**
- * The featured film of the current week, first item of its grid: the backdrop under two veils,
- * with eyebrow, title and a date line (date, then up to two genres) at the bottom left.
- * @param props Movie to show, the backdrop omitted when TMDB has none.
- * @returns Article with one link.
- */
 export function FeaturedCard({
   movie,
   country,

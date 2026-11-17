@@ -22,11 +22,6 @@ type SearchParams = PageProps<"/[locale]">["searchParams"];
 const first = (value: string | string[] | undefined): string | undefined =>
   Array.isArray(value) ? value[0] : value;
 
-/**
- * Title and description that name the country of the list, with its canonical address.
- * @param props Route props.
- * @returns Metadata.
- */
 export async function generateMetadata({
   params,
   searchParams,
@@ -66,20 +61,17 @@ async function loadRange(searchParams: SearchParams) {
     today,
     todayMonday: mondayOf(today),
     range: picked ?? defaultRange(today),
-    /** Whether the address names a period; without one the links stay on the bare page. */
     picked: picked !== null,
     country: parseCountry(first(params.country)) ?? DEFAULT_COUNTRY,
   };
 }
 
-// Streams into the header slot: the week tabs and their date disclosure.
 async function HeaderTabs({ searchParams }: { readonly searchParams: SearchParams }) {
   const { today, todayMonday, range, country } = await loadRange(searchParams);
 
   return <WeekTabs range={range} todayMonday={todayMonday} today={today} country={country} />;
 }
 
-// Streams into the country slot of the header; switching keeps the period on screen.
 async function HeaderCountry({ searchParams }: { readonly searchParams: SearchParams }) {
   const { range, picked, country } = await loadRange(searchParams);
   const { pathname, query } = picked ? periodHref(range) : { pathname: "/", query: {} };
@@ -87,7 +79,6 @@ async function HeaderCountry({ searchParams }: { readonly searchParams: SearchPa
   return <CountryPicker country={country} pathname={pathname} query={query} />;
 }
 
-// Streams into the page: one section per week. Paging happens in the navbar.
 async function Weeks({ locale, searchParams }: { locale: UiLocale; searchParams: SearchParams }) {
   const { today, todayMonday, range, country } = await loadRange(searchParams);
   const weeks = weeksBetween(range);
@@ -111,11 +102,6 @@ async function Weeks({ locale, searchParams }: { locale: UiLocale; searchParams:
   );
 }
 
-/**
- * Release list page: the navbar with the week tabs, then the weeks of the period stream in.
- * @param props Route props.
- * @returns Header and releases grouped by week.
- */
 export default async function ReleasesPage({ params, searchParams }: PageProps<"/[locale]">) {
   const { locale } = await params;
 

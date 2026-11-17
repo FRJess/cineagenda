@@ -1,11 +1,3 @@
-/**
- * FILE: _MovieCard.css
- * USAGE: Styles for MovieCard: the whole poster, then a band painted with a blurred copy of it that carries title and date
- * SCOPE: [data-part="movie-card"], [data-part="poster-placeholder"], [data-part="card-text"], [data-part="card-blur"]
- */
-
-/* ─── Card: one link, poster on top, band below ─── */
-
 [data-part="movie-card"] {
   display: flex;
   flex-direction: column;
@@ -23,8 +15,6 @@
   border-radius: var(--radius);
   box-shadow: var(--poster-shadow);
 }
-
-/* ─── Poster: whole, never covered ─── */
 
 [data-part="movie-card"] > a > img,
 [data-part="poster-placeholder"] {
@@ -47,8 +37,6 @@
   border-bottom: 0;
   border-radius: var(--radius) var(--radius) 0 0;
 }
-
-/* ─── Band: blurred copy of the poster under a black veil, text on top ─── */
 
 [data-part="movie-card"] [data-part="card-text"] {
   position: relative;
@@ -115,8 +103,6 @@
   color: var(--accent-soft);
 }
 
-/* ─── "Limitata": text at the end of the date line, after a dot ─── */
-
 /* White text, not the date's pink, so the two read apart; the dot keeps the date's pink. */
 [data-part="movie-card"] [data-part="card-text"] [data-release="limited"] {
   font-size: 0.65rem;
@@ -136,8 +122,6 @@
   border-radius: 50%;
 }
 
-/* ─── No poster: same band as the others, on a solid dark ground since there is nothing to blur ─── */
-
 /* The text colors are the band's own; only the ground differs, and the veil is not needed on it. */
 [data-part="movie-card"]:has([data-part="poster-placeholder"]) [data-part="card-text"] {
   background: #101018;
@@ -152,8 +136,6 @@
     font-size: 1rem;
   }
 }
-
-/* ─── Hover lift ─── */
 
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   [data-part="movie-card"] > a {

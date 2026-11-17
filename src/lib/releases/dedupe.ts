@@ -7,8 +7,6 @@ const normalize = (title: string): string =>
  * Drops films TMDB lists twice: the same title (ignoring case, accents and spaces) released on
  * the same day is one film filed under two ids. The most popular entry is kept, in the place of
  * the first one.
- * @param movies Films of one listing.
- * @returns Films without duplicates, in list order.
  */
 export function dedupeMovies(movies: readonly Movie[]): readonly Movie[] {
   const kept: Movie[] = [];

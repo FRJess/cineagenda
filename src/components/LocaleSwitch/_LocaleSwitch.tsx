@@ -9,7 +9,6 @@ import "./_LocaleSwitch.css";
 
 type Query = Readonly<Record<string, string>>;
 
-/** The only params a locale link carries; anything else in the URL is dropped. */
 const KEPT_PARAMS = ["country", "weeks"] as const;
 
 const CODE_KEY = { it: "itCode", en: "enCode", fr: "frCode" } as const;
@@ -60,7 +59,6 @@ function LinksWithQuery() {
  * for screen readers;
  * the active one carries aria-current. The links keep the query, so the country and the dates
  * stay; until the query is read they point to the bare page.
- * @returns Navigation landmark.
  */
 export function LocaleSwitch() {
   return (

@@ -8,9 +8,6 @@ import "./_WeekRangeForm.css";
 /**
  * Date-range popover body: a GET form so the URL carries the range and works without JS.
  * The week picker holds the calendar, the shortcut pills and the footer that submits the form.
- * @param props Current normalized range, today's ISO date in Europe/Rome and the country, which
- * the form keeps.
- * @returns Form with the picker, shortcuts and footer.
  */
 export function WeekRangeForm({
   range,

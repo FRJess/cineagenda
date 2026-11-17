@@ -3,10 +3,6 @@ import { ServicePage } from "@/components/ServicePage";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Link } from "@/i18n/navigation";
 
-/**
- * Shown for unknown ids and films without an Italian cinema release.
- * @returns Service page with a link to the release list and a TMDB search.
- */
 export default function FilmNotFound() {
   const t = useTranslations("NotFound");
 

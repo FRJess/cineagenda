@@ -40,7 +40,7 @@ const COPY = {
     nav: "Informazioni sul sito",
     about: "Informazioni",
     privacy: "Privacy",
-    small: "Realizzato da Jessica. Dati e immagini dei film da TMDB.",
+    small: "Made by Jessica. Dati e immagini dei film da TMDB.",
   },
   en: {
     nav: "Site information",
@@ -52,7 +52,7 @@ const COPY = {
     nav: "Informations sur le site",
     about: "À propos",
     privacy: "Confidentialité",
-    small: "Réalisé par Jessica. Données et images des films : TMDB.",
+    small: "Made by Jessica. Données et images des films : TMDB.",
   },
 } as const;
 

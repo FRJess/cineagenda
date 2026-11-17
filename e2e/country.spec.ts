@@ -85,7 +85,7 @@ test("the page title and description name the country", async ({ page }) => {
   await expect(page).toHaveTitle("Uscite al cinema negli Stati Uniti · Cineagenda");
   await expect(page.locator("meta[name='description']")).toHaveAttribute(
     "content",
-    "Film in uscita al cinema negli Stati Uniti, settimana per settimana.",
+    "Scopri subito i film in uscita al cinema negli Stati Uniti, settimana per settimana. Senza pubblicità, senza registrazione.",
   );
 
   await page.goto("/en?country=us");

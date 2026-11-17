@@ -3,12 +3,6 @@ import "./_ServicePage.css";
 
 const CODE_LABEL = { "404": "NOT FOUND", "!": "ERR" } as const;
 
-/**
- * Shared body of the 404, film-not-found and error pages: an empty dashed poster carrying the
- * code, then eyebrow, heading, one line of text and the actions.
- * @param props Code on the poster, copy, a primary action and an optional secondary one.
- * @returns Main landmark.
- */
 export function ServicePage({
   code,
   eyebrow,

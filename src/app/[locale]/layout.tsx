@@ -13,19 +13,10 @@ import "../globals.css";
 /* Applies a stored theme before first paint, so a dark-mode viewer does not see a light flash. */
 const THEME_BOOT_SCRIPT = `try{var t=localStorage.getItem("cineagenda-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){console.warn("theme storage unavailable",e)}`;
 
-/**
- * Prerenders one tree per locale.
- * @returns Locale params.
- */
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
-/**
- * Localized document metadata.
- * @param props Route props.
- * @returns Title, description and the origin that makes page addresses absolute.
- */
 export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({
@@ -39,8 +30,6 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
 /**
  * Root layout per locale: the page and the site footer.
  * Each page renders its own SiteHeader, so the home page can place the week tabs in it.
- * @param props Route props.
- * @returns Document shell.
  */
 export default async function LocaleLayout({ children, params }: LayoutProps<"/[locale]">) {
   const { locale } = await params;

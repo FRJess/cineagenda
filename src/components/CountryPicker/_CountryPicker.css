@@ -1,11 +1,3 @@
-/**
- * FILE: _CountryPicker.css
- * USAGE: Styles for CountryPicker: at the right end of the navbar, a neutral pill with the flag alone below 48rem and a filled button with flag and name from 48rem; its menu of countries is a bottom sheet below 48rem and a dropdown from 48rem
- * SCOPE: [data-part="country-picker"], [data-part="country-name"], [data-part="country-menu"]
- */
-
-/* ─── Button: inverted like the active tab ─── */
-
 [data-part="country-picker"] {
   position: relative;
   flex: 0 0 auto;
@@ -26,7 +18,6 @@
   border-radius: 0.5rem;
 }
 
-/* Chevron: 7px, 2px stroke, the text colour at 70%. */
 [data-part="country-picker"] > button::after {
   width: 0.4375rem;
   height: 0.4375rem;
@@ -56,8 +47,6 @@
   border-radius: 2px;
   box-shadow: 0 0 0 1px rgb(128 128 128 / 0.45);
 }
-
-/* ─── Menu: a bottom sheet on phones, a dropdown from 48rem ─── */
 
 [data-part="country-menu"] {
   position: fixed;
@@ -112,7 +101,6 @@
   }
 }
 
-/* The chosen country is inverted, with a check mark at the right end. */
 [data-part="country-menu"] a[aria-current="true"] {
   color: var(--tab-fg);
   background: var(--tab-bg);
@@ -154,7 +142,6 @@
     white-space: nowrap;
   }
 
-  /* The menu is a bottom sheet; this scrim dims the page behind it. */
   [data-part="country-picker"]:has(> button[aria-expanded="true"])::before {
     position: fixed;
     inset: 0;

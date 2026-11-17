@@ -14,7 +14,6 @@ const titleIn = (
   return preferred?.data.title?.trim() ?? "";
 };
 
-/** Title for the card and its secondary line for the film page. */
 export type DisplayTitles = { readonly title: string; readonly subtitle: string };
 
 /**
@@ -22,9 +21,6 @@ export type DisplayTitles = { readonly title: string; readonly subtitle: string 
  * country's language keeps its original title alone; otherwise the country's title is the card
  * title and the original the subtitle. Without a local title the original is the card title,
  * with the English title as subtitle outside English-speaking countries.
- * @param details Movie details with `translations`.
- * @param country Country of the listing; Italy by default.
- * @returns Card title and subtitle, which is empty when there is nothing distinct to show.
  */
 export function buildDisplayTitles(
   details: TmdbMovieDetails,

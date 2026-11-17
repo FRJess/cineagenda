@@ -44,11 +44,6 @@ async function loadFilm(params: Params, searchParams: SearchParams) {
   return { locale, country, film: await getMovieDetails(movieId, locale, country) };
 }
 
-/**
- * Film title, plot, canonical address and backdrop for previews, or the not-found title.
- * @param props Route props.
- * @returns Metadata.
- */
 export async function generateMetadata({
   params,
   searchParams,
@@ -82,7 +77,6 @@ export async function generateMetadata({
   return { title: t("filmDocumentTitle") };
 }
 
-// Request-time part: today's date. The film itself is loaded by the page.
 async function Film({ film, country }: { readonly film: MovieDetails; readonly country: Country }) {
   // The clock is request data: without this Next flags `new Date()` as unstable at prerender.
   await connection();
@@ -93,8 +87,6 @@ async function Film({ film, country }: { readonly film: MovieDetails; readonly c
 /**
  * Film detail page. The film is loaded before any Suspense boundary: once streaming starts the
  * status is committed to 200, so `notFound()` must run first to answer a real 404.
- * @param props Route props.
- * @returns Film details, or the not-found page.
  */
 export default async function FilmPage({ params, searchParams }: PageProps<"/[locale]/film/[id]">) {
   const loaded = await loadFilm(params, searchParams);

@@ -19,7 +19,6 @@ const TAGS = {
 /**
  * Privacy page: who is responsible, what is processed on a visit, what is stored on the device,
  * the legal basis and the visitor's rights. The text states only what the code does.
- * @returns Main landmark.
  */
 export function Privacy() {
   const t = useTranslations("Privacy");

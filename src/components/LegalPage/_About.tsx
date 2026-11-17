@@ -10,7 +10,6 @@ const GITHUB_URL = "https://github.com/FRJess/cineagenda";
 /**
  * About page: the credits, opened by the TMDB logo and notice that TMDB asks for, and the legal
  * notice.
- * @returns Main landmark.
  */
 export function About() {
   const t = useTranslations("About");

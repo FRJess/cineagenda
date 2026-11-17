@@ -5,11 +5,6 @@ import { ServicePage } from "@/components/ServicePage";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Link } from "@/i18n/navigation";
 
-/**
- * Error boundary for the release list, e.g. TMDB unreachable.
- * @param props Next error props; `retry` re-fetches and re-renders.
- * @returns Service page with a retry button and a link to the release list.
- */
 export default function ReleasesError({ retry }: { error: unknown; retry: () => void }) {
   const t = useTranslations("Error");
   const tNotFound = useTranslations("NotFound");

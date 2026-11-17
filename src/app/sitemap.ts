@@ -11,11 +11,6 @@ const PAGES = [
 const pageUrl = (locale: string, path: string): string =>
   new URL(`/${locale}${path}`, SITE_URL).href;
 
-/**
- * Static sitemap: home, about and privacy in every locale. Each entry names the same page in
- * the other languages (hreflang), with the default locale as `x-default`.
- * @returns Sitemap entries.
- */
 export default function sitemap(): MetadataRoute.Sitemap {
   return PAGES.flatMap(({ path, changeFrequency, priority }) => {
     const languages = {

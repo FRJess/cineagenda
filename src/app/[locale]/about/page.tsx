@@ -6,11 +6,6 @@ import { About, LegalHeader } from "@/components/LegalPage";
 import { routing } from "@/i18n/routing";
 import { ogImage, pageMetadata } from "@/lib/seo";
 
-/**
- * Title, description and canonical address of the About page.
- * @param props Route props.
- * @returns Metadata.
- */
 export async function generateMetadata({
   params,
 }: PageProps<"/[locale]/about">): Promise<Metadata> {
@@ -27,11 +22,6 @@ export async function generateMetadata({
   });
 }
 
-/**
- * About page: credits, with the TMDB logo and notice, and the legal notice.
- * @param props Route props.
- * @returns Header and page body.
- */
 export default async function AboutPage({ params, searchParams }: PageProps<"/[locale]/about">) {
   const { locale } = await params;
 

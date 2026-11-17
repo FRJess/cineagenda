@@ -39,14 +39,6 @@ async function getGenreNames(locale: UiLocale) {
   return fetchGenreNames(locale);
 }
 
-/**
- * Cinema releases of one week in one country, without TMDB duplicates, sorted by date then title.
- * @param weekStart Monday, ISO date.
- * @param locale UI locale for genres and overviews.
- * @param past Whether the week is before the current one; past weeks are cached longer.
- * @param country Country of the releases.
- * @returns Movies released in that country's cinemas that week.
- */
 export async function getWeekReleases(
   weekStart: string,
   locale: UiLocale,
@@ -69,13 +61,6 @@ export async function getWeekReleases(
 // Any cinema release from the app's first week onward counts on the film page.
 const FILM_WINDOW = { from: mondayOf(MIN_DATE), to: "2099-12-31" };
 
-/**
- * Film page data, refreshed daily.
- * @param id TMDB movie id.
- * @param locale UI locale.
- * @param country Country whose release date and title are shown.
- * @returns Details, or null when the id is unknown or the film has no cinema release there.
- */
 export async function getMovieDetails(
   id: number,
   locale: UiLocale,

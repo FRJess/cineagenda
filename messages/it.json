@@ -1,9 +1,9 @@
 {
   "Metadata": {
     "title": "Cineagenda",
-    "description": "Film in uscita nei cinema italiani, settimana per settimana.",
+    "description": "Scopri subito i film in uscita al cinema, settimana per settimana. Senza pubblicità, senza registrazione.",
     "countryTitle": "Uscite al cinema {country, select, GB {nel Regno Unito} US {negli Stati Uniti} other {in {name}}} · Cineagenda",
-    "countryDescription": "Film in uscita al cinema {country, select, GB {nel Regno Unito} US {negli Stati Uniti} other {in {name}}}, settimana per settimana."
+    "countryDescription": "Scopri subito i film in uscita al cinema {country, select, GB {nel Regno Unito} US {negli Stati Uniti} other {in {name}}}, settimana per settimana. Senza pubblicità, senza registrazione."
   },
   "Header": {
     "language": "Lingua",
@@ -145,7 +145,7 @@
     "links": "Informazioni sul sito",
     "about": "Informazioni",
     "privacy": "Privacy",
-    "small": "Realizzato da Jessica. Dati e immagini dei film da <tmdb>TMDB</tmdb>.",
+    "small": "Made by Jessica. Dati e immagini dei film da <tmdb>TMDB</tmdb>.",
     "theme": "Tema scuro"
   }
 }

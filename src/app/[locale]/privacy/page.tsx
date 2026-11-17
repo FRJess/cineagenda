@@ -6,11 +6,6 @@ import { LegalHeader, Privacy } from "@/components/LegalPage";
 import { routing } from "@/i18n/routing";
 import { ogImage, pageMetadata } from "@/lib/seo";
 
-/**
- * Title, description and canonical address of the Privacy page.
- * @param props Route props.
- * @returns Metadata.
- */
 export async function generateMetadata({
   params,
 }: PageProps<"/[locale]/privacy">): Promise<Metadata> {
@@ -27,11 +22,6 @@ export async function generateMetadata({
   });
 }
 
-/**
- * Privacy page: what the site processes, what it stores on the device and the visitor's rights.
- * @param props Route props.
- * @returns Header and page body.
- */
 export default async function PrivacyPage({
   params,
   searchParams,

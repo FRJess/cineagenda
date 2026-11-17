@@ -11,11 +11,6 @@ type Theme = "light" | "dark";
 
 const listeners = new Set<() => void>();
 
-/**
- * Subscribes a mounted toggle to theme changes.
- * @param listener Called after every change made by a toggle.
- * @returns Unsubscribe function.
- */
 function subscribe(listener: () => void) {
   listeners.add(listener);
 
@@ -24,11 +19,6 @@ function subscribe(listener: () => void) {
   };
 }
 
-/**
- * Theme in effect: the one the document already carries, then the stored choice, then the OS
- * preference.
- * @returns "light" or "dark".
- */
 function readTheme(): Theme {
   const applied = document.documentElement.dataset.theme;
 
@@ -49,11 +39,6 @@ function readTheme(): Theme {
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
-/**
- * Footer switch between light and dark theme, shown as a sun and a moon with no text; the
- * choice is stored per viewer.
- * @returns Switch button named "Tema scuro" / "Dark theme", on while dark.
- */
 export function ThemeToggle() {
   const t = useTranslations("Footer");
   const theme = useSyncExternalStore(subscribe, readTheme, () => "light");
@@ -77,7 +62,6 @@ export function ThemeToggle() {
     }
   }, []);
 
-  /** Flips the theme on the document, stores it and tells the other toggles; storage errors are ignored. */
   function toggle() {
     const next: Theme = theme === "dark" ? "light" : "dark";
 
