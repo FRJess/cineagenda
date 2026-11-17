@@ -31,6 +31,9 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   headers: async () => [{ source: "/:path*", headers: SECURITY_HEADERS }],
   cacheComponents: true,
+  // Experimental: the styles are a few KB, so they go in the HTML instead of blocking the
+  // first paint with one request per stylesheet.
+  experimental: { inlineCss: true },
   partialPrefetching: true,
   images: {
     remotePatterns: [{ protocol: "https", hostname: "image.tmdb.org", pathname: "/t/p/**" }],
