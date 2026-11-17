@@ -381,3 +381,20 @@ test("today's number in the date popover has the color of the other days", async
     await color("[data-day='2026-11-17'] .rdp-day_button"),
   );
 });
+
+test("TMDB images come from TMDB in several widths, the featured one first", async ({ page }) => {
+  await page.goto("/it?country=it");
+  const featured = page.locator("[data-part='featured-card'] img");
+  const poster = page.locator("[data-part='movie-card'] a > img").first();
+
+  await expect(featured).toHaveAttribute("fetchpriority", "high");
+  await expect(featured).toHaveAttribute(
+    "srcset",
+    /^https:\/\/image\.tmdb\.org\/t\/p\/w300\/\S+ 300w, .*\/w1280\/\S+ 1280w$/,
+  );
+  await expect(poster).toHaveAttribute(
+    "srcset",
+    /^https:\/\/image\.tmdb\.org\/t\/p\/w185\/\S+ 185w, /,
+  );
+  await expect(page.locator("img[src*='/_next/image']")).toHaveCount(0);
+});

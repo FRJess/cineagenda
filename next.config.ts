@@ -34,6 +34,12 @@ const nextConfig: NextConfig = {
   partialPrefetching: true,
   images: {
     remotePatterns: [{ protocol: "https", hostname: "image.tmdb.org", pathname: "/t/p/**" }],
+    // TMDB resizes its own images: the loader swaps the size in the address, and these are
+    // the widths TMDB serves, so every srcset entry is a file that exists.
+    loader: "custom",
+    loaderFile: "./src/lib/tmdb/image-loader.ts",
+    deviceSizes: [342, 500, 780, 1280],
+    imageSizes: [185, 300],
   },
 };
 

@@ -13,7 +13,10 @@ vi.mock("@/i18n/navigation", () => ({
 }));
 
 const originalTz = process.env.TZ;
-const POSTER = encodeURIComponent("https://image.tmdb.org/t/p/w342/poster.jpg");
+const POSTER = "https://image.tmdb.org/t/p/w342/poster.jpg";
+const SIZES = "(min-width: 48rem) 13rem, 50vw";
+const source = (img: Element | null | undefined): string =>
+  decodeURIComponent(img?.getAttribute("src") ?? "");
 
 afterEach(() => {
   process.env.TZ = originalTz;
@@ -75,7 +78,8 @@ describe("MovieCard", () => {
     const parts = [...(container.querySelector("a")?.children ?? [])];
 
     expect(parts.map((el) => el.tagName)).toEqual(["IMG", "DIV"]);
-    expect(parts[0]?.getAttribute("src")).toBe("https://image.tmdb.org/t/p/w342/poster.jpg");
+    expect(source(parts[0])).toContain(POSTER);
+    expect(parts[0]).toHaveAttribute("sizes", SIZES);
     expect(parts[1]).toHaveAttribute("data-part", "card-text");
   });
 
@@ -106,7 +110,9 @@ describe("MovieCard", () => {
     expect(blur?.tagName).toBe("IMG");
     expect(blur).toHaveAttribute("alt", "");
     expect(blur).toHaveAttribute("aria-hidden", "true");
-    expect(blur?.getAttribute("src")).toBe("https://image.tmdb.org/t/p/w342/poster.jpg");
+    expect(source(blur)).toContain(POSTER);
+    // Same sizes as the poster, so the browser reuses the file it already has.
+    expect(blur).toHaveAttribute("sizes", SIZES);
   });
 
   it("shows no limited label for a theatrical release", () => {

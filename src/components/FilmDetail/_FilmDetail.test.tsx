@@ -364,20 +364,25 @@ describe("FilmDetail", () => {
     expect(container.querySelector("[data-part='film-hero'] img")).toBeNull();
   });
 
-  it("serves TMDB backdrop directly (not via Vercel optimization)", () => {
+  it("renders the TMDB backdrop in the width of the screen, fetched first", () => {
     const { container } = renderFilm();
-    expect(container.querySelector("[data-part='film-hero'] > img")).toHaveAttribute(
-      "src",
+    const img = container.querySelector("[data-part='film-hero'] > img");
+
+    expect(decodeURIComponent(img?.getAttribute("src") ?? "")).toContain(
       "https://image.tmdb.org/t/p/w1280/back.jpg",
     );
+    expect(img).toHaveAttribute("sizes", "100vw");
+    expect(img).toHaveAttribute("fetchpriority", "high");
   });
 
-  it("serves TMDB poster directly (not via Vercel optimization)", () => {
+  it("renders the TMDB poster in the width of its column", () => {
     const { container } = renderFilm();
-    expect(container.querySelector("[data-part='film-poster']")).toHaveAttribute(
-      "src",
+    const img = container.querySelector("[data-part='film-poster']");
+
+    expect(decodeURIComponent(img?.getAttribute("src") ?? "")).toContain(
       "https://image.tmdb.org/t/p/w780/poster.jpg",
     );
+    expect(img).toHaveAttribute("sizes", "18rem");
   });
 
   it("serves TMDB cast profile directly (not via Vercel optimization)", () => {

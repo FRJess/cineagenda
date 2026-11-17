@@ -8,6 +8,8 @@ import type { Movie } from "@/lib/releases/movie";
 import "./_MovieCard.css";
 
 const POSTER_BASE = "https://image.tmdb.org/t/p/w342";
+// Two posters per row on phones, tiles of 13rem at most from 48rem.
+const POSTER_SIZES = "(min-width: 48rem) 13rem, 50vw";
 
 /**
  * One release in the poster grid: the whole poster, then a band painted with a blurred copy
@@ -37,8 +39,8 @@ export function MovieCard({
             alt=""
             width={342}
             height={513}
+            sizes={POSTER_SIZES}
             loading={eager ? "eager" : "lazy"}
-            unoptimized
           />
         ) : (
           <figure data-part="poster-placeholder">
@@ -54,7 +56,7 @@ export function MovieCard({
               width={342}
               height={513}
               data-part="card-blur"
-              unoptimized
+              sizes={POSTER_SIZES}
             />
           )}
           <h3>{movie.title}</h3>
