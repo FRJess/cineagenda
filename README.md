@@ -87,4 +87,4 @@ This product uses the TMDB API but is not endorsed or certified by TMDB.
 
 ## License
 
-MIT, see `LICENSE`.
+All rights reserved. The code is public to read; reusing it requires the author's permission.

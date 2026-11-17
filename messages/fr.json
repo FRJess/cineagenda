@@ -110,7 +110,7 @@
     "data": "Toutes les données et images des films proviennent de <tmdb>TMDB</tmdb>, The Movie Database : ce produit utilise l'API de TMDB mais n'est ni approuvé ni certifié par TMDB. Cineagenda n'est affilié ni à TMDB, ni aux distributeurs, ni aux cinémas. Les dates de sortie peuvent changer et les données peuvent être incomplètes ou ne pas être mises à jour en temps réel : vérifiez auprès de votre cinéma avant de vous organiser.",
     "trailers": "<b>Les bandes-annonces</b> sont lues depuis YouTube.",
     "typefaces": "<b>Polices.</b> Syne et Instrument Sans, sous licence SIL Open Font License 1.1.",
-    "code": "<b>Code.</b> Open source sous licence MIT, © 2026 Jessica Tartaglia, <github>disponible sur GitHub</github>.",
+    "code": "<b>Code.</b> <github>Visible sur GitHub</github>, tous droits réservés : le réutiliser demande mon autorisation. © 2026 Jessica Tartaglia.",
     "legal": "Mentions légales",
     "whoTitle": "Qui gère le site",
     "who": "Cineagenda est géré par Jessica Tartaglia comme un projet personnel et non commercial, sans publicité. Contact : <mail>hello@cineagenda.app</mail>. Hébergeur : Vercel Inc., 440 N Barranca Avenue #4133, Covina, CA 91723, États-Unis.",
