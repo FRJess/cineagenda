@@ -53,12 +53,19 @@ describe("FeaturedCard", () => {
     expect(container.querySelector("[data-part='card-meta']")).toHaveTextContent(/^Gio 5 nov$/);
   });
 
-  it("renders the TMDB backdrop at 1280px", () => {
+  it("renders the TMDB backdrop in the width of its column, fetched first", () => {
     const { container } = renderWithIntl(<FeaturedCard country="IT" movie={movie()} />);
+    const img = container.querySelector("img");
 
-    expect(container.querySelector("img")?.getAttribute("src")).toBe(
+    expect(decodeURIComponent(img?.getAttribute("src") ?? "")).toContain(
       "https://image.tmdb.org/t/p/w1280/backdrop.jpg",
     );
+    expect(img).toHaveAttribute("srcset");
+    expect(img).toHaveAttribute(
+      "sizes",
+      "(min-width: 72rem) 36rem, (min-width: 48rem) 60vw, 100vw",
+    );
+    expect(img).toHaveAttribute("fetchpriority", "high");
   });
 
   it("renders no image without a backdrop", () => {

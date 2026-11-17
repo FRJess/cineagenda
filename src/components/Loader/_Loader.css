@@ -1,17 +1,18 @@
 /**
  * FILE: _Loader.css
- * USAGE: Styles for Loader, the loading state of every page: three film perforations centered in the space the page leaves, pulsing in turn
+ * USAGE: Styles for Loader, the loading state of every page: three film perforations centered in a box one screen tall, pulsing in turn
  * SCOPE: [data-part="loader"], [data-part="loader-mark"]
  */
 
-/* ─── Box: fills the page's free space and centers the mark ─── */
+/* ─── Box: one screen tall, so the footer waits below the fold and does not jump when the
+   content replaces the loader ─── */
 
 [data-part="loader"] {
   display: flex;
   flex: 1;
   align-items: center;
   justify-content: center;
-  min-height: 12rem;
+  min-height: 100dvh;
 }
 
 /* ─── Mark: three perforations in ink, 10 by 12px, 8px apart ─── */

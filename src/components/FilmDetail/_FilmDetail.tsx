@@ -120,8 +120,9 @@ export function FilmDetail({
             alt=""
             width={1280}
             height={720}
-            priority
-            unoptimized
+            sizes="100vw"
+            preload
+            fetchPriority="high"
           />
         )}
         <nav aria-label={t("backLabel")}>
@@ -170,7 +171,6 @@ export function FilmDetail({
             width={780}
             height={1170}
             sizes="18rem"
-            unoptimized
           />
         )}
         <div data-part="film-body">
