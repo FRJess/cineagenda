@@ -1,5 +1,10 @@
 /** A release as a reference site lists it. */
-export type ReferenceFilm = { readonly title: string; readonly date: string };
+export type ReferenceFilm = {
+  readonly title: string;
+  readonly date: string;
+  /** The film's page on the reference site, where the original title is. */
+  readonly url?: string;
+};
 
 /** A release as the site lists it, with every title it may be known by. */
 export type ListedFilm = {
@@ -42,6 +47,11 @@ const sameBy =
   (key: (title: string) => string) =>
   (a: string, b: string): boolean =>
     key(a) !== "" && key(a) === key(b);
+
+/** Whether two titles are the same film's: equal as a whole or up to the subtitle. */
+export function sameTitle(a: string, b: string): boolean {
+  return sameBy(normalizeTitle)(a, b) || sameBy(mainTitle)(a, b);
+}
 
 const wordCount = (text: string): number => text.split(" ").length;
 const holds = (whole: string, part: string): boolean => ` ${whole} `.includes(` ${part} `);

@@ -1,16 +1,18 @@
 import { comingSoonUrl } from "@/lib/comingsoon";
 import { type Country, releaseWeekday } from "@/lib/country";
 import { addDays, mondayOf } from "@/lib/releases/window";
-import { parseComingSoon } from "./comingsoon";
+import { comingSoonOriginalTitle, parseComingSoon } from "./comingsoon";
 import type { ReferenceFilm } from "./match";
 import { parseSchedule } from "./the-numbers";
-import { parseAgenda } from "./webedia";
+import { agendaOriginalTitle, parseAgenda } from "./webedia";
 
 type Source = {
   readonly name: string;
   /** Pages that cover the weeks, given as Mondays. */
   readonly urls: (weeks: readonly string[], today: string) => readonly string[];
   readonly parse: (html: string) => readonly ReferenceFilm[];
+  /** Reads the original title on a film page; absent when the site has no film pages to read. */
+  readonly originalTitle?: (html: string) => string | null;
 };
 
 const releaseDayOf = (week: string, country: Country): string =>
@@ -24,12 +26,14 @@ const SOURCES = {
         (week) => `https://www.filmstarts.de/filme-vorschau/de/week-${releaseDayOf(week, "DE")}/`,
       ),
     parse: parseAgenda,
+    originalTitle: agendaOriginalTitle,
   },
   FR: {
     name: "AlloCine",
     urls: (weeks) =>
       weeks.map((week) => `https://www.allocine.fr/film/agenda/sem-${releaseDayOf(week, "FR")}/`),
     parse: parseAgenda,
+    originalTitle: agendaOriginalTitle,
   },
   IT: {
     name: "ComingSoon.it",
@@ -40,6 +44,7 @@ const SOURCES = {
       ),
     ],
     parse: parseComingSoon,
+    originalTitle: comingSoonOriginalTitle,
   },
   US: {
     name: "The Numbers",
@@ -48,6 +53,8 @@ const SOURCES = {
     parse: parseSchedule,
   },
 } as const satisfies Record<Country, Source>;
+
+const HEADERS = { "user-agent": "release-check/1.0" };
 
 /** Name of the site a country is compared with, for the report. */
 export function referenceName(country: Country): string {
@@ -67,14 +74,18 @@ export async function fetchReference(
   const films = new Map<string, ReferenceFilm>();
 
   for (const url of source.urls(weeks, today)) {
-    const response = await fetch(url, { headers: { "user-agent": "release-check/1.0" } });
+    const response = await fetch(url, { headers: HEADERS });
 
     if (!response.ok) {
       throw new Error(`${source.name} answered ${response.status}`);
     }
 
     for (const film of source.parse(await response.text())) {
-      films.set(`${film.title}|${film.date}`, film);
+      // Film links are relative to the page they come from.
+      films.set(`${film.title}|${film.date}`, {
+        ...film,
+        url: film.url && new URL(film.url, url).href,
+      });
     }
   }
 
@@ -83,4 +94,24 @@ export async function fetchReference(
   }
 
   return [...films.values()];
+}
+
+/**
+ * Original title of a reference release, read on its film page: a local title TMDB does not know
+ * ("Il Caso Marie-Claire") can then be searched as "L'Affaire Marie-Claire". Null when the site
+ * gives no page or no original title, or the page does not load.
+ */
+export async function fetchOriginalTitle(
+  country: Country,
+  film: ReferenceFilm,
+): Promise<string | null> {
+  const source: Source = SOURCES[country];
+
+  if (!film.url || !source.originalTitle) {
+    return null;
+  }
+
+  const response = await fetch(film.url, { headers: HEADERS });
+
+  return response.ok ? source.originalTitle(await response.text()) : null;
 }

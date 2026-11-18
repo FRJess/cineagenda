@@ -4,6 +4,15 @@ export type TmdbDiscoverPage = {
   readonly results: readonly { readonly id: number }[];
 };
 
+/** `GET /search/movie`, only fields the release check reads. */
+export type TmdbSearchPage = {
+  readonly results: readonly {
+    readonly id: number;
+    readonly title: string;
+    readonly original_title: string;
+  }[];
+};
+
 /** One entry of a country's release dates. Types: 2 limited theatrical, 3 theatrical. */
 export type TmdbReleaseDate = {
   readonly type: number;

@@ -46,6 +46,21 @@ const overviewIn = (details: TmdbMovieDetails, lang: UiLocale): string =>
 
 const overviewOrder = (locale: UiLocale): readonly UiLocale[] => [locale, "en", "it"];
 
+/**
+ * Whether TMDB describes a feature film: not a short by running time or keyword, not a stage
+ * show. An unknown running time passes.
+ */
+export function isFeatureFilm(details: TmdbMovieDetails): boolean {
+  const runtime = runtimeOf(details);
+
+  return !(
+    (runtime !== null && runtime < MIN_RUNTIME_MINUTES) ||
+    details.keywords?.keywords.some(
+      (keyword) => SHORT_FILM_KEYWORDS.has(keyword.id) || STAGE_SHOW_KEYWORDS.has(keyword.id),
+    )
+  );
+}
+
 export function toMovie(
   details: TmdbMovieDetails,
   window: ReleaseWindow,
@@ -54,14 +69,8 @@ export function toMovie(
   country: Country = DEFAULT_COUNTRY,
 ): Movie | null {
   const release = pickRelease(details, window, country);
-  const runtime = runtimeOf(details);
-  const isShort =
-    (runtime !== null && runtime < MIN_RUNTIME_MINUTES) ||
-    !!details.keywords?.keywords.some(
-      (keyword) => SHORT_FILM_KEYWORDS.has(keyword.id) || STAGE_SHOW_KEYWORDS.has(keyword.id),
-    );
 
-  if (!release || isShort) {
+  if (!release || !isFeatureFilm(details)) {
     return null;
   }
 
