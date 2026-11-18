@@ -98,6 +98,22 @@ describe("pickRelease", () => {
     },
   );
 
+  // TMDB id 378 in France: festival screenings of an old film filed as theatrical entries.
+  it.each(["Festival Lumière 2026 : Prolongations, Institut Lumière, Lyon", "World Premiere"])(
+    "drops a theatrical entry noted %j (festival or premiere)",
+    (note) => {
+      const film = details({}, [rd(3, "1987-05-27"), rd(3, "2026-11-04", note)]);
+
+      expect(pickRelease(film, window)).toBeNull();
+    },
+  );
+
+  it("keeps a bare theatrical entry the day after a premiere", () => {
+    const film = details({}, [rd(1, "2026-11-11"), rd(3, "2026-11-12")]);
+
+    expect(pickRelease(film, window)?.date).toBe("2026-11-12");
+  });
+
   it("still prefers a theatrical entry even when a limited one is a festival screening", () => {
     const film = details({}, [rd(2, "2026-11-05", "Festival"), rd(3, "2026-11-12")]);
 

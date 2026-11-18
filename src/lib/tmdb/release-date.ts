@@ -11,8 +11,8 @@ export type Release = {
 
 const TYPE_BY_CODE: Readonly<Record<number, ReleaseType>> = { 3: "theatrical", 2: "limited" };
 const PREMIERE = 1;
-// TMDB files festival screenings and premieres as "limited" too; the note is the only signal,
-// so limited entries with these words are not shown as cinema releases. IMAX runs and event
+// TMDB files festival screenings and premieres as "limited" or "theatrical" too; the note is the
+// only signal, so entries with these words are not shown as cinema releases. IMAX runs and event
 // releases are cinema releases and stay.
 // Notes come in the country's language: "première" (FR), "preestreno" (ES) as well.
 const FESTIVAL_OR_PREMIERE = /festival|anteprima|premi[eè]re|preestreno/i;
@@ -27,8 +27,8 @@ const daysApart = (a: string, b: string): number =>
 
 /**
  * Cinema release of one country inside the window: theatrical (type 3) first, then limited (type 2).
- * Limited entries that look like festival screenings or premieres are skipped: a festival or
- * premiere word in the note, or a premiere (type 1) within a week of the limited date. So are
+ * Entries that look like festival screenings or premieres are skipped: a festival or premiere
+ * word in the note, or, for a limited one, a premiere (type 1) within a week of its date. So are
  * limited entries up to eight weeks before a theatrical one: the film has one date, the theatrical.
  * Premieres, digital, physical and TV entries never count.
  */
@@ -41,13 +41,17 @@ export function pickRelease(
     details.release_dates.results.find((entry) => entry.iso_3166_1 === country)?.release_dates ??
     [];
   const premieres = entries.filter((entry) => entry.type === PREMIERE).map(dateOf);
-  const isFestivalScreening = (entry: TmdbReleaseDate): boolean =>
-    FESTIVAL_OR_PREMIERE.test(entry.note) ||
+  // A premiere nearby tells nothing about a theatrical entry: films open right after theirs.
+  const nearPremiere = (entry: TmdbReleaseDate): boolean =>
     premieres.some((premiere) => daysApart(premiere, dateOf(entry)) <= 1);
   const cinema = entries.flatMap((entry): Release[] => {
     const type = TYPE_BY_CODE[entry.type];
 
-    if (!type || (type === "limited" && isFestivalScreening(entry))) {
+    if (
+      !type ||
+      FESTIVAL_OR_PREMIERE.test(entry.note) ||
+      (type === "limited" && nearPremiere(entry))
+    ) {
       return [];
     }
 
