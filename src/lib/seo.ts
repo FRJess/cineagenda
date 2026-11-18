@@ -3,8 +3,14 @@ import type { UiLocale } from "@/lib/tmdb/to-movie";
 
 export const SITE_URL = process.env.SITE_URL ?? "http://localhost:3000";
 
+/**
+ * Version of the preview images. Social apps cache an image by its address, so raise this
+ * whenever a `public/og-image-*.png` changes, or they keep showing the old one.
+ */
+const OG_IMAGE_VERSION = 2;
+
 export function ogImage(locale: UiLocale) {
-  return { url: `/og-image-${locale}.png`, width: 1200, height: 630 };
+  return { url: `/og-image-${locale}.png?v=${OG_IMAGE_VERSION}`, width: 1200, height: 630 };
 }
 
 const OG_LOCALE = { it: "it_IT", en: "en_GB", fr: "fr_FR" } as const satisfies Record<
