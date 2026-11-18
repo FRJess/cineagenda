@@ -2,6 +2,7 @@ import { type Country, DEFAULT_COUNTRY } from "@/lib/country";
 import type { Movie } from "@/lib/releases/movie";
 import type { ReleaseWindow } from "@/lib/releases/window";
 import { pickRelease } from "./release-date";
+import { runtimeOf } from "./runtime";
 import { buildDisplayTitles } from "./title";
 import type { GenreNames, TmdbMovieDetails } from "./types";
 
@@ -53,8 +54,9 @@ export function toMovie(
   country: Country = DEFAULT_COUNTRY,
 ): Movie | null {
   const release = pickRelease(details, window, country);
+  const runtime = runtimeOf(details);
   const isShort =
-    (!!details.runtime && details.runtime < MIN_RUNTIME_MINUTES) ||
+    (runtime !== null && runtime < MIN_RUNTIME_MINUTES) ||
     !!details.keywords?.keywords.some(
       (keyword) => SHORT_FILM_KEYWORDS.has(keyword.id) || STAGE_SHOW_KEYWORDS.has(keyword.id),
     );

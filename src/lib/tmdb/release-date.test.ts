@@ -80,15 +80,15 @@ describe("pickRelease", () => {
     expect(pickRelease(film, window)?.date).toBe("2026-11-05");
   });
 
-  it.each(["CineUnderground Film Festival", "Anteprima", "Premiere", "IMAX", "Evento speciale"])(
-    "drops a limited entry noted %j (festival or event)",
+  it.each(["CineUnderground Film Festival", "Anteprima", "Anteprima IMAX ed EPIC", "Premiere"])(
+    "drops a limited entry noted %j (festival or premiere)",
     (note) => {
       expect(pickRelease(details({}, [rd(2, "2026-11-26", note)]), window)).toBeNull();
     },
   );
 
-  it.each(["Re-release", "40th Anniversary", "4K Restoration", ""])(
-    "keeps a limited entry noted %j (re-release or plain limited run)",
+  it.each(["Re-release", "40th Anniversary", "4K Restoration", "IMAX", "Evento speciale", ""])(
+    "keeps a limited entry noted %j (re-release, IMAX run, event release or plain limited run)",
     (note) => {
       expect(pickRelease(details({}, [rd(2, "2026-11-26", note)]), window)).toEqual({
         date: "2026-11-26",
