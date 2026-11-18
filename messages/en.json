@@ -123,8 +123,8 @@
   "Privacy": {
     "documentTitle": "Privacy · Cineagenda",
     "title": "Privacy",
-    "updated": "Last updated: <time>16 November 2026</time>",
-    "lead": "Cineagenda has no accounts, no forms, no advertising and no analytics. It asks you for nothing and builds no profile of you. A few technical data are still processed when you use it; this page says which.",
+    "updated": "Last updated: <time>17 November 2026</time>",
+    "lead": "Cineagenda has no accounts, no forms, no advertising and no cookie-based analytics. It asks you for nothing and builds no profile of you. A few technical data are still processed when you use it; this page says which.",
     "controllerTitle": "Who is responsible",
     "controller": "Jessica Tartaglia runs this site as a personal, non-commercial project and is the data controller. Contact: <mail>hello@cineagenda.app</mail>.",
     "visitTitle": "What is processed when you visit",
@@ -139,7 +139,8 @@
     "basisTitle": "Why, and on what basis",
     "basis": "These data are processed only to show you the site and keep it secure, on the basis of legitimate interest (art. 6(1)(f) GDPR). Nothing is sold, used for marketing or used for automated decisions.",
     "rightsTitle": "Your rights",
-    "rights": "You can ask to access, correct or delete your data, to restrict their processing or to object to it, by writing to the address above. You can also lodge a complaint with the data protection authority of your country (in Italy, the Garante per la protezione dei dati personali)."
+    "rights": "You can ask to access, correct or delete your data, to restrict their processing or to object to it, by writing to the address above. You can also lodge a complaint with the data protection authority of your country (in Italy, the Garante per la protezione dei dati personali).",
+    "analytics": "<b>Web Analytics.</b> The site uses Vercel Web Analytics to measure page views and performance. This service does not use cookies and does not store identifiable information about individual visitors. See <vercel>Vercel Web Analytics privacy</vercel>."
   },
   "Footer": {
     "links": "Site information",

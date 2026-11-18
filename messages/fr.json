@@ -123,8 +123,8 @@
   "Privacy": {
     "documentTitle": "Confidentialité · Cineagenda",
     "title": "Confidentialité",
-    "updated": "Dernière mise à jour : <time>16 novembre 2026</time>",
-    "lead": "Cineagenda n'a ni comptes, ni formulaires, ni publicité, ni outils de mesure d'audience. Il ne vous demande rien et ne crée aucun profil. Quelques données techniques sont tout de même traitées lorsque vous l'utilisez : cette page indique lesquelles.",
+    "updated": "Dernière mise à jour : <time>17 novembre 2026</time>",
+    "lead": "Cineagenda n'a ni comptes, ni formulaires, ni publicité, ni analytiques basées sur les cookies. Il ne vous demande rien et ne crée aucun profil. Quelques données techniques sont tout de même traitées lorsque vous l'utilisez : cette page indique lesquelles.",
     "controllerTitle": "Qui est responsable",
     "controller": "Jessica Tartaglia gère ce site comme un projet personnel et non commercial et en est la responsable du traitement. Contact : <mail>hello@cineagenda.app</mail>.",
     "visitTitle": "Ce qui est traité lors de votre visite",
@@ -139,7 +139,8 @@
     "basisTitle": "Pourquoi, et sur quelle base",
     "basis": "Ces données sont traitées uniquement pour vous afficher le site et le sécuriser, sur la base de l'intérêt légitime (art. 6, § 1, f du RGPD). Rien n'est vendu, ni utilisé à des fins de marketing ou de décision automatisée.",
     "rightsTitle": "Vos droits",
-    "rights": "Vous pouvez demander l'accès à vos données, leur rectification ou leur effacement, la limitation de leur traitement, ou vous y opposer, en écrivant à l'adresse ci-dessus. Vous pouvez aussi introduire une réclamation auprès de l'autorité de protection des données de votre pays (en France, la CNIL ; en Italie, le Garante per la protezione dei dati personali)."
+    "rights": "Vous pouvez demander l'accès à vos données, leur rectification ou leur effacement, la limitation de leur traitement, ou vous y opposer, en écrivant à l'adresse ci-dessus. Vous pouvez aussi introduire une réclamation auprès de l'autorité de protection des données de votre pays (en France, la CNIL ; en Italie, le Garante per la protezione dei dati personali).",
+    "analytics": "<b>Analytiques web.</b> Le site utilise Vercel Web Analytics pour mesurer les pages vues et les performances. Ce service n'utilise pas de cookies et ne stocke pas d'informations identifiables sur les visiteurs individuels. Voir la <vercel>politique de confidentialité de Vercel Web Analytics</vercel>."
   },
   "Footer": {
     "links": "Informations sur le site",

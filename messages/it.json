@@ -123,8 +123,8 @@
   "Privacy": {
     "documentTitle": "Privacy · Cineagenda",
     "title": "Privacy",
-    "updated": "Ultimo aggiornamento: <time>16 novembre 2026</time>",
-    "lead": "Cineagenda non ha account, moduli, pubblicità né strumenti di analisi. Non ti chiede nulla e non crea un tuo profilo. Quando lo usi vengono comunque trattati alcuni dati tecnici: questa pagina dice quali.",
+    "updated": "Ultimo aggiornamento: <time>17 novembre 2026</time>",
+    "lead": "Cineagenda non ha account, moduli, pubblicità né strumenti di analisi basati su cookie. Non ti chiede nulla e non crea un tuo profilo. Quando lo usi vengono comunque trattati alcuni dati tecnici: questa pagina dice quali.",
     "controllerTitle": "Chi è il titolare",
     "controller": "Jessica Tartaglia gestisce questo sito come progetto personale e non commerciale ed è la titolare del trattamento. Contatto: <mail>hello@cineagenda.app</mail>.",
     "visitTitle": "Cosa viene trattato quando visiti il sito",
@@ -139,7 +139,8 @@
     "basisTitle": "Perché, e su quale base",
     "basis": "Questi dati sono trattati solo per mostrarti il sito e tenerlo sicuro, sulla base del legittimo interesse (art. 6, par. 1, lett. f del GDPR). Nulla viene venduto, usato per marketing o per decisioni automatizzate.",
     "rightsTitle": "I tuoi diritti",
-    "rights": "Puoi chiedere di accedere ai tuoi dati, di correggerli o cancellarli, di limitarne il trattamento o di opporti, scrivendo all'indirizzo qui sopra. Puoi anche presentare un reclamo all'autorità per la protezione dei dati del tuo paese (in Italia, il Garante per la protezione dei dati personali)."
+    "rights": "Puoi chiedere di accedere ai tuoi dati, di correggerli o cancellarli, di limitarne il trattamento o di opporti, scrivendo all'indirizzo qui sopra. Puoi anche presentare un reclamo all'autorità per la protezione dei dati del tuo paese (in Italia, il Garante per la protezione dei dati personali).",
+    "analytics": "<b>Analitiche web.</b> Il sito usa Vercel Web Analytics per misurare le visite alle pagine e le performance. Questo servizio non usa cookie e non memorizza informazioni identificabili su visitatori singoli. Vedi l'<vercel>informativa sulla privacy di Vercel Web Analytics</vercel>."
   },
   "Footer": {
     "links": "Informazioni sul sito",
