@@ -1,7 +1,14 @@
 export type TmdbDiscoverPage = {
   readonly page: number;
   readonly total_pages: number;
-  readonly results: readonly { readonly id: number }[];
+  readonly results: readonly { readonly id: number; readonly original_language: string }[];
+};
+
+/** One poster of `images`; TMDB lists them best-voted first. Untagged posters have no language. */
+export type TmdbPoster = {
+  readonly file_path: string;
+  readonly iso_639_1: string | null;
+  readonly iso_3166_1: string | null;
 };
 
 /** `GET /search/movie`, only fields the release check reads. */
@@ -82,6 +89,8 @@ export type TmdbMovieDetails = {
     readonly crew: readonly TmdbCrewMember[];
   };
   readonly videos?: { readonly results: readonly TmdbVideo[] };
+  /** Appended with `images`; the fetch functions resolve it into `poster_path` and drop it. */
+  readonly images?: { readonly posters: readonly TmdbPoster[] };
   readonly release_dates: {
     readonly results: readonly {
       readonly iso_3166_1: string;

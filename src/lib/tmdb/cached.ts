@@ -70,7 +70,7 @@ export async function getMovieDetails(
   cacheLife("days");
 
   // Resolved here, not by the caller: errors thrown across a "use cache" boundary lose their class.
-  const details = await fetchMovieDetails(id).catch((error: unknown) => {
+  const details = await fetchMovieDetails(id, country).catch((error: unknown) => {
     if (error instanceof TmdbError && error.status === 404) {
       return null;
     }

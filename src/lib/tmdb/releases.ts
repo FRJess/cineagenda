@@ -1,6 +1,7 @@
-import { type Country, DEFAULT_COUNTRY } from "@/lib/country";
+import { type Country, DEFAULT_COUNTRY, titleLanguage } from "@/lib/country";
 import type { ReleaseWindow } from "@/lib/releases/window";
 import { tmdbGet } from "./client";
+import { localPoster } from "./poster";
 import type { UiLocale } from "./to-movie";
 import type {
   GenreNames,
@@ -19,8 +20,12 @@ const TMDB_LANGUAGE: Readonly<Record<UiLocale, string>> = {
   fr: "fr-FR",
 };
 
-async function discoverIds(window: ReleaseWindow, country: Country): Promise<readonly number[]> {
-  const ids = new Set<number>();
+// Film id to original language, which tells the details call what posters to ask for.
+async function discoverFilms(
+  window: ReleaseWindow,
+  country: Country,
+): Promise<ReadonlyMap<number, string>> {
+  const films = new Map<number, string>();
 
   for (let page = 1; page <= MAX_DISCOVER_PAGES; page++) {
     const result = await tmdbGet<TmdbDiscoverPage>("/discover/movie", {
@@ -34,7 +39,7 @@ async function discoverIds(window: ReleaseWindow, country: Country): Promise<rea
     });
 
     for (const movie of result.results) {
-      ids.add(movie.id);
+      films.set(movie.id, movie.original_language);
     }
 
     if (page >= result.total_pages) {
@@ -42,7 +47,12 @@ async function discoverIds(window: ReleaseWindow, country: Country): Promise<rea
     }
   }
 
-  return [...ids];
+  return films;
+}
+
+// The poster list is resolved here and left out, so cached details stay as small as before.
+function withLocalPoster(details: TmdbMovieDetails, country: Country): TmdbMovieDetails {
+  return { ...details, poster_path: localPoster(details, country), images: undefined };
 }
 
 async function mapLimited<T, R>(
@@ -68,13 +78,17 @@ export async function fetchReleaseDetails(
   window: ReleaseWindow,
   country: Country = DEFAULT_COUNTRY,
 ): Promise<readonly TmdbMovieDetails[]> {
-  const ids = await discoverIds(window, country);
+  const films = await discoverFilms(window, country);
 
-  return mapLimited(ids, MAX_IN_FLIGHT, (id) =>
-    tmdbGet<TmdbMovieDetails>(`/movie/${id}`, {
-      append_to_response: "release_dates,translations,keywords",
-    }),
-  );
+  return mapLimited([...films], MAX_IN_FLIGHT, async ([id, originalLanguage]) => {
+    const details = await tmdbGet<TmdbMovieDetails>(`/movie/${id}`, {
+      append_to_response: "release_dates,translations,keywords,images",
+      // Unfiltered, a big film sends hundreds of posters.
+      include_image_language: [...new Set([titleLanguage(country), originalLanguage])].join(","),
+    });
+
+    return withLocalPoster(details, country);
+  });
 }
 
 export async function fetchGenreNames(locale: UiLocale): Promise<GenreNames> {
@@ -89,12 +103,19 @@ export async function fetchGenreNames(locale: UiLocale): Promise<GenreNames> {
  * Full details of one film for the film page.
  * @throws {TmdbError} With status 404 when the id does not exist.
  */
-export async function fetchMovieDetails(id: number): Promise<TmdbMovieDetails> {
-  const details = await tmdbGet<TmdbMovieDetails>(`/movie/${id}`, {
-    append_to_response: "credits,videos,release_dates,translations,keywords",
-    // Without it TMDB returns English videos only, so dubbed trailers never arrive.
-    include_video_language: VIDEO_LANGUAGES.join(","),
-  });
+export async function fetchMovieDetails(
+  id: number,
+  country: Country = DEFAULT_COUNTRY,
+): Promise<TmdbMovieDetails> {
+  const details = withLocalPoster(
+    await tmdbGet<TmdbMovieDetails>(`/movie/${id}`, {
+      // Posters come in every language: the original one is not known before this call.
+      append_to_response: "credits,videos,release_dates,translations,keywords,images",
+      // Without it TMDB returns English videos only, so dubbed trailers never arrive.
+      include_video_language: VIDEO_LANGUAGES.join(","),
+    }),
+    country,
+  );
 
   if (VIDEO_LANGUAGES.includes(details.original_language)) {
     return details;
