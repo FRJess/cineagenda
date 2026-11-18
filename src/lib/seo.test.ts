@@ -66,8 +66,8 @@ describe("pageMetadata", () => {
   });
 
   it("gives each locale its own preview image", () => {
-    expect(ogImage("it")).toEqual({ url: "/og-image-it.png", width: 1200, height: 630 });
-    expect(ogImage("en").url).toBe("/og-image-en.png");
-    expect(ogImage("fr").url).toBe("/og-image-fr.png");
+    expect(ogImage("it")).toEqual({ url: "/og-image-it.png?v=2", width: 1200, height: 630 });
+    expect(ogImage("en").url).toBe("/og-image-en.png?v=2");
+    expect(ogImage("fr").url).toBe("/og-image-fr.png?v=2");
   });
 });
