@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { compareReleases, mainTitle, normalizeTitle, type ListedFilm } from "./match";
+import { compareReleases, mainTitle, normalizeTitle, overlaps, type ListedFilm } from "./match";
 
 const ours = (id: number, date: string, ...titles: string[]): ListedFilm => ({ id, titles, date });
 
@@ -10,6 +10,37 @@ describe("normalizeTitle", () => {
     );
     expect(normalizeTitle("Your Name.")).toBe("your name");
     expect(normalizeTitle("È Andata Così")).toBe("e andata cosi");
+  });
+
+  it("drops a leading article and trailing parentheses", () => {
+    expect(normalizeTitle("The Weed Eaters")).toBe("weed eaters");
+    expect(normalizeTitle("Les Braves (Coward)")).toBe("braves");
+    expect(normalizeTitle("Die Biene Maja")).toBe("biene maja");
+    expect(normalizeTitle("(500) Days of Summer")).toBe("500 days of summer");
+    expect(normalizeTitle("The")).toBe("the");
+  });
+});
+
+describe("overlaps", () => {
+  it.each([
+    ["Wiener Blues - The Loneliest Man In Town", "The Loneliest Man in Town"],
+    ["Der Preis des Widerstands", "Vater, Sohn und der Preis des Widerstands"],
+    ["MET Opera Live im Kino: Samson et Dalila", "The Metropolitan Opera: Samson et Dalila"],
+    [
+      "Puella Magi Madoka Magica - Der Film - Walpurgisnacht: Rising",
+      "Puella Magi Madoka Magica the Movie -Walpurgisnacht: Rising-",
+    ],
+  ])("pairs %j with %j", (a, b) => {
+    expect(overlaps(a, b)).toBe(true);
+    expect(overlaps(b, a)).toBe(true);
+  });
+
+  it.each([
+    ["Train", "Night Train"],
+    ["Papayas große Reise", "Papaya"],
+    ["Rocky", "I Play Rocky"],
+  ])("does not pair %j with %j", (a, b) => {
+    expect(overlaps(a, b)).toBe(false);
   });
 });
 
@@ -59,6 +90,23 @@ describe("compareReleases", () => {
     );
 
     expect(result).toEqual({ missing: [], differentDate: [], onlyOurs: [] });
+  });
+
+  it("pairs overlapping titles only when the day is the same", () => {
+    const film = ours(8, "2026-11-26", "Vater, Sohn und der Preis des Widerstands");
+    const sameDay = { title: "Der Preis des Widerstands", date: "2026-11-26" };
+    const otherDay = { title: "Der Preis des Widerstands", date: "2026-12-03" };
+
+    expect(compareReleases([film], [sameDay])).toEqual({
+      missing: [],
+      differentDate: [],
+      onlyOurs: [],
+    });
+    expect(compareReleases([film], [otherDay])).toEqual({
+      missing: [otherDay],
+      differentDate: [],
+      onlyOurs: [film],
+    });
   });
 
   it("pairs a re-release with the entry of the same day", () => {
