@@ -1,0 +1,48 @@
+name: Check releases
+
+# Weekly comparison of the TMDB releases with one reference site per country.
+# The report becomes an issue assigned to the owner, so it arrives by mail.
+
+on:
+  schedule:
+    # Mondays 06:00 UTC: three days before the Thursday releases.
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Build the report
+        env:
+          TMDB_ACCESS_TOKEN: ${{ secrets.TMDB_ACCESS_TOKEN }}
+        run: pnpm --silent check:releases > report.md
+      - name: Open the issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          if [ ! -s report.md ]; then
+            echo "Nothing to check."
+            exit 0
+          fi
+          gh label create release-check --description "Weekly release report" --force
+          gh issue list --label release-check --state open --json number --jq '.[].number' |
+            xargs -r -n 1 gh issue close
+          gh issue create \
+            --title "Release check $(date -u +%F)" \
+            --body-file report.md \
+            --label release-check \
+            --assignee "${{ github.repository_owner }}"
