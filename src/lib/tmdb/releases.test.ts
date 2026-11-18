@@ -87,8 +87,56 @@ describe("fetchReleaseDetails", () => {
     const detailCalls = tmdb.urls.filter((u) => u.pathname === "/3/movie/7");
     expect(detailCalls).toHaveLength(1);
     expect(detailCalls[0].searchParams.get("append_to_response")).toBe(
-      "release_dates,translations,keywords",
+      "release_dates,translations,keywords,images",
     );
+  });
+
+  it("asks for posters in the country's language and the film's original one", async () => {
+    const tmdb = stubTmdb((url) =>
+      url.pathname === "/3/discover/movie"
+        ? {
+            page: 1,
+            total_pages: 1,
+            results: [
+              { id: 7, original_language: "ro" },
+              { id: 8, original_language: "fr" },
+            ],
+          }
+        : detailsOf(Number(url.pathname.split("/").pop())),
+    );
+
+    await fetchReleaseDetails(window, "FR");
+
+    const languages = (id: number) =>
+      tmdb.urls
+        .find((u) => u.pathname === `/3/movie/${id}`)
+        ?.searchParams.get("include_image_language");
+    expect(languages(7)).toBe("fr,ro");
+    expect(languages(8)).toBe("fr");
+  });
+
+  // The week cache stores these details: the poster list must not travel with them.
+  it("returns the poster of the country and drops the poster list", async () => {
+    stubTmdb((url) =>
+      url.pathname === "/3/discover/movie"
+        ? { page: 1, total_pages: 1, results: [{ id: 7, original_language: "en" }] }
+        : {
+            id: 7,
+            original_language: "en",
+            poster_path: "/default.jpg",
+            images: {
+              posters: [
+                { file_path: "/us.jpg", iso_639_1: "en", iso_3166_1: "US" },
+                { file_path: "/fr.jpg", iso_639_1: "fr", iso_3166_1: "FR" },
+              ],
+            },
+          },
+    );
+
+    const [film] = await fetchReleaseDetails(window, "FR");
+
+    expect(film.poster_path).toBe("/fr.jpg");
+    expect(film.images).toBeUndefined();
   });
 
   it("de-duplicates ids repeated across discover pages", async () => {
@@ -172,6 +220,27 @@ describe("fetchMovieDetails", () => {
 
     expect(tmdb.urls[1].searchParams.get("include_video_language")).toBe("ko");
     expect(result.videos?.results).toEqual([en, ko]);
+  });
+
+  it("asks for posters in every language and returns the one of the country", async () => {
+    const tmdb = stubTmdb(() => ({
+      id: 7,
+      original_language: "fr",
+      poster_path: "/default.jpg",
+      images: {
+        posters: [
+          { file_path: "/fr.jpg", iso_639_1: "fr", iso_3166_1: "FR" },
+          { file_path: "/de.jpg", iso_639_1: "de", iso_3166_1: "DE" },
+        ],
+      },
+    }));
+
+    const film = await fetchMovieDetails(7, "DE");
+
+    expect(tmdb.urls[0].searchParams.get("append_to_response")).toContain("images");
+    expect(tmdb.urls[0].searchParams.has("include_image_language")).toBe(false);
+    expect(film.poster_path).toBe("/de.jpg");
+    expect(film.images).toBeUndefined();
   });
 
   it("makes one call when the original language is a UI one", async () => {
