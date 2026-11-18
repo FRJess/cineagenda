@@ -10,6 +10,7 @@ export type TmdbSearchPage = {
     readonly id: number;
     readonly title: string;
     readonly original_title: string;
+    readonly release_date?: string;
   }[];
 };
 

@@ -8,17 +8,16 @@ import {
   sameTitle,
 } from "@/lib/reference/match";
 import { type CountryReport, type MissingDate, renderReport } from "@/lib/reference/report";
-import { type Resolution, resolveMissing } from "@/lib/reference/resolve";
+import { hasEarlierRun, isRecent, type Resolution, resolveMissing } from "@/lib/reference/resolve";
 import { addDays, MAX_WEEKS, mondayOf, sundayOf, todayInRome } from "@/lib/releases/window";
 import { tmdbGet } from "@/lib/tmdb/client";
 import { fetchReleaseDetails } from "@/lib/tmdb/releases";
-import { runtimeOf } from "@/lib/tmdb/runtime";
 import { toMovie } from "@/lib/tmdb/to-movie";
 import type { TmdbMovieDetails, TmdbSearchPage } from "@/lib/tmdb/types";
 
 type Listed = {
   readonly films: readonly ListedFilm[];
-  readonly unknownRuntime: readonly ListedFilm[];
+  readonly details: ReadonlyMap<number, TmdbMovieDetails>;
 };
 
 /** What the site lists for a country in the weeks, from today on, built by the site's own rules. */
@@ -28,50 +27,48 @@ async function listReleases(
   today: string,
 ): Promise<Listed> {
   const films = new Map<number, ListedFilm>();
-  const unknownRuntime: ListedFilm[] = [];
+  const details = new Map<number, TmdbMovieDetails>();
 
   for (const week of weeks) {
     const window = { from: week, to: sundayOf(week) };
 
-    for (const details of await fetchReleaseDetails(window, country)) {
-      const movie = toMovie(details, window, "en", {}, country);
+    for (const film of await fetchReleaseDetails(window, country)) {
+      const movie = toMovie(film, window, "en", {}, country);
 
       if (!movie || movie.releaseDate < today || films.has(movie.id)) {
         continue;
       }
 
-      const film: ListedFilm = {
+      films.set(movie.id, {
         id: movie.id,
         titles: [movie.title, movie.subtitle, movie.originalTitle].filter(Boolean),
         date: movie.releaseDate,
-      };
-
-      films.set(film.id, film);
-
-      if (runtimeOf(details) === null) {
-        unknownRuntime.push(film);
-      }
+      });
+      details.set(movie.id, film);
     }
   }
 
-  return { films: [...films.values()], unknownRuntime };
+  return { films: [...films.values()], details };
 }
 
 const TRAILING_PARENTHESES = /\s*\([^)]*\)\s*$/;
 const MAX_CANDIDATES = 3;
 
-/** TMDB films that carry a title, as the search ranks them. */
+/** Recent TMDB films that carry a title, as the search ranks them. */
 async function findCandidates(
   title: string,
   country: Country,
+  referenceDate: string,
 ): Promise<readonly TmdbMovieDetails[]> {
   const page = await tmdbGet<TmdbSearchPage>("/search/movie", {
     query: title.replace(TRAILING_PARENTHESES, "") || title,
     language: titleLanguage(country),
   });
   const ids = page.results
-    .filter((result) =>
-      [result.title, result.original_title].some((found) => sameTitle(found, title)),
+    .filter(
+      (result) =>
+        isRecent(result.release_date, referenceDate) &&
+        [result.title, result.original_title].some((found) => sameTitle(found, title)),
     )
     .slice(0, MAX_CANDIDATES)
     .map((result) => result.id);
@@ -93,7 +90,7 @@ async function resolve(
 ): Promise<Resolution> {
   const byTitle = resolveMissing(
     reference,
-    await findCandidates(reference.title, country),
+    await findCandidates(reference.title, country, reference.date),
     films,
     country,
   );
@@ -105,7 +102,12 @@ async function resolve(
   const original = await fetchOriginalTitle(country, reference);
 
   return original
-    ? resolveMissing(reference, await findCandidates(original, country), films, country)
+    ? resolveMissing(
+        reference,
+        await findCandidates(original, country, reference.date),
+        films,
+        country,
+      )
     : byTitle;
 }
 
@@ -115,16 +117,14 @@ async function checkCountry(
   today: string,
   to: string,
 ): Promise<CountryReport> {
-  const { films, unknownRuntime } = await listReleases(country, weeks, today);
+  const { films, details } = await listReleases(country, weeks, today);
   const report = {
     country,
     reference: referenceName(country),
     referenceError: null,
     differentDate: [],
     missingDate: [],
-    notFound: [],
-    notFeatures: 0,
-    unknownRuntime,
+    leftOut: 0,
   } satisfies CountryReport;
 
   try {
@@ -132,10 +132,16 @@ async function checkCountry(
       (film) => film.date >= today && film.date <= to,
     );
     const { missing, differentDate } = compareReleases(films, listed);
-    const found: DateDifference[] = [...differentDate];
+    // A film we list on a re-release date that the reference dates otherwise: nothing to fix.
+    const rerun = (pair: DateDifference): boolean => {
+      const film = details.get(pair.ours.id);
+      const date = pair.ours.date < pair.reference.date ? pair.ours.date : pair.reference.date;
+
+      return !!film && hasEarlierRun(film, country, date);
+    };
+    const found = differentDate.filter((pair) => !rerun(pair));
     const missingDate: MissingDate[] = [];
-    const notFound: ReferenceFilm[] = [];
-    let notFeatures = 0;
+    let leftOut = differentDate.length - found.length;
 
     for (const reference of missing) {
       const resolution = await resolve(reference, films, country);
@@ -144,14 +150,12 @@ async function checkCountry(
         found.push({ ours: resolution.ours, reference });
       } else if (resolution.kind === "noDate") {
         missingDate.push({ reference, id: resolution.id, title: resolution.title });
-      } else if (resolution.kind === "notFound") {
-        notFound.push(reference);
-      } else if (resolution.kind === "notFeature") {
-        notFeatures++;
+      } else if (resolution.kind !== "sameDate") {
+        leftOut++;
       }
     }
 
-    return { ...report, differentDate: found, missingDate, notFound, notFeatures };
+    return { ...report, differentDate: found, missingDate, leftOut };
   } catch (error) {
     return { ...report, referenceError: error instanceof Error ? error.message : String(error) };
   }
