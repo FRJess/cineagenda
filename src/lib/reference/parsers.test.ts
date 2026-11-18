@@ -56,6 +56,18 @@ const THE_NUMBERS = `
 <td></td>
 <td><b><a href="/movie/I-Play-Rocky-(2026)">I Play Rocky</a></b> (Expands Wide)</td>
 </tr>
+<tr>
+<td></td>
+<td><b><a href="/movie/Moulin-Rouge">Moulin Rouge!</a></b> (Special Engagement, re-release)</td>
+</tr>
+<tr>
+<td></td>
+<td><b><a href="/movie/Tangles">Tangles</a></b> (Oscar Qualifying Run)</td>
+</tr>
+<tr>
+<td></td>
+<td><b><a href="/movie/Rate-It-X">Rate It X</a></b> (Wide, re-release)</td>
+</tr>
 </table>`;
 
 describe("parseComingSoon", () => {
@@ -85,10 +97,8 @@ describe("parseAgenda", () => {
 });
 
 describe("parseSchedule", () => {
-  it("gives each film the day of its row group and skips expansions", () => {
+  it("keeps wide releases only, each on the day of its row group", () => {
     expect(parseSchedule(THE_NUMBERS)).toEqual([
-      { title: "Madden", date: "2026-11-18" },
-      { title: "TUTU", date: "2026-11-18" },
       { title: "The Hunger Games: Sunrise on the Reaping", date: "2026-11-20" },
     ]);
   });

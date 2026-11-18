@@ -7,9 +7,7 @@ const base: CountryReport = {
   referenceError: null,
   differentDate: [],
   missingDate: [],
-  notFound: [],
-  notFeatures: 0,
-  unknownRuntime: [],
+  leftOut: 0,
 };
 
 const render = (report: CountryReport): string =>
@@ -18,7 +16,7 @@ const render = (report: CountryReport): string =>
 describe("renderReport", () => {
   it("is empty when no country has anything to fix", () => {
     expect(render(base)).toBe("");
-    expect(render({ ...base, notFeatures: 3 })).toBe("");
+    expect(render({ ...base, leftOut: 3 })).toBe("");
   });
 
   it("lists each kind of fix with a TMDB link", () => {
@@ -34,9 +32,7 @@ describe("renderReport", () => {
         { reference: { title: "Mustang", date: "2026-11-23" }, id: 42, title: "Mustang" },
         { reference: { title: "Train", date: "2026-12-04" }, id: 43, title: "Zug" },
       ],
-      notFound: [{ title: "La Furia", date: "2026-11-25" }],
-      notFeatures: 2,
-      unknownRuntime: [{ id: 1822507, titles: ["Beanstalk"], date: "2026-11-21" }],
+      leftOut: 2,
     });
 
     expect(report).toContain("## IT");
@@ -51,25 +47,32 @@ describe("renderReport", () => {
       "- 2026-11-23 [Mustang](https://www.themoviedb.org/movie/42/edit?active_nav_item=release_information)",
     );
     expect(report).toContain(
-      "- 2026-11-25 La Furia ([search](https://www.themoviedb.org/search/movie?query=La%20Furia))",
+      "Left out: 2 on ComingSoon.it with nothing to fix (shorts, stage shows, re-releases, films not on TMDB).",
     );
-    expect(report).toContain("### Running time unknown on TMDB (1)");
-    expect(report).toContain(
-      "Left out: 2 on ComingSoon.it that TMDB files as shorts or stage shows.",
-    );
-    expect(report).not.toContain("Listed by us");
+    expect(report).not.toContain("Not found");
+    expect(report).not.toContain("Running time");
   });
 
-  it("says when a reference could not be read and keeps the other checks", () => {
+  it("says when a reference could not be read", () => {
     const report = render({
       ...base,
       country: "US",
       reference: "The Numbers",
       referenceError: "The Numbers answered 403",
-      unknownRuntime: [{ id: 7, titles: ["Odd [cut]"], date: "2026-11-20" }],
     });
 
+    expect(report).toContain("## US");
     expect(report).toContain("The Numbers could not be read: The Numbers answered 403.");
+  });
+
+  it("escapes brackets in titles", () => {
+    const report = render({
+      ...base,
+      missingDate: [
+        { reference: { title: "Odd [cut]", date: "2026-11-20" }, id: 7, title: "Odd [cut]" },
+      ],
+    });
+
     expect(report).toContain("[Odd \\[cut\\]]");
   });
 });

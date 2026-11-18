@@ -5,12 +5,13 @@ const ROW = /<tr[^>]*>[\s\S]*?<\/tr>/g;
 const ROW_DATE = /^<tr[^>]*\bid="(\d{4}-\d{2}-\d{2})"/;
 const FIRST_CELL = /<td[^>]*>([\s\S]*?)<\/td>/;
 const FILM = /<b><a href="\/movie\/[^"]*">([\s\S]*?)<\/a><\/b>\s*\(([^)]*)\)/;
-// "Expands Wide" is a film already out reaching more cinemas, not a release.
-const EXPANSION = /^expands/i;
+// Wide releases only: limited runs of small films, re-releases, special engagements (events),
+// Oscar qualifying runs and expansions of films already out are not worth a weekly fix.
+const WIDE = /^wide$/i;
 
 /**
- * Releases on The Numbers release schedule (United States). The first row of a day carries the
- * date as its id, the following rows have an empty first cell and belong to the same day.
+ * Wide releases on The Numbers release schedule (United States). The first row of a day carries
+ * the date as its id, the following rows have an empty first cell and belong to the same day.
  */
 export function parseSchedule(html: string): readonly ReferenceFilm[] {
   const films: ReferenceFilm[] = [];
@@ -28,7 +29,7 @@ export function parseSchedule(html: string): readonly ReferenceFilm[] {
 
     const film = FILM.exec(row);
 
-    if (date && film && !EXPANSION.test(film[2])) {
+    if (date && film && WIDE.test(film[2].trim())) {
       films.push({ title: htmlText(film[1]), date });
     }
   }

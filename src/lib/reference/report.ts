@@ -1,5 +1,5 @@
 import type { Country } from "@/lib/country";
-import { type DateDifference, type ListedFilm, type ReferenceFilm, sameTitle } from "./match";
+import { type DateDifference, type ReferenceFilm, sameTitle } from "./match";
 
 /** A reference release whose film is on TMDB with no cinema date for the country. */
 export type MissingDate = {
@@ -15,18 +15,16 @@ export type CountryReport = {
   readonly referenceError: string | null;
   readonly differentDate: readonly DateDifference[];
   readonly missingDate: readonly MissingDate[];
-  readonly notFound: readonly ReferenceFilm[];
-  /** Reference releases left out: TMDB files them as shorts or stage shows. */
-  readonly notFeatures: number;
-  /** Films we list whose running time TMDB does not know: shorts cannot be told apart. */
-  readonly unknownRuntime: readonly ListedFilm[];
+  /**
+   * Reference releases with nothing to fix: shorts, stage shows, re-releases and later runs of
+   * films already out, films TMDB does not have.
+   */
+  readonly leftOut: number;
 };
 
 const escape = (text: string): string => text.replaceAll(/[[\]]/g, "\\$&");
 const editUrl = (id: number): string =>
   `https://www.themoviedb.org/movie/${id}/edit?active_nav_item=release_information`;
-const searchUrl = (title: string): string =>
-  `https://www.themoviedb.org/search/movie?query=${encodeURIComponent(title)}`;
 const link = (title: string, id: number): string => `[${escape(title)}](${editUrl(id)})`;
 const byDate = <T>(items: readonly T[], date: (item: T) => string): readonly T[] =>
   [...items].sort((a, b) => date(a).localeCompare(date(b)));
@@ -56,18 +54,6 @@ function section(report: CountryReport): readonly string[] {
           `- ${film.reference.date} ${sameTitle(film.title, film.reference.title) ? "" : `${escape(film.reference.title)}: `}${link(film.title, film.id)}`,
       ),
     ),
-    ...list(
-      "Not found on TMDB",
-      byDate(report.notFound, (film) => film.date).map(
-        (film) => `- ${film.date} ${escape(film.title)} ([search](${searchUrl(film.title)}))`,
-      ),
-    ),
-    ...list(
-      "Running time unknown on TMDB",
-      byDate(report.unknownRuntime, (film) => film.date).map(
-        (film) => `- ${film.date} ${link(film.titles[0], film.id)}`,
-      ),
-    ),
   ];
 
   if (body.length === 0) {
@@ -78,9 +64,9 @@ function section(report: CountryReport): readonly string[] {
     `## ${country}`,
     "",
     ...body,
-    ...(report.notFeatures
+    ...(report.leftOut
       ? [
-          `Left out: ${report.notFeatures} on ${reference} that TMDB files as shorts or stage shows.`,
+          `Left out: ${report.leftOut} on ${reference} with nothing to fix (shorts, stage shows, re-releases, films not on TMDB).`,
           "",
         ]
       : []),
