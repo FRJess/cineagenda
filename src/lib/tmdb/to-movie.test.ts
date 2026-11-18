@@ -147,6 +147,16 @@ describe("toMovie", () => {
     ).toBeNull();
   });
 
+  it("drops a short whose running time is on a translation only", () => {
+    // TMDB id 1826483, "Pesciolino & Superverme": runtime 0, 50 minutes on the Italian page.
+    const short = details(
+      { runtime: 0, translations: { translations: [tr("it", "IT", { runtime: 50 })] } },
+      [rd(3, "2026-11-05")],
+    );
+
+    expect(toMovie(short, window, "it", genreNames)).toBeNull();
+  });
+
   it("drops films TMDB tags as short films, even without a running time", () => {
     const short = details(
       { runtime: 0, keywords: { keywords: [{ id: 263548, name: "short film" }] } },

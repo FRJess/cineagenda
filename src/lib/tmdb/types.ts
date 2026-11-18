@@ -15,7 +15,11 @@ export type TmdbReleaseDate = {
 export type TmdbTranslation = {
   readonly iso_639_1: string;
   readonly iso_3166_1: string;
-  readonly data: { readonly title?: string; readonly overview?: string };
+  readonly data: {
+    readonly title?: string;
+    readonly overview?: string;
+    readonly runtime?: number;
+  };
 };
 
 export type TmdbCastMember = {

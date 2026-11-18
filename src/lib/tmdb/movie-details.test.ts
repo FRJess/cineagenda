@@ -54,6 +54,27 @@ const full = (overrides: Partial<TmdbMovieDetails> = {}): TmdbMovieDetails =>
 const window = { from: "2025-12-29", to: "2027-12-31" };
 
 describe("toMovieDetails", () => {
+  it("takes the running time from a translation when the film has none", () => {
+    const film = full();
+    const result = toMovieDetails(
+      {
+        ...film,
+        runtime: 0,
+        translations: {
+          translations: [
+            ...film.translations.translations,
+            { iso_639_1: "it", iso_3166_1: "IT", data: { runtime: 107 } },
+          ],
+        },
+      },
+      window,
+      "it",
+      { 99: "Documentario" },
+    );
+
+    expect(result?.runtime).toBe(107);
+  });
+
   it("maps title, dates, runtime, genres, countries and companies", () => {
     const result = toMovieDetails(full(), window, "it", { 99: "Documentario" });
 

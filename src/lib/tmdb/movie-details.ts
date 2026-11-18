@@ -1,6 +1,7 @@
 import { type Country, DEFAULT_COUNTRY } from "@/lib/country";
 import type { Movie } from "@/lib/releases/movie";
 import type { ReleaseWindow } from "@/lib/releases/window";
+import { runtimeOf } from "./runtime";
 import { imagePath, toMovie, type UiLocale } from "./to-movie";
 import type { GenreNames, TmdbMovieDetails, TmdbVideo } from "./types";
 
@@ -83,7 +84,7 @@ export function toMovieDetails(
   return {
     ...movie,
     year: details.release_date ? Number(details.release_date.slice(0, 4)) : null,
-    runtime: details.runtime ?? null,
+    runtime: runtimeOf(details),
     directors: credits.crew.filter((member) => member.job === "Director").map((m) => m.name),
     writers: [
       ...new Set(credits.crew.filter((member) => WRITER_JOBS.has(member.job)).map((m) => m.name)),
