@@ -16,16 +16,21 @@ export type Comparison = {
   readonly onlyOurs: readonly ListedFilm[];
 };
 
-const SUBTITLE = /\s[-\u2013\u2014]\s|:\s/;
+const SUBTITLE = /\s[-–—]\s|:\s/;
+// A reference site often adds the original title: "Les Braves (Coward)".
+const TRAILING_PARENTHESES = /\s*\([^)]*\)\s*$/;
+// English, French and German only: an Italian "i" or "a" is too often a word of the title.
+const LEADING_ARTICLE = /^(?:the|an?|les?|la|der|die|das)\s+(?=\S)/;
 
-/** Title without case, accents, punctuation and extra spaces. */
+/** Title without case, accents, punctuation, leading article and trailing parentheses. */
 export function normalizeTitle(title: string): string {
-  return title
+  return (title.replace(TRAILING_PARENTHESES, "") || title)
     .normalize("NFD")
     .replaceAll(/\p{M}/gu, "")
     .toLowerCase()
     .replaceAll(/[^\p{L}\p{N}]+/gu, " ")
-    .trim();
+    .trim()
+    .replace(LEADING_ARTICLE, "");
 }
 
 /** Normalized title up to its subtitle: "I Swear - È più forte di me" gives "i swear". */
@@ -33,10 +38,47 @@ export function mainTitle(title: string): string {
   return normalizeTitle(title.split(SUBTITLE)[0]);
 }
 
+const sameBy =
+  (key: (title: string) => string) =>
+  (a: string, b: string): boolean =>
+    key(a) !== "" && key(a) === key(b);
+
+const wordCount = (text: string): number => text.split(" ").length;
+const holds = (whole: string, part: string): boolean => ` ${whole} `.includes(` ${part} `);
+
 /**
- * Pairs the reference releases with ours by title: whole titles first, then titles without
- * subtitle among what is left, so "Dune" does not take "Dune - Parte due". A reference film is
- * paired at most once; nothing is dropped, unpaired films land in `missing` or `onlyOurs`.
+ * Whether one title, or one of its parts around a subtitle mark, sits inside the other title:
+ * "Der Preis des Widerstands" in "Vater, Sohn und der Preis des Widerstands", or the "Samson et
+ * Dalila" of two differently worded opera broadcasts. One word alone is not enough: "Train" is
+ * inside "Night Train". Two films sharing a subtitle ("Part Two") overlap as well, which is why
+ * the rule is only used for films out on the same day.
+ */
+export function overlaps(a: string, b: string): boolean {
+  const inside = (title: string, other: string): boolean =>
+    [title, ...title.split(SUBTITLE)]
+      .map(normalizeTitle)
+      .some((part) => wordCount(part) > 1 && holds(normalizeTitle(other), part));
+
+  return inside(a, b) || inside(b, a);
+}
+
+type Pass = {
+  readonly same: (a: string, b: string) => boolean;
+  /** A loose rule only pairs films out on the same day. */
+  readonly sameDayOnly: boolean;
+};
+
+const PASSES: readonly Pass[] = [
+  { same: sameBy(normalizeTitle), sameDayOnly: false },
+  { same: sameBy(mainTitle), sameDayOnly: false },
+  { same: overlaps, sameDayOnly: true },
+];
+
+/**
+ * Pairs the reference releases with ours by title, strictest rule first: whole titles, then
+ * titles without subtitle among what is left, so "Dune" does not take "Dune - Parte due", then
+ * overlapping titles of the same day. A film is paired at most once; nothing is dropped,
+ * unpaired films land in `missing` or `onlyOurs`.
  */
 export function compareReleases(
   ours: readonly ListedFilm[],
@@ -45,16 +87,22 @@ export function compareReleases(
   const pairs = new Map<ReferenceFilm, ListedFilm>();
   const paired = new Set<ListedFilm>();
 
-  for (const key of [normalizeTitle, mainTitle]) {
+  for (const { same, sameDayOnly } of PASSES) {
     for (const film of reference) {
-      const wanted = key(film.title);
+      if (pairs.has(film)) {
+        continue;
+      }
+
       const candidates = ours.filter(
-        (listed) => !paired.has(listed) && listed.titles.some((title) => key(title) === wanted),
+        (listed) =>
+          !paired.has(listed) &&
+          (!sameDayOnly || listed.date === film.date) &&
+          listed.titles.some((title) => same(title, film.title)),
       );
       // The same title on the same day wins, so a re-release pairs with its own entry.
       const match = candidates.find((listed) => listed.date === film.date) ?? candidates[0];
 
-      if (wanted && match && !pairs.has(film)) {
+      if (match) {
         pairs.set(film, match);
         paired.add(match);
       }
