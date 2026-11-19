@@ -385,7 +385,7 @@ describe("FilmDetail", () => {
     expect(img).toHaveAttribute("sizes", "18rem");
   });
 
-  it("serves TMDB cast profile directly (not via Vercel optimization)", () => {
+  it("serves TMDB cast profile directly (not via an image optimizer)", () => {
     const { container } = renderFilm();
     const castImg = container.querySelector("[data-part='film-cast'] img");
     expect(castImg).toHaveAttribute("src", "https://image.tmdb.org/t/p/w185/m.jpg");

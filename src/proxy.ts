@@ -160,5 +160,5 @@ function isSameAddress(href: PeriodHref, segment: string | undefined, params: UR
 }
 
 export const config = {
-  matcher: "/((?!api|_next|_vercel|.*\\..*).*)",
+  matcher: "/((?!api|_next|.*\\..*).*)",
 };

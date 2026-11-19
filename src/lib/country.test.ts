@@ -99,12 +99,12 @@ describe("resolveCountryRequest", () => {
 });
 
 describe("visitorCountry", () => {
-  it("reads the country Netlify passes on, then the one Vercel sets", () => {
+  it("reads the country the edge function passes on", () => {
     expect(visitorCountry(new Headers({ "x-cineagenda-country": "DE" }))).toBe("DE");
-    expect(visitorCountry(new Headers({ "x-vercel-ip-country": "US" }))).toBe("US");
   });
 
   it("is null when the host sends no location", () => {
     expect(visitorCountry(new Headers())).toBeNull();
+    expect(visitorCountry(new Headers({ "x-vercel-ip-country": "US" }))).toBeNull();
   });
 });
