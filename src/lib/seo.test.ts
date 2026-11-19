@@ -70,4 +70,11 @@ describe("pageMetadata", () => {
     expect(ogImage("en").url).toBe("/og-image-en.png?v=2");
     expect(ogImage("fr").url).toBe("/og-image-fr.png?v=2");
   });
+
+  it("lets a page out of the index while its links are still followed", () => {
+    const base = { locale: "it", path: "/film/62", title: "Film", description: "Trama." } as const;
+
+    expect(pageMetadata({ ...base, index: false }).robots).toEqual({ index: false, follow: true });
+    expect(pageMetadata(base)).not.toHaveProperty("robots");
+  });
 });

@@ -120,3 +120,15 @@ test("switching country on a film page goes back to the list of that country", a
 
   await expect(page).toHaveURL(/\/it\?country=fr$/);
 });
+
+test("without a country in the address, each language shows its own country", async ({ page }) => {
+  await page.goto("/it");
+  await expect(page).toHaveTitle("Uscite al cinema in Italia · Cineagenda");
+
+  await page.goto("/fr");
+  await expect(page).toHaveTitle("Sorties au cinéma en France · Cineagenda");
+
+  // No location header in local runs: English falls back to the United States.
+  await page.goto("/en");
+  await expect(page).toHaveTitle("Cinema releases in the United States · Cineagenda");
+});

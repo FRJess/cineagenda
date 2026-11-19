@@ -2,11 +2,8 @@ import type { MetadataRoute } from "next";
 import { routing } from "@/i18n/routing";
 import { SITE_URL } from "@/lib/seo";
 
-const PAGES = [
-  { path: "", changeFrequency: "weekly", priority: 1 },
-  { path: "/about", changeFrequency: "yearly", priority: 0.5 },
-  { path: "/privacy", changeFrequency: "yearly", priority: 0.5 },
-] as const;
+// Only the home page is indexed: film, week, about and privacy pages are noindex.
+const PAGES = [{ path: "", changeFrequency: "weekly", priority: 1 }] as const;
 
 const pageUrl = (locale: string, path: string): string =>
   new URL(`/${locale}${path}`, SITE_URL).href;

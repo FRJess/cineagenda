@@ -25,6 +25,8 @@ type PageSeo = {
   readonly title: string;
   readonly description: string;
   readonly image?: { readonly url: string; readonly width: number; readonly height: number };
+  /** False keeps the page out of search results; its links are still followed. */
+  readonly index?: boolean;
 };
 
 /**
@@ -39,6 +41,7 @@ export function pageMetadata({
   title,
   description,
   image,
+  index = true,
 }: PageSeo): Metadata {
   const search = new URLSearchParams(query).toString();
   const url = `/${locale}${path}${search ? `?${search}` : ""}`;
@@ -47,6 +50,7 @@ export function pageMetadata({
     title,
     description,
     alternates: { canonical: url },
+    ...(!index && { robots: { index: false, follow: true } }),
     openGraph: {
       type: "website",
       siteName: "Cineagenda",

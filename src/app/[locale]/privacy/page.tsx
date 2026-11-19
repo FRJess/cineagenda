@@ -19,6 +19,7 @@ export async function generateMetadata({
     title: t("documentTitle"),
     description: t("lead"),
     image: ogImage(uiLocale),
+    index: false,
   });
 }
 

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { hasLocale } from "next-intl";
@@ -9,7 +10,13 @@ import { FilmDetail } from "@/components/FilmDetail";
 import { Loader } from "@/components/Loader";
 import { SiteHeader } from "@/components/SiteHeader";
 import { routing } from "@/i18n/routing";
-import { type Country, countryQuery, DEFAULT_COUNTRY, parseCountry } from "@/lib/country";
+import {
+  type Country,
+  countryQuery,
+  defaultCountry,
+  GEO_HEADER,
+  parseCountry,
+} from "@/lib/country";
 import { todayInRome } from "@/lib/releases/window";
 import { pageMetadata } from "@/lib/seo";
 import { getMovieDetails } from "@/lib/tmdb/cached";
@@ -34,12 +41,15 @@ const first = (value: string | string[] | undefined): string | undefined =>
 
 async function loadFilm(params: Params, searchParams: SearchParams) {
   const { locale, id } = await params;
-  const country = parseCountry(first((await searchParams).country)) ?? DEFAULT_COUNTRY;
   const movieId = parseId(id);
 
   if (!hasLocale(routing.locales, locale) || movieId === null) {
     return null;
   }
+
+  const country =
+    parseCountry(first((await searchParams).country)) ??
+    defaultCountry(locale, (await headers()).get(GEO_HEADER));
 
   return { locale, country, film: await getMovieDetails(movieId, locale, country) };
 }
@@ -69,6 +79,7 @@ export async function generateMetadata({
       image: film.backdropPath
         ? { url: `${BACKDROP_BASE}${film.backdropPath}`, width: 1280, height: 720 }
         : undefined,
+      index: false,
     });
   }
 

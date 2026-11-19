@@ -1,3 +1,5 @@
+import type { UiLocale } from "@/lib/tmdb/to-movie";
+
 export const COUNTRIES = [
   "DE",
   "FR",
@@ -11,6 +13,29 @@ export const COUNTRIES = [
 export type Country = (typeof COUNTRIES)[number];
 
 export const DEFAULT_COUNTRY: Country = "IT";
+
+/** Country for English pages when the visitor's location is unknown or not supported. */
+export const FALLBACK_COUNTRY: Country = "US";
+
+/** Country each UI language opens with; null follows the visitor's location. */
+const LOCALE_COUNTRY = { it: "IT", fr: "FR", en: null } as const satisfies Record<
+  UiLocale,
+  Country | null
+>;
+
+/** Request header with the visitor's country (ISO 3166-1 alpha-2), set by the host (Vercel). */
+export const GEO_HEADER = "x-vercel-ip-country";
+
+/**
+ * Country shown when the URL names none: Italian opens Italy and French opens France; English
+ * opens the visitor's own country when it is supported, else the United States.
+ * @param locale UI language of the page.
+ * @param geo Visitor's country from {@link GEO_HEADER}, null when unknown.
+ * @returns Supported country.
+ */
+export function defaultCountry(locale: UiLocale, geo: string | null | undefined): Country {
+  return LOCALE_COUNTRY[locale] ?? parseCountry(geo ?? undefined) ?? FALLBACK_COUNTRY;
+}
 
 /** Cookie that remembers the last country chosen; set by the proxy. */
 export const COUNTRY_COOKIE = "cineagenda-country";
@@ -58,11 +83,12 @@ export type CountryRequest = {
 
 /**
  * Decides how a request picks its country: a valid `country` param is remembered; a URL without
- * one goes to the remembered country, unless that is the default, which needs no redirect.
+ * one goes to the remembered country, unless that is the page's default, which needs no redirect.
  */
 export function resolveCountryRequest(
   param: string | null,
   cookie: string | undefined,
+  fallback: Country,
 ): CountryRequest {
   if (param !== null) {
     return { redirect: null, remember: parseCountry(param) };
@@ -71,7 +97,7 @@ export function resolveCountryRequest(
   const remembered = parseCountry(cookie);
 
   return {
-    redirect: remembered && remembered !== DEFAULT_COUNTRY ? remembered : null,
+    redirect: remembered && remembered !== fallback ? remembered : null,
     remember: null,
   };
 }

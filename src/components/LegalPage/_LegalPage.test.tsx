@@ -105,8 +105,8 @@ describe("Privacy", () => {
     const time = container.querySelector("[data-part='legal-updated'] time");
 
     expect(headings(1)).toEqual(["Privacy"]);
-    expect(time).toHaveAttribute("dateTime", "2026-11-16");
-    expect(time).toHaveTextContent("16 November 2026");
+    expect(time).toHaveAttribute("dateTime", "2026-11-19");
+    expect(time).toHaveTextContent("19 November 2026");
     expect(headings(2)).toEqual([
       "Who is responsible",
       "What is processed when you visit",
@@ -116,11 +116,12 @@ describe("Privacy", () => {
     ]);
   });
 
-  it("links the three privacy policies in a new tab", () => {
+  it("links the privacy policies in a new tab", () => {
     renderWithIntl(<Privacy />, "en");
 
     for (const [name, href] of [
       ["Vercel's privacy policy", "https://vercel.com/legal/privacy-policy"],
+      ["Vercel Web Analytics privacy", "https://vercel.com/docs/analytics/privacy-policy"],
       ["TMDB's privacy policy", "https://www.themoviedb.org/privacy-policy"],
       ["Google's privacy policy", "https://policies.google.com/privacy"],
     ]) {
