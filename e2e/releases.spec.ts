@@ -3,10 +3,39 @@ import { expect, test } from "@playwright/test";
 
 const WCAG_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
 
-test("root redirects to Italian", async ({ page }) => {
-  await page.goto("/");
+// The root follows the browser language; languages without a UI version get English.
+for (const [language, path] of [
+  ["it-IT", "it"],
+  ["fr-FR", "fr"],
+  ["de-DE", "en"],
+] as const) {
+  test.describe(`a ${language} browser`, () => {
+    test.use({ locale: language });
 
-  await expect(page).toHaveURL(/\/it$/);
+    test(`is sent from the root to /${path}`, async ({ page }) => {
+      await page.goto("/");
+
+      await expect(page).toHaveURL(new RegExp(`/${path}$`));
+    });
+  });
+}
+
+test("only the home page is indexed, with its address as canonical", async ({ page }) => {
+  await page.goto("/fr?country=it");
+  await expect(page.locator("link[rel='canonical']")).toHaveAttribute(
+    "href",
+    /^https?:\/\/[^/]+\/fr$/,
+  );
+  await expect(page.locator("meta[name='robots']")).toHaveCount(0);
+
+  for (const address of ["/fr/2026-11-16", "/fr/about", "/fr/privacy"]) {
+    await page.goto(address);
+    await expect(page.locator("meta[name='robots']")).toHaveAttribute("content", /noindex/);
+  }
+
+  await page.goto("/fr");
+  await page.locator("article a").first().click();
+  await expect(page.locator("meta[name='robots']")).toHaveAttribute("content", /noindex/);
 });
 
 test("html lang follows the locale", async ({ page }) => {

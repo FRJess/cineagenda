@@ -71,7 +71,7 @@ test("the English film page uses English labels", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 2, name: "Plot" })).toBeVisible();
   await expect(page.getByRole("link", { name: "All releases" })).toHaveAttribute(
     "href",
-    /^\/en\/\d{4}-\d{2}-\d{2}\?country=it$/,
+    /^\/en\/\d{4}-\d{2}-\d{2}\?country=us$/,
   );
 });
 

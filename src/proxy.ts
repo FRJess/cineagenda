@@ -2,7 +2,13 @@ import { type NextRequest, NextResponse } from "next/server";
 import { hasLocale } from "next-intl";
 import createMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing";
-import { COUNTRY_COOKIE, resolveCountryRequest } from "./lib/country";
+import {
+  COUNTRY_COOKIE,
+  DEFAULT_COUNTRY,
+  defaultCountry,
+  GEO_HEADER,
+  resolveCountryRequest,
+} from "./lib/country";
 import { parsePeriod, periodHref, type PeriodHref } from "./lib/releases/period";
 import {
   isRangeAllowed,
@@ -59,9 +65,15 @@ export default function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // The page's own default needs no redirect: it depends on the language, and in English on
+  // the visitor's location. The root has no language yet: next-intl redirects it first.
+  const fallback = hasLocale(routing.locales, locale)
+    ? defaultCountry(locale, request.headers.get(GEO_HEADER))
+    : DEFAULT_COUNTRY;
   const { redirect, remember } = resolveCountryRequest(
     searchParams.get("country"),
     request.cookies.get(COUNTRY_COOKIE)?.value,
+    fallback,
   );
 
   if (redirect) {

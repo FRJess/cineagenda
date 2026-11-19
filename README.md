@@ -16,8 +16,9 @@ A single Next.js 16 App Router app with Cache Components. There is no database a
 
 - **Data source:** The Movie Database (TMDB) API v3, called only from the server with a v4 read token. Per week and country: one `discover/movie` query filtered on `region`, then one details call per film with its release dates, translations, keywords and posters. Per film page: one details call with credits and videos.
 - **Data rules** (`src/lib/tmdb`, `src/lib/releases`): a film's date is the country's type 3 (theatrical) entry inside the week, else its type 2 (limited) entry, unless that one is a preview run up to eight weeks before the theatrical date. An entry of either type whose note names a festival or a premiere is not a release. The card title is the title in the country's language, with the original as the film page subtitle; a film in the country's language keeps its original title. The poster is the one made for the country, else one in the film's original language, else TMDB's default. Weeks run Monday to Sunday in Europe/Rome.
+- **SEO:** only the home page is indexed and listed in the sitemap, with its plain address as canonical; week, film, about and privacy pages are `noindex, follow`.
 - **Caching:** each week and each film page is a `"use cache"` function with a daily lifetime (weekly for past weeks), so TMDB is called at most once a day per week or film.
-- **Routing:** `/it`, `/en` and `/fr` via next-intl; `/` redirects to `/it`. The period lives in the path and the country in the query, always written:
+- **Routing:** `/it`, `/en` and `/fr` via next-intl; `/` redirects to the browser's language, English when it has no UI version. Without a country in the query, Italian opens Italy, French opens France, and English opens the visitor's country (Vercel's `x-vercel-ip-country` header) when supported, else the United States. The period lives in the path and the country in the query, always written in links:
 
   | Address | Shows |
   | --- | --- |
@@ -47,7 +48,7 @@ printf 'TMDB_ACCESS_TOKEN=<your v4 read token>\n' > .env.local
 pnpm dev
 ```
 
-Open <http://localhost:3000>. It redirects to `/it`.
+Open <http://localhost:3000>. It redirects to the browser's language.
 
 `.env.local` is gitignored. The token is read only on the server; never prefix it with `NEXT_PUBLIC_`.
 
