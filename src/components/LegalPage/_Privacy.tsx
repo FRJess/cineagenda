@@ -3,10 +3,11 @@ import type { ReactNode } from "react";
 import { external, LegalPage, TEXT_TAGS } from "./_LegalPage";
 
 /** Day the text last changed; the visible date is written out in the messages. */
-const UPDATED = "2026-11-16";
+const UPDATED = "2026-11-17";
 
 const POLICIES = {
   vercel: "https://vercel.com/legal/privacy-policy",
+  analytics: "https://vercel.com/docs/analytics/privacy-policy",
   tmdbp: "https://www.themoviedb.org/privacy-policy",
   google: "https://policies.google.com/privacy",
 } as const;
@@ -39,6 +40,7 @@ export function Privacy() {
         <h2 id="privacy-visit">{t("visitTitle")}</h2>
         <ul>
           <li>{t.rich("hosting", { ...TAGS, vercel: external(POLICIES.vercel) })}</li>
+          <li>{t.rich("analytics", { ...TAGS, vercel: external(POLICIES.analytics) })}</li>
           <li>{t.rich("images", { ...TAGS, tmdbp: external(POLICIES.tmdbp) })}</li>
           <li>{t.rich("trailers", { ...TAGS, google: external(POLICIES.google) })}</li>
           <li>{t.rich("email", TAGS)}</li>
