@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { external, LegalPage, TEXT_TAGS } from "./_LegalPage";
 
 /** Day the text last changed; the visible date is written out in the messages. */
-const UPDATED = "2026-11-17";
+const UPDATED = "2026-11-19";
 
 const POLICIES = {
   vercel: "https://vercel.com/legal/privacy-policy",

@@ -105,8 +105,8 @@ describe("Privacy", () => {
     const time = container.querySelector("[data-part='legal-updated'] time");
 
     expect(headings(1)).toEqual(["Privacy"]);
-    expect(time).toHaveAttribute("dateTime", "2026-11-17");
-    expect(time).toHaveTextContent("17 November 2026");
+    expect(time).toHaveAttribute("dateTime", "2026-11-19");
+    expect(time).toHaveTextContent("19 November 2026");
     expect(headings(2)).toEqual([
       "Who is responsible",
       "What is processed when you visit",
