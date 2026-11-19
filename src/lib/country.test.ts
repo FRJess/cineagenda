@@ -99,27 +99,12 @@ describe("resolveCountryRequest", () => {
 });
 
 describe("visitorCountry", () => {
-  const nfGeo = (geo: unknown) => btoa(JSON.stringify(geo));
-
-  it("reads the country the edge function passes on first", () => {
-    const headers = new Headers({
-      "x-cineagenda-country": "DE",
-      "x-nf-geo": nfGeo({ country: { code: "FR" } }),
-    });
-
-    expect(visitorCountry(headers)).toBe("DE");
+  it("reads the country the edge function passes on", () => {
+    expect(visitorCountry(new Headers({ "x-cineagenda-country": "DE" }))).toBe("DE");
   });
 
-  it("reads Netlify's own location header when the edge function has not run", () => {
-    const geo = nfGeo({ city: "Paris", country: { code: "FR", name: "France" } });
-
-    expect(visitorCountry(new Headers({ "x-nf-geo": geo }))).toBe("FR");
-  });
-
-  it("is null when the host sends no location, or one it cannot read", () => {
+  it("is null when the host sends no location", () => {
     expect(visitorCountry(new Headers())).toBeNull();
     expect(visitorCountry(new Headers({ "x-vercel-ip-country": "US" }))).toBeNull();
-    expect(visitorCountry(new Headers({ "x-nf-geo": "not base64 json" }))).toBeNull();
-    expect(visitorCountry(new Headers({ "x-nf-geo": nfGeo({ country: {} }) }))).toBeNull();
   });
 });
