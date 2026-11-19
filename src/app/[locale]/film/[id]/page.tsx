@@ -14,8 +14,8 @@ import {
   type Country,
   countryQuery,
   defaultCountry,
-  GEO_HEADER,
   parseCountry,
+  visitorCountry,
 } from "@/lib/country";
 import { todayInRome } from "@/lib/releases/window";
 import { pageMetadata } from "@/lib/seo";
@@ -49,7 +49,7 @@ async function loadFilm(params: Params, searchParams: SearchParams) {
 
   const country =
     parseCountry(first((await searchParams).country)) ??
-    defaultCountry(locale, (await headers()).get(GEO_HEADER));
+    defaultCountry(locale, visitorCountry(await headers()));
 
   return { locale, country, film: await getMovieDetails(movieId, locale, country) };
 }

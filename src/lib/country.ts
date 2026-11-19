@@ -23,14 +23,35 @@ const LOCALE_COUNTRY = { it: "IT", fr: "FR", en: null } as const satisfies Recor
   Country | null
 >;
 
-/** Request header with the visitor's country (ISO 3166-1 alpha-2), set by the host (Vercel). */
-export const GEO_HEADER = "x-vercel-ip-country";
+/**
+ * Request headers with the visitor's country (ISO 3166-1 alpha-2). Netlify gives the location
+ * only to edge functions, so `netlify/edge-functions/geo-country.ts` passes it on in the first
+ * one; Vercel sets the second itself.
+ */
+const GEO_HEADERS = ["x-cineagenda-country", "x-vercel-ip-country"] as const;
+
+/**
+ * Visitor's country as the host reports it.
+ * @param headers Request headers.
+ * @returns Two-letter code, or null when the host sends none.
+ */
+export function visitorCountry(headers: Pick<Headers, "get">): string | null {
+  for (const name of GEO_HEADERS) {
+    const value = headers.get(name);
+
+    if (value) {
+      return value;
+    }
+  }
+
+  return null;
+}
 
 /**
  * Country shown when the URL names none: Italian opens Italy and French opens France; English
  * opens the visitor's own country when it is supported, else the United States.
  * @param locale UI language of the page.
- * @param geo Visitor's country from {@link GEO_HEADER}, null when unknown.
+ * @param geo Visitor's country from {@link visitorCountry}, null when unknown.
  * @returns Supported country.
  */
 export function defaultCountry(locale: UiLocale, geo: string | null | undefined): Country {

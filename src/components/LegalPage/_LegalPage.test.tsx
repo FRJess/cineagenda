@@ -120,8 +120,7 @@ describe("Privacy", () => {
     renderWithIntl(<Privacy />, "en");
 
     for (const [name, href] of [
-      ["Vercel's privacy policy", "https://vercel.com/legal/privacy-policy"],
-      ["Vercel Web Analytics privacy", "https://vercel.com/docs/analytics/privacy-policy"],
+      ["Netlify's privacy policy", "https://www.netlify.com/privacy/"],
       ["TMDB's privacy policy", "https://www.themoviedb.org/privacy-policy"],
       ["Google's privacy policy", "https://policies.google.com/privacy"],
     ]) {

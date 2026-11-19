@@ -11,7 +11,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { WeekSection } from "@/components/WeekSection";
 import { WeekTabs } from "@/components/WeekTabs";
 import { routing } from "@/i18n/routing";
-import { countryQuery, defaultCountry, GEO_HEADER, parseCountry } from "@/lib/country";
+import { countryQuery, defaultCountry, parseCountry, visitorCountry } from "@/lib/country";
 import { parsePeriod, periodHref } from "@/lib/releases/period";
 import { defaultRange, mondayOf, sundayOf, todayInRome, weeksBetween } from "@/lib/releases/window";
 import { ogImage, pageMetadata } from "@/lib/seo";
@@ -53,7 +53,7 @@ export async function generateMetadata({
 // The proxy turns the period of the address (`/it/2026-11-09`) into `week` and `weeks`.
 async function loadRange(locale: UiLocale, searchParams: SearchParams) {
   const params = await searchParams;
-  const geo = (await headers()).get(GEO_HEADER);
+  const geo = visitorCountry(await headers());
 
   // The clock is request data: without this Next flags `new Date()` as unstable at prerender.
   await connection();

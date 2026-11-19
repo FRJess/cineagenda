@@ -18,7 +18,7 @@ A single Next.js 16 App Router app with Cache Components. There is no database a
 - **Data rules** (`src/lib/tmdb`, `src/lib/releases`): a film's date is the country's type 3 (theatrical) entry inside the week, else its type 2 (limited) entry, unless that one is a preview run up to eight weeks before the theatrical date. An entry of either type whose note names a festival or a premiere is not a release. The card title is the title in the country's language, with the original as the film page subtitle; a film in the country's language keeps its original title. The poster is the one made for the country, else one in the film's original language, else TMDB's default. Weeks run Monday to Sunday in Europe/Rome.
 - **SEO:** only the home page is indexed and listed in the sitemap, with its plain address as canonical; week, film, about and privacy pages are `noindex, follow`.
 - **Caching:** each week and each film page is a `"use cache"` function with a daily lifetime (weekly for past weeks), so TMDB is called at most once a day per week or film.
-- **Routing:** `/it`, `/en` and `/fr` via next-intl; `/` redirects to the browser's language, English when it has no UI version. Without a country in the query, Italian opens Italy, French opens France, and English opens the visitor's country (Vercel's `x-vercel-ip-country` header) when supported, else the United States. The period lives in the path and the country in the query, always written in links:
+- **Routing:** `/it`, `/en` and `/fr` via next-intl; `/` redirects to the browser's language, English when it has no UI version. Without a country in the query, Italian opens Italy, French opens France, and English opens the visitor's country (the location header set by the host, see Deployment) when supported, else the United States. The period lives in the path and the country in the query, always written in links:
 
   | Address | Shows |
   | --- | --- |
@@ -76,11 +76,15 @@ No seeding. All data is read live from TMDB and cached by Next.js.
 
 ## Docker
 
-Not used. The app runs with `pnpm dev` locally and on Vercel in production.
+Not used. The app runs with `pnpm dev` locally and on Netlify in production.
 
 ## Deployment
 
-Vercel Hobby, linked to this GitHub repository, auto-deploys `main`. Set `TMDB_ACCESS_TOKEN` in the Vercel project environment before the first deploy.
+Netlify (free plan), linked to this GitHub repository; build settings are in `netlify.toml`. Set `TMDB_ACCESS_TOKEN` and `SITE_URL` (`https://cineagenda.app`) in the Netlify project environment before the first deploy.
+
+Auto-publishing is off: a merge to `main` builds a production deploy, which is published by hand from the Netlify dashboard. The free plan has a monthly credit cap (each published production deploy counts), so changes are published in batches. Deploy Previews for pull requests are free.
+
+`netlify/edge-functions/geo-country.ts` passes the visitor's country to the app, for the default country of the English pages.
 
 ## Attribution
 
