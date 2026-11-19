@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { CountryPicker } from "@/components/CountryPicker";
 import { SiteHeader } from "@/components/SiteHeader";
 import { routing } from "@/i18n/routing";
-import { defaultCountry, GEO_HEADER, parseCountry } from "@/lib/country";
+import { defaultCountry, parseCountry, visitorCountry } from "@/lib/country";
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
@@ -14,7 +14,7 @@ async function HeaderCountry({ searchParams }: { readonly searchParams: SearchPa
   const locale = await getLocale();
   const fallback = defaultCountry(
     routing.locales.find((code) => code === locale) ?? routing.defaultLocale,
-    (await headers()).get(GEO_HEADER),
+    visitorCountry(await headers()),
   );
 
   return <CountryPicker country={parseCountry(value) ?? fallback} pathname="/" />;

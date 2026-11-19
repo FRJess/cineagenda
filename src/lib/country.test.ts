@@ -9,6 +9,7 @@ import {
   releaseWeekday,
   resolveCountryRequest,
   titleLanguage,
+  visitorCountry,
 } from "./country";
 
 describe("COUNTRIES", () => {
@@ -94,5 +95,16 @@ describe("resolveCountryRequest", () => {
 
   it("ignores invalid values in the URL and in the cookie", () => {
     expect(resolveCountryRequest("xx", "zz", "IT")).toEqual({ redirect: null, remember: null });
+  });
+});
+
+describe("visitorCountry", () => {
+  it("reads the country Netlify passes on, then the one Vercel sets", () => {
+    expect(visitorCountry(new Headers({ "x-cineagenda-country": "DE" }))).toBe("DE");
+    expect(visitorCountry(new Headers({ "x-vercel-ip-country": "US" }))).toBe("US");
+  });
+
+  it("is null when the host sends no location", () => {
+    expect(visitorCountry(new Headers())).toBeNull();
   });
 });

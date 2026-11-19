@@ -6,8 +6,8 @@ import {
   COUNTRY_COOKIE,
   DEFAULT_COUNTRY,
   defaultCountry,
-  GEO_HEADER,
   resolveCountryRequest,
+  visitorCountry,
 } from "./lib/country";
 import { parsePeriod, periodHref, type PeriodHref } from "./lib/releases/period";
 import {
@@ -68,7 +68,7 @@ export default function proxy(request: NextRequest) {
   // The page's own default needs no redirect: it depends on the language, and in English on
   // the visitor's location. The root has no language yet: next-intl redirects it first.
   const fallback = hasLocale(routing.locales, locale)
-    ? defaultCountry(locale, request.headers.get(GEO_HEADER))
+    ? defaultCountry(locale, visitorCountry(request.headers))
     : DEFAULT_COUNTRY;
   const { redirect, remember } = resolveCountryRequest(
     searchParams.get("country"),
