@@ -6,7 +6,7 @@ const WIDTHS = [185, 300, 342, 500, 780, 1280] as const;
 
 /**
  * Loader of every `next/image`: a TMDB image is asked from TMDB in the width the browser needs,
- * rounded up to a size TMDB serves, so nothing goes through the Vercel optimizer. The size in
+ * rounded up to a size TMDB serves, so nothing goes through an image optimizer. The size in
  * the address is the ceiling: a 3x phone would otherwise fetch a poster twice as heavy as the
  * design needs.
  */
