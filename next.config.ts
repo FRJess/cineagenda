@@ -27,8 +27,15 @@ const SECURITY_HEADERS = [
   { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
 ];
 
+// Bots that get metadata in the <head> of the first HTML instead of streamed into the body.
+// Next's default list, plus Google: a canonical in the body is ignored, so Search Console saw
+// no user-declared canonical. Visitors keep streamed metadata.
+const HTML_LIMITED_BOTS =
+  /Googlebot|Google-InspectionTool|Mediapartners-Google|Slurp|DuckDuckBot|baiduspider|yandex|sogou|bitlybot|tumblr|vkShare|quora link preview|redditbot|ia_archiver|Bingbot|BingPreview|applebot|facebookexternalhit|facebookcatalog|Twitterbot|LinkedInBot|Slackbot|Discordbot|WhatsApp|SkypeUriPreview/i;
+
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  htmlLimitedBots: HTML_LIMITED_BOTS,
   headers: async () => [{ source: "/:path*", headers: SECURITY_HEADERS }],
   cacheComponents: true,
   partialPrefetching: true,
