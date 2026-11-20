@@ -76,15 +76,11 @@ No seeding. All data is read live from TMDB and cached by Next.js.
 
 ## Docker
 
-Not used. The app runs with `pnpm dev` locally and on Netlify in production.
+Not used. The app runs with `pnpm dev` locally and on Vercel in production.
 
 ## Deployment
 
-Netlify (free plan), linked to this GitHub repository; build settings are in `netlify.toml`. Set `TMDB_ACCESS_TOKEN` and `SITE_URL` (`https://cineagenda.app`) in the Netlify project environment before the first deploy.
-
-Auto-publishing is off: a merge to `main` builds a production deploy, which is published by hand from the Netlify dashboard. The free plan has a monthly credit cap (each published production deploy counts), so changes are published in batches. Deploy Previews for pull requests are free.
-
-`netlify/edge-functions/geo-country.ts` passes the visitor's country to the app, for the default country of the English pages.
+Vercel Hobby, linked to this GitHub repository, auto-deploys `main`. Set `TMDB_ACCESS_TOKEN` and `SITE_URL` (`https://cineagenda.app`) in the Vercel project environment before the first deploy. Vercel sends the visitor's country in `x-vercel-ip-country`, used for the default country of the English pages.
 
 ## Attribution
 

@@ -99,12 +99,13 @@ describe("resolveCountryRequest", () => {
 });
 
 describe("visitorCountry", () => {
-  it("reads the country the edge function passes on", () => {
-    expect(visitorCountry(new Headers({ "x-cineagenda-country": "DE" }))).toBe("DE");
+  it("reads the country Vercel sets", () => {
+    expect(visitorCountry(new Headers({ "x-vercel-ip-country": "DE" }))).toBe("DE");
   });
 
   it("is null when the host sends no location", () => {
     expect(visitorCountry(new Headers())).toBeNull();
-    expect(visitorCountry(new Headers({ "x-vercel-ip-country": "US" }))).toBeNull();
+    // A visitor cannot pick it through the header the old Netlify edge function used.
+    expect(visitorCountry(new Headers({ "x-cineagenda-country": "US" }))).toBeNull();
   });
 });
