@@ -23,11 +23,8 @@ const LOCALE_COUNTRY = { it: "IT", fr: "FR", en: null } as const satisfies Recor
   Country | null
 >;
 
-/**
- * Set by `netlify/edge-functions/geo-country.ts`. It reaches the pages, not the proxy: Netlify runs
- * the proxy first, and its own location header (`x-nf-geo`) does not reach the proxy either.
- */
-const COUNTRY_HEADER = "x-cineagenda-country";
+/** Visitor's country, set by Vercel on every request; it reaches both the proxy and the pages. */
+const COUNTRY_HEADER = "x-vercel-ip-country";
 
 /**
  * Visitor's country (ISO 3166-1 alpha-2) as the host reports it.

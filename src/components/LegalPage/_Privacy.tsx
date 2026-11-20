@@ -6,7 +6,7 @@ import { external, LegalPage, TEXT_TAGS } from "./_LegalPage";
 const UPDATED = "2026-11-19";
 
 const POLICIES = {
-  netlify: "https://www.netlify.com/privacy/",
+  vercel: "https://vercel.com/legal/privacy-policy",
   tmdbp: "https://www.themoviedb.org/privacy-policy",
   google: "https://policies.google.com/privacy",
 } as const;
@@ -38,7 +38,7 @@ export function Privacy() {
       <section aria-labelledby="privacy-visit">
         <h2 id="privacy-visit">{t("visitTitle")}</h2>
         <ul>
-          <li>{t.rich("hosting", { ...TAGS, netlify: external(POLICIES.netlify) })}</li>
+          <li>{t.rich("hosting", { ...TAGS, vercel: external(POLICIES.vercel) })}</li>
           <li>{t.rich("images", { ...TAGS, tmdbp: external(POLICIES.tmdbp) })}</li>
           <li>{t.rich("trailers", { ...TAGS, google: external(POLICIES.google) })}</li>
           <li>{t.rich("email", TAGS)}</li>
