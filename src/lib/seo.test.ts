@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ogImage, pageMetadata } from "./seo";
+import { HOME_LANGUAGES, ogImage, pageMetadata } from "./seo";
 
 describe("pageMetadata", () => {
   it("sets the canonical and the Open Graph address under the locale", () => {
@@ -76,5 +76,15 @@ describe("pageMetadata", () => {
 
     expect(pageMetadata({ ...base, index: false }).robots).toEqual({ index: false, follow: true });
     expect(pageMetadata(base)).not.toHaveProperty("robots");
+  });
+
+  it("adds hreflang links only when the page lists its languages", () => {
+    const base = { locale: "it", path: "", title: "Cineagenda", description: "Uscite." } as const;
+
+    expect(pageMetadata({ ...base, languages: HOME_LANGUAGES }).alternates).toEqual({
+      canonical: "/it",
+      languages: { it: "/it", en: "/en", fr: "/fr", "x-default": "/" },
+    });
+    expect(pageMetadata(base).alternates).toEqual({ canonical: "/it" });
   });
 });

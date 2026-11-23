@@ -13,6 +13,14 @@ export function ogImage(locale: UiLocale) {
   return { url: `/og-image-${locale}.png?v=${OG_IMAGE_VERSION}`, width: 1200, height: 630 };
 }
 
+/** The home in every language, with the root (which redirects by language) as x-default. */
+export const HOME_LANGUAGES = {
+  it: "/it",
+  en: "/en",
+  fr: "/fr",
+  "x-default": "/",
+} as const;
+
 const OG_LOCALE = { it: "it_IT", en: "en_GB", fr: "fr_FR" } as const satisfies Record<
   UiLocale,
   string
@@ -27,6 +35,8 @@ type PageSeo = {
   readonly image?: { readonly url: string; readonly width: number; readonly height: number };
   /** False keeps the page out of search results; its links are still followed. */
   readonly index?: boolean;
+  /** Same page in each language, as hreflang links: locale (or `x-default`) to address. */
+  readonly languages?: Readonly<Record<string, string>>;
 };
 
 /**
@@ -42,6 +52,7 @@ export function pageMetadata({
   description,
   image,
   index = true,
+  languages,
 }: PageSeo): Metadata {
   const search = new URLSearchParams(query).toString();
   const url = `/${locale}${path}${search ? `?${search}` : ""}`;
@@ -49,7 +60,7 @@ export function pageMetadata({
   return {
     title,
     description,
-    alternates: { canonical: url },
+    alternates: { canonical: url, ...(languages && { languages }) },
     ...(!index && { robots: { index: false, follow: true } }),
     openGraph: {
       type: "website",
