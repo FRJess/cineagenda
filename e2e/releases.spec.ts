@@ -471,5 +471,6 @@ test("Googlebot gets the canonical and the title in the head of the first HTML",
 
   expect(response.status()).toBe(200);
   expect(head).toMatch(/<link rel="canonical" href="[^"]+\/it"\/>/);
+  expect(head).toMatch(/<link rel="alternate" hreflang="x-default" href="https?:\/\/[^/"]+\/?"/i);
   expect(head).toContain("<title>");
 });

@@ -12,7 +12,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return PAGES.flatMap(({ path, changeFrequency, priority }) => {
     const languages = {
       ...Object.fromEntries(routing.locales.map((locale) => [locale, pageUrl(locale, path)])),
-      "x-default": pageUrl(routing.defaultLocale, path),
+      // The root sends each visitor to their language: declared as x-default, Google reads it as
+      // the language picker instead of a copy of one home (it had chosen it over /it).
+      "x-default": new URL(`/${path}`, SITE_URL).href,
     };
 
     return routing.locales.map((locale) => ({

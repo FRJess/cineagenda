@@ -14,7 +14,7 @@ import { routing } from "@/i18n/routing";
 import { countryQuery, defaultCountry, parseCountry, visitorCountry } from "@/lib/country";
 import { parsePeriod, periodHref } from "@/lib/releases/period";
 import { defaultRange, mondayOf, sundayOf, todayInRome, weeksBetween } from "@/lib/releases/window";
-import { ogImage, pageMetadata } from "@/lib/seo";
+import { HOME_LANGUAGES, ogImage, pageMetadata } from "@/lib/seo";
 import { getWeekReleases } from "@/lib/tmdb/cached";
 import type { UiLocale } from "@/lib/tmdb/to-movie";
 
@@ -46,6 +46,7 @@ export async function generateMetadata({
     description: t("countryDescription", { country, name }),
     image: ogImage(uiLocale),
     index: !picked,
+    languages: picked ? undefined : HOME_LANGUAGES,
   });
 }
 

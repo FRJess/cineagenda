@@ -9,7 +9,7 @@ describe("sitemap", () => {
     expect(sitemap().map((entry) => entry.url)).toEqual(["/it", "/en", "/fr"].map(url));
   });
 
-  it("names the home in the other languages, English as x-default", () => {
+  it("names the home in the other languages, the root as x-default", () => {
     const languagesOf = (path: string) =>
       sitemap().find((entry) => entry.url === url(path))?.alternates?.languages;
 
@@ -17,7 +17,7 @@ describe("sitemap", () => {
       it: url("/it"),
       en: url("/en"),
       fr: url("/fr"),
-      "x-default": url("/en"),
+      "x-default": url("/"),
     });
   });
 });
